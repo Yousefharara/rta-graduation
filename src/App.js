@@ -1,12 +1,14 @@
-import './App.css';
-import HomePage from './home';
+import { Suspense } from "react";
+import Router from "./routes";
+import ProviderTemplate from "./components/templates/providerTemplate";
 
 function App() {
   return (
-    <div className="App">
-      <h1 className='bg-red-400 p-4'>Hello from App</h1>
-      <HomePage />
-    </div>
+    <ProviderTemplate>
+      <Suspense fallback={<h1>Loading</h1>}>
+        <Router />
+      </Suspense>
+    </ProviderTemplate>
   );
 }
 
