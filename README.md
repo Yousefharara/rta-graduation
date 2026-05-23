@@ -71,7 +71,6 @@ The system follows a client-server architecture consisting of:
 
 ### Frontend
 - React.js
-- Next.js
 - Tailwind CSS
 - Axios
 
@@ -84,7 +83,6 @@ The system follows a client-server architecture consisting of:
 
 ### Other Tools
 - JWT Authentication
-- QR Code Integration
 - REST API
 - Git & GitHub
 
@@ -95,4 +93,4 @@ The system follows a client-server architecture consisting of:
 ### Clone the repository
 
 ```bash
-git clone https://github.com/your-username/rta-project.git
+git clone https://github.com/Yousefharara/rta-graduation
