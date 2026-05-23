@@ -6,13 +6,13 @@ const About = () => {
     const {role} = useAuthContext();
 
     useEffect(() => {
-        console.log("Role , ", role);
-    })
+        console.log("Role , ", typeof role);
+    }, [role]);
 
     return (
         <div className='p-8'>
             <h2>About page</h2>
-            <p className='rounded-md w-fit border border-gray-300 p-4 text-emerald-600'>Role is : {role}</p>
+            <p className='rounded-md w-fit border border-gray-300 p-4 text-emerald-600'>Role is : {role.toString()}</p>
         </div>
     );
 }
