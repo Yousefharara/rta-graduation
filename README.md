@@ -7,7 +7,7 @@ The system helps administrators and local organizations manage beneficiaries, mo
 
 ## Live Demo
 
-🔗 (Demo Live)[https://rta-graduation.vercel.app/]
+🔗 [Live Demo](https://rta-graduation.vercel.app/)
 
 ---
 
