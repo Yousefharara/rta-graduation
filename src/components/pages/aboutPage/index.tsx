@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { useAuthContext } from '../../../context/AuthContext';
+import { useAppSelector } from '../../../redux/store';
 
 const About = () => {
 
-    const {role} = useAuthContext();
+    const {role} = useAppSelector(state => state.auth);
 
     useEffect(() => {
         console.log("Role , ", typeof role);

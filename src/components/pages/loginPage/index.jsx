@@ -20,11 +20,10 @@ const LoginPage = () => {
   }
 
   return (
-    <section>
+    <section className="mx-auto border rounded-md p-4 border-black" style={{width: "min(700px, 90%)"}}>
       <h1>Login page role is : {role}</h1>
 
-      <button onClick={handleLogin}>Login button</button>
-      <button onClick={handleLogout}>Logout button</button>
+      <button onClick={handleLogin} >Login button</button>
     </section>
   );
 };

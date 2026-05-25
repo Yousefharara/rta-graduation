@@ -57,9 +57,8 @@ const LayoutTemplate = ({ children }) => {
 
   if (isAuthPath(location.pathname)) {
     return (
-      <article className="min-h-[300vh]">
+      <article className="min-h-[300vh] flex flex-col gap-20 bg-[#F8F9FF]">
         <Navbar />
-        <h2>Auth Page</h2>
         {children}
       </article>
     );

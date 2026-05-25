@@ -10,34 +10,16 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    dispatch(logout())
-  }
+    dispatch(logout());
+  };
 
   return (
-    <nav className="w-full z-20 sticky top-0 backdrop-blur-sm mb-4 mx-auto border-b border-b-gray-300 px-[2rem] py-[.7rem] flex items-center justify-between">
-      <ul className="flex gap-4">
-        {role === "user" && (
-          <>
-            <li>
-              <NavLink to={PATHS.HOME}>Home</NavLink>
-            </li>
-            <li>
-              <NavLink to={PATHS.ABOUT}>About</NavLink>
-            </li>
-            <li>
-              <NavLink to={PATHS.ABOUT}>Post</NavLink>
-            </li>
-            <li>
-              <NavLink to={PATHS.ABOUT}>Create Post</NavLink>
-            </li>
-          </>
-        )}
-      </ul>
+    <nav className="w-full bg-white z-20 sticky top-0 backdrop-blur-sm mb-4 mx-auto border-b border-b-gray-300 px-[2rem] py-[.7rem] flex items-center justify-between">
       <ul className="flex gap-4 items-center">
         {role === "guest" && (
           <>
             <li>
-              <NavLink to={PATHS.AUTH.LOGIN}>Login</NavLink>
+              <NavLink to={PATHS.AUTH.LOGIN}>تسحيل الدخول</NavLink>
             </li>
           </>
         )}
@@ -49,6 +31,43 @@ const Navbar = () => {
             </button>
           </li>
         )}
+
+        {role === "guest" && (
+          <li>
+            <NavLink
+              to={PATHS.AUTH.LOGIN}
+              className={"!text-white rounded-md px-4 py-2 bg-[#0048C1]"}
+            >
+              تبرع الان
+            </NavLink>
+          </li>
+        )}
+      </ul>
+      <ul className="flex gap-4">
+        {role === "guest" && (
+          <>
+            <li>
+              <NavLink to={PATHS.HOME}>تواصل معنا</NavLink>
+            </li>
+
+            <li>
+              <NavLink to={PATHS.ABOUT}>تتبع المساعدات</NavLink>
+            </li>
+          </>
+        )}
+        <li>
+          <NavLink to={PATHS.ABOUT}>حول المنصه</NavLink>
+        </li>
+        <li>
+          <NavLink to={PATHS.ABOUT}>الرئيسية</NavLink>
+        </li>
+      </ul>
+
+      <ul>
+        <li>
+          <img src="" alt="" />
+          <p>yousef</p>
+        </li>
       </ul>
     </nav>
   );
