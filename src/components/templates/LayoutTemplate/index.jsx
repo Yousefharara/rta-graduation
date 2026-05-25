@@ -2,6 +2,10 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuthContext } from "../../../context/AuthContext";
 import { PATHS } from "../../../routes/paths";
+import ScrollToTop from "../../atoms/scrollToTop";
+import Navbar from "../../organisms/navbar";
+import { isAuthPath } from "../../../utils/router.helper";
+import DashbaordTemplate from "../DashboardTemplate";
 
 const LayoutTemplate = ({ children }) => {
   const location = useLocation();
@@ -54,6 +58,7 @@ const LayoutTemplate = ({ children }) => {
   if (isAuthPath(location.pathname)) {
     return (
       <article className="min-h-screen flex items-center justify-center">
+        <h2>Auth Page</h2>
         {children}
       </article>
     );

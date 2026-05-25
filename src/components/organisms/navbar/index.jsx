@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { PATHS } from "../../../routes/paths";
-import Button from "../../atoms/button";
+// import Button from "../../atoms/button";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { logout } from "../../../redux/slices/authSlice";
 import "./style.css";
@@ -47,9 +47,9 @@ const Navbar = () => {
         <li></li>
         {(role === "admin" || role === "user") && (
           <li>
-            <Button variant="destructive" size="small" onClick={handleLogout}>
+            {/* <Button variant="destructive" size="small" onClick={handleLogout}>
               Logout
-            </Button>
+            </Button> */}
           </li>
         )}
       </ul>
