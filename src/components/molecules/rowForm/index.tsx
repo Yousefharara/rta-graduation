@@ -26,7 +26,7 @@ const RowForm = <TFromValues extends FieldValues>({
   const messageError = errors[label]?.message;
 
   return (
-    <div className="flex flex-col gap-4 my-4">
+    <div className="flex flex-col gap-4 my-4 w-full">
       <label className="text-sm font-semibold">{title}</label>
       <Input<TFromValues>
         {...restProps}

@@ -1,3 +1,23 @@
 nav ul li a.active {
-    color: #0048C1;
+  color: #0048c1;
+}
+
+nav ul li a {
+  position: relative;
+}
+
+nav ul li a:not(.not-active)::before {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background-color: #004ac6;
+  bottom: -5px;
+  transition: 0.5s;
+}
+nav ul li a:hover::before {
+  width: 100%;
+}
+nav ul li a.active::before {
+  width: 100%;
 }

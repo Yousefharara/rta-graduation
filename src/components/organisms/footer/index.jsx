@@ -1,3 +1,5 @@
+import { Globe2, Mail, PhoneCall } from "lucide-react";
+
 const Footer = () => {
   return (
     <section className="flex flex-col gap-12 bg-[#213145] text-[#B5C6FF] p-8">
@@ -27,17 +29,13 @@ const Footer = () => {
 
         <div className="flex flex-col gap-4">
           <h4 className="text-white text-2xl font-medium">تواصل معنا</h4>
-          <div>
-            {/* <Mail /> */}
+          <div className="flex items-center gap-3">
+            <Mail size={18} />
             <p>info@rta-relife.org</p>
           </div>
-          <div>
-            {/* <PhoneCall /> */}
+          <div className="flex items-center gap-3">
+            <PhoneCall size={18} />
             <p dir="ltr">+970 59 000 0000</p>
-          </div>
-          <div>
-            <div></div>
-            <div>{/* <Globe2 /> */}</div>
           </div>
         </div>
       </article>

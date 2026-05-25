@@ -2,7 +2,6 @@
 import React from "react";
 import { PATHS } from "../../../routes/paths";
 import { Link } from "react-router-dom";
-import { AppWindowMac } from "lucide";
 
 
 const NavbarDashboard = ({ handleOpenAside }) => {
@@ -17,7 +16,7 @@ const NavbarDashboard = ({ handleOpenAside }) => {
             onClick={handleOpenAside}
             className={`cursor-pointer lg:hidden text-gray-600`}
           >
-            <AppWindowMac />
+            {/* <AppWindowMac /> */}
           </div>
           <li>
             <Link to={PATHS.HOME}>Home</Link>

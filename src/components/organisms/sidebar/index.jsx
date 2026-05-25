@@ -1,4 +1,3 @@
-import { X } from "lucide";
 
 
 const Sidebar = ({isOpenAside, isMobile, handleCloseAside}) => {
@@ -14,7 +13,7 @@ const Sidebar = ({isOpenAside, isMobile, handleCloseAside}) => {
             className="cursor-pointer text-gray-700"
             onClick={handleCloseAside}
           >
-            <X />
+            {/* <X /> */}
           </h3>
         )}
       </div>

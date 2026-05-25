@@ -3,3 +3,10 @@ export interface ILoginForm {
   password: string;
   remeberMe: boolean;
 }
+
+export interface IContactForm {
+  fullName: string;
+  email: string;
+  title: string;
+  description: string;
+}

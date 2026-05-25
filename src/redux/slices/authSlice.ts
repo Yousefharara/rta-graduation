@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { ROLES } from "../../constants/roles";
 
 type RoleType =  'guest' | 'user' | 'admin' | 'org';
 
