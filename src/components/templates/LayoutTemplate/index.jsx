@@ -1,15 +1,15 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useAuthContext } from "../../../context/AuthContext";
 import { PATHS } from "../../../routes/paths";
 import ScrollToTop from "../../atoms/scrollToTop";
 import Navbar from "../../organisms/navbar";
 import { isAuthPath } from "../../../utils/router.helper";
 import DashbaordTemplate from "../DashboardTemplate";
+import { useAppSelector } from "../../../redux/store";
 
 const LayoutTemplate = ({ children }) => {
   const location = useLocation();
-  const { role } = useAuthContext();
+  const { role } = useAppSelector((state) => state.auth);
   const [isOpenAside, setIsOpenAside] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -57,7 +57,8 @@ const LayoutTemplate = ({ children }) => {
 
   if (isAuthPath(location.pathname)) {
     return (
-      <article className="min-h-screen flex items-center justify-center">
+      <article className="min-h-[300vh]">
+        <Navbar />
         <h2>Auth Page</h2>
         {children}
       </article>
