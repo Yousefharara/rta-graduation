@@ -1,5 +1,4 @@
 import React from "react";
-import { ROLES } from "../constants/roles";
 import { Navigate, Outlet } from "react-router-dom";
 import { PATHS } from "../routes/paths";
 import { useAppSelector } from "../redux/store";
@@ -7,7 +6,7 @@ import { useAppSelector } from "../redux/store";
 const UserGuard = () => {
   const { role } = useAppSelector((state) => state.auth);
 
-  if (role === ROLES.USER || role === ROLES.ADMIN) return <Outlet />;
+  if (role === "user" || role === "admin") return <Outlet />;
 
   return <Navigate to={PATHS.AUTH.LOGIN} replace={true} />;
 };

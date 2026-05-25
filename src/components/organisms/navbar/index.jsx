@@ -7,6 +7,8 @@ import { logout } from "../../../redux/slices/authSlice";
 
 const Navbar = () => {
   const { role } = useAppSelector((state) => state.auth);
+
+  console.log('Roles in nav is :, ', role);
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
@@ -44,7 +46,7 @@ const Navbar = () => {
         )}
       </ul>
       <ul className="flex gap-4">
-        {role === "guest" && (
+        {(role === "guest" || role === "user") && (
           <>
             <li>
               <NavLink to={PATHS.CONTACT_US}>تواصل معنا</NavLink>

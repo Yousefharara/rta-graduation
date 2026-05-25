@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+// import { ROLES } from "../../constants/roles";
 
-type RoleType = 'user' | 'admin' | 'guest'
+type RoleType =  'guest' | 'user' | 'admin' | 'org';
 
 interface IInitialState {
   user: string | null;
@@ -11,7 +12,7 @@ interface IInitialState {
 const initialState: IInitialState = {
   user: null,
   token: null,
-  role: 'guest'
+  role: "guest"
 };
 
 const authSlice = createSlice({

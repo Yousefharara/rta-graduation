@@ -7,7 +7,7 @@ const AdminGuard = () => {
 
     const {role} = useAppSelector(state => state.auth)
 
-    if(role === ROLES.ADMIN) return <Outlet />;
+    if(role === "admin") return <Outlet />;
 }
 
 export default AdminGuard;
