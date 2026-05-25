@@ -35,7 +35,7 @@ const Navbar = () => {
         {role === "guest" && (
           <li>
             <NavLink
-              to={PATHS.AUTH.LOGIN}
+              to={PATHS.DONATION}
               className={"!text-white rounded-md px-4 py-2 bg-[#0048C1]"}
             >
               تبرع الان
@@ -47,11 +47,11 @@ const Navbar = () => {
         {role === "guest" && (
           <>
             <li>
-              <NavLink to={PATHS.HOME}>تواصل معنا</NavLink>
+              <NavLink to={PATHS.CONTACT_US}>تواصل معنا</NavLink>
             </li>
 
             <li>
-              <NavLink to={PATHS.ABOUT}>تتبع المساعدات</NavLink>
+              <NavLink to={PATHS.TRACK_AID}>تتبع المساعدات</NavLink>
             </li>
           </>
         )}
@@ -59,14 +59,13 @@ const Navbar = () => {
           <NavLink to={PATHS.ABOUT}>حول المنصه</NavLink>
         </li>
         <li>
-          <NavLink to={PATHS.ABOUT}>الرئيسية</NavLink>
+          <NavLink to={PATHS.HOME}>الرئيسية</NavLink>
         </li>
       </ul>
 
       <ul>
-        <li>
-          <img src="" alt="" />
-          <p>yousef</p>
+        <li className="w-28 h-full overflow-hidden">
+          <img className="w-full h-full object-cover scale-125" src="/logo.png" alt="" />
         </li>
       </ul>
     </nav>

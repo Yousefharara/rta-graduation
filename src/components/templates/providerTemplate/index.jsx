@@ -7,9 +7,8 @@ const ProviderTemplate = ({ children }) => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>Template provider</title>
+        <title>RTA Graduation</title>
       </Helmet>
-      <h2>Provider Template</h2>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           {children}

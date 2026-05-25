@@ -7,7 +7,7 @@ import { useAppSelector } from "../redux/store";
 const UserGuard = () => {
   const { role } = useAppSelector((state) => state.auth);
 
-  if (role === ROLES.USER) return <Outlet />;
+  if (role === ROLES.USER || role === ROLES.ADMIN) return <Outlet />;
 
   return <Navigate to={PATHS.AUTH.LOGIN} replace={true} />;
 };

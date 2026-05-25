@@ -6,6 +6,7 @@ import Navbar from "../../organisms/navbar";
 import { isAuthPath } from "../../../utils/router.helper";
 import DashbaordTemplate from "../DashboardTemplate";
 import { useAppSelector } from "../../../redux/store";
+import Footer from "../../organisms/footer";
 
 const LayoutTemplate = ({ children }) => {
   const location = useLocation();
@@ -47,41 +48,44 @@ const LayoutTemplate = ({ children }) => {
 
   if (location.pathname === PATHS.HOME) {
     return (
-      <article className="min-h-[300vh]">
-        {/* <ScrollToTop /> */}
+      <article className="min-h-screen flex flex-col justify-between">
+        <ScrollToTop />
         <Navbar />
         {children}
+        <Footer />
       </article>
     );
   }
 
   if (isAuthPath(location.pathname)) {
     return (
-      <article className="min-h-[300vh] flex flex-col gap-20 bg-[#F8F9FF]">
+      <article className="flex flex-col gap-20 bg-[#F8F9FF]">
         <Navbar />
         {children}
+        <Footer />
       </article>
     );
   }
 
-  if (role === "admin") {
-    return (
-      <DashbaordTemplate
-        handleCloseAside={handleCloseAside}
-        handleOpenAside={handleOpenAside}
-        isMobile={isMobile}
-        isOpenAside={isOpenAside}
-      >
-        {children}
-      </DashbaordTemplate>
-    );
-  }
+  // if (role === "admin") {
+  //   return (
+  //     <DashbaordTemplate
+  //       handleCloseAside={handleCloseAside}
+  //       handleOpenAside={handleOpenAside}
+  //       isMobile={isMobile}
+  //       isOpenAside={isOpenAside}
+  //     >
+  //       {children}
+  //     </DashbaordTemplate>
+  //   );
+  // }
 
   return (
-    <article className="min-h-[300vh]">
+    <article className="">
       <ScrollToTop />
       <Navbar />
       {children}
+      <Footer />
     </article>
   );
 };

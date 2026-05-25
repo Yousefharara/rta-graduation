@@ -1,29 +1,17 @@
-import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { login, logout } from "../../../redux/slices/authSlice";
+import LoginForm from "../../organisms/loginForm";
 
 const LoginPage = () => {
-  const { role } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
-
-  const handleLogin = () => {
-    dispatch(
-      login({
-        role: "user",
-        token: "token",
-        user: "yousef",
-      }),
-    );
-  };
-
-  const handleLogout = () => {
-    dispatch(logout())
-  }
 
   return (
-    <section className="mx-auto border rounded-md p-4 border-black" style={{width: "min(700px, 90%)"}}>
-      <h1>Login page role is : {role}</h1>
-
-      <button onClick={handleLogin} >Login button</button>
+    <section className="mx-auto border rounded-md p-4 border-neutral-300 bg-white" style={{width: "min(500px, 90%)"}}>
+      
+      <article className="flex justify-center items-center flex-col gap-3">
+        <h2>تسجيل الدخول</h2>
+      </article>
+      <article>
+        <LoginForm />
+      </article>
+      
     </section>
   );
 };
