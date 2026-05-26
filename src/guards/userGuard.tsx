@@ -5,7 +5,7 @@ import { PATHS } from "@/routes/paths";
 const UserGuard = () => {
   const { role } = useAppSelector((state) => state.auth);
 
-  if (role === "user" || role === "admin") return <Outlet />;
+  if (role === "user") return <Outlet />;
 
   return <Navigate to={PATHS.AUTH.LOGIN} replace={true} />;
 };

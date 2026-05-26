@@ -31,7 +31,7 @@ const Navbar = () => {
         <li></li>
         {(role === "admin" || role === "user") && (
           <li>
-            <Button variant="destructive" size="small" onClick={handleLogout}>
+            <Button variant="destructive" size="medium" onClick={handleLogout}>
               Logout
             </Button>
           </li>
@@ -41,7 +41,7 @@ const Navbar = () => {
           <li>
             <NavLink
               to={PATHS.DONATION}
-              className={"not-active text-white! rounded-md px-4 py-2 bg-[#0048C1]"}
+              className={"not-active text-white! rounded-md px-4 py-2 bg-blue-primary"}
             >
               تبرع الان
             </NavLink>
@@ -56,7 +56,7 @@ const Navbar = () => {
             </li>
 
             <li>
-              <NavLink to={PATHS.TRACK_AID}>تتبع المساعدات</NavLink>
+              <NavLink to={PATHS.TRACK_AID.ROOT}>تتبع المساعدات</NavLink>
             </li>
           </>
         )}

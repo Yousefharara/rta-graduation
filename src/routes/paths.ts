@@ -3,7 +3,10 @@ export const PATHS = {
   DASHBOARD: "/dashboard",
   ABOUT: "/about",
   CONTACT_US: "/contactus",
-  TRACK_AID: "/track-aid",
+  TRACK_AID: {
+    ROOT: "/track-aid",
+    USER: "/track-aid/auth"
+  },
   DONATION: "/donation",
   AUTH: {
     LOGIN: "/login",

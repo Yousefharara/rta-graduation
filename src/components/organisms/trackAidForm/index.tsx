@@ -6,6 +6,10 @@ import RowForm from "../../molecules/rowForm";
 import Button from "../../atoms/button";
 import { ArrowLeft } from "lucide-react";
 import type { ITrackAidForm } from "@/@types/forms";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "@/routes/paths";
+import { useAppDispatch } from "@/redux/store";
+import { login } from "@/redux/slices/authSlice";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
   IDNumber: Yup.number().required("ID is required !"),
@@ -19,6 +23,9 @@ const TrackAidForm = () => {
     register,
   } = useForm<ITrackAidForm>({ resolver: yupResolver(schemaLoginFrom) });
 
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (errors) {
       console.log("errors , ", errors);
@@ -27,6 +34,12 @@ const TrackAidForm = () => {
 
   const handleOnSubmit = (data: ITrackAidForm) => {
     console.log("Data is , ", data);
+    dispatch(login({
+      role: "user",
+      user: "yousef",
+      token: 'ksdhfahf'
+    }))
+    navigate(PATHS.TRACK_AID.USER)
   };
 
   return (
@@ -37,7 +50,7 @@ const TrackAidForm = () => {
         register={register}
         label="IDNumber"
         placeholder="123456789"
-        className="w-full !bg-[#E0E9FD]"
+        className="w-full bg-[#E0E9FD]!"
       />
       <RowForm<ITrackAidForm>
         title="رقم الاصدار"
@@ -48,7 +61,7 @@ const TrackAidForm = () => {
         dir="rtl"
         lang="ar"
         placeholder="10/10/2020"
-        className="w-full !bg-[#E0E9FD]"
+        className="w-full bg-[#E0E9FD]!"
       />
       <Button
         variant="default"

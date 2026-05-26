@@ -10,9 +10,8 @@ const Footer = () => {
         <div className="flex flex-col gap-4">
           <h3 className="text-3xl font-semibold">Relife Track Aid</h3>
           <p className="text-sm">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ut
-            voluptate ratione blanditiis beatae corporis quae voluptatibus
-            aliquid doloribus dolorum ipsa?
+            منصة تقنية إنسانية تهدف لإعادة تعريف الكفاءة في توزيع المساعدات
+            الدولية والمحلية، مع التركيز على الكرامة الإنسانية والعدالة الرقمية.
           </p>
         </div>
 
@@ -42,8 +41,7 @@ const Footer = () => {
       <div className="w-full h-0.5 bg-gray-700"></div>
       <article className="text-center w-full">
         <p>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Illo,
-          cumque.
+          © 2026 جميع الحقوق محفوظة لمنصة RTA - Relief Track Aid
         </p>
       </article>
     </section>

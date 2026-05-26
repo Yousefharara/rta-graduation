@@ -10,6 +10,7 @@ const LoginPage = lazy(() => import("@/components/pages/loginPage"));
 const ContactusPage = lazy(() => import("../components/pages/contactusPage"));
 const TrackAidPage = lazy(() => import("../components/pages/trackAidPage"));
 const DonationPage = lazy(() => import("../components/pages/donationPage"));
+const TrackAidUser = lazy(() => import("@/components/pages/trackAidPage/trackAidUser"));
 
 const userRoutes: RouteObject[] = [
   {
@@ -19,6 +20,16 @@ const userRoutes: RouteObject[] = [
       {
         index: true,
         element: <AboutPage />,
+      },
+    ],
+  },
+  {
+    path: PATHS.TRACK_AID.USER,
+    element: <UserGuard />,
+    children: [
+      {
+        index: true,
+        element: <TrackAidUser />,
       },
     ],
   },
@@ -55,9 +66,8 @@ export const routes = [
     path: PATHS.CONTACT_US,
     element: <ContactusPage />,
   },
-  
   {
-    path: PATHS.TRACK_AID,
+    path: PATHS.TRACK_AID.ROOT,
     element: <TrackAidPage />,
   },
   {

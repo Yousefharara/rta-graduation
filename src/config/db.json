@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "yousef",
+      "token": "1245kasdjflakd",
+      "role": "user",
+      "aids": "502"
+    },
+    {
+      "id": 2,
+      "name": "ahmed",
+      "token": "2245kasdjflakd",
+      "role": "user",
+      "aids": "502"
+    },
+    {
+      "id": 3,
+      "name": "ali",
+      "token": "3245kasdjflakd",
+      "role": "user",
+      "aids": "502"
+    }
+  ]
+}

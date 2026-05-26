@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import ContactForm from "../../organisms/contactForm";
-import {Mail, MapPin, Phone} from "lucide-react"
+import { Mail, MapPin, Phone } from "lucide-react"
 
 const ContactusPage = () => {
   return (
@@ -13,11 +13,11 @@ const ContactusPage = () => {
         <article className="min-h-80 flex flex-col justify-center items-center gap-4 bg-[#E0E9FD]">
           <h2 className="text-5xl font-semibold text-[#004AC6]">تواصل معنا</h2>
           <p className="text-center text-[#213145]">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure eos
-            consectetur natus ea, dicta adipisci!
+            نحن هنا للإجابة على استفساراتكم وضمان وصول المساعدات لكل من يحتاجها بكل شفافية
+            وموثوقية.
           </p>
         </article>
-        <article className="flex flex-col justify-between mx-auto gap-4 md:flex-row" style={{width: "min(1200px, 95%)"}}>
+        <article className="flex flex-col justify-between mx-auto gap-4 md:flex-row" style={{ width: "min(1200px, 95%)" }}>
           <div className="basis-3/5">
             <h3>أرسل لنا رسالة</h3>
             <ContactForm />
@@ -27,7 +27,7 @@ const ContactusPage = () => {
             <ul className="flex flex-col gap-3">
               <li className="flex gap-4 items-center">
                 <div className="flex justify-center items-center rounded-md p-3 bg-[#195CCC]">
-                  <Mail className="" size={18}/>
+                  <Mail className="" size={18} />
                 </div>
                 <div>
                   <small>البريد الالكتروني</small>
@@ -36,7 +36,7 @@ const ContactusPage = () => {
               </li>
               <li className="flex gap-4 items-center">
                 <div className="flex justify-center items-center rounded-md p-3 bg-[#195CCC]">
-                  <Phone size={18}/>
+                  <Phone size={18} />
                 </div>
                 <div>
                   <small>رقم الهاتف</small>
@@ -45,7 +45,7 @@ const ContactusPage = () => {
               </li>
               <li className="flex gap-4 items-center">
                 <div className="flex justify-center items-center rounded-md p-3 bg-[#195CCC]">
-                  <MapPin size={18}/>
+                  <MapPin size={18} />
                 </div>
                 <div>
                   <small>المكتب الرئيسي</small>

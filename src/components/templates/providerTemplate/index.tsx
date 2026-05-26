@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "../../../redux/store";
 import type { ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 const ProviderTemplate = ({ children } : {children: ReactNode}) => {
   return (
@@ -12,7 +13,7 @@ const ProviderTemplate = ({ children } : {children: ReactNode}) => {
       </Helmet>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          {/* <Toaster /> */}
+          <Toaster />
           {children}
         </PersistGate>
       </Provider>

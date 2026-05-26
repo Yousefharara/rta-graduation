@@ -8,6 +8,7 @@ import { Check, Heart, Lock, ShieldCheck } from "lucide-react";
 import RowForm from "../../molecules/rowForm";
 import Button from "../../atoms/button";
 import type { IDonationForm } from "@/@types/forms";
+import { toast } from "sonner";
 
 const schemaDonationFrom: Yup.ObjectSchema<IDonationForm> = Yup.object({
   donationType: Yup.string().oneOf(["A", "B"]).required(),
@@ -41,6 +42,7 @@ const DonationForm = () => {
       ...data,
       budget: finalBudget,
     });
+    toast.success("تمت عملية التبرع بنجاح ❤️");
   };
 
   return (
