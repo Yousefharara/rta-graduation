@@ -10,3 +10,17 @@ export interface IContactForm {
   title: string;
   description: string;
 }
+
+export interface ITrackAidForm {
+  IDNumber: number;
+  versionNumber: Date;
+}
+
+export interface IDonationForm {
+  donationType: 'A' | 'B';
+  budget: number;
+  nameOfCard: string;
+  cardNumber: string;
+  endDate: Date;
+  CVV: number;
+}

@@ -1,0 +1,49 @@
+.donation-slider {
+  position: relative;
+}
+
+.donation-slider::before {
+  content: "";
+  position: absolute;
+  border-radius: 50px;
+  inset: 0;
+  margin: auto;
+}
+
+.slider-gaza {
+  --gaza-pt: 60%;
+}
+
+.slider-gaza::before {
+  background: linear-gradient(
+    to left,
+    hsl(133, 50%, 20%) var(--gaza-pt),
+    transparent var(--gaza-pt),
+    transparent 100%
+  );
+}
+.slider-learning {
+  --gaza-learn: 23%;
+}
+
+.slider-learning::before {
+  background: linear-gradient(
+    to left,
+    hsl(133, 50%, 20%) var(--gaza-learn),
+    transparent var(--gaza-learn),
+    transparent 100%
+  );
+}
+
+.lable-gaza input[type="radio"]:checked {
+  background-color: orange;
+}
+
+.donation-grid {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr) auto;
+  grid-template-areas:
+    "    item1 item1 item3 "
+    "    item2 item2 item3 "
+    "    .     .     item3 ";
+}

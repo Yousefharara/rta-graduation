@@ -8,6 +8,8 @@ const AboutPage = lazy(() => import("../components/pages/aboutPage"));
 const HomePage = lazy(() => import("../components/pages/homePage"));
 const LoginPage = lazy(() => import("../components/pages/loginPage"));
 const ContactusPage = lazy(() => import("../components/pages/contactusPage"));
+const TrackAidPage = lazy(() => import("../components/pages/trackAidPage"));
+const DonationPage = lazy(() => import("../components/pages/donationPage"));
 
 const userRoutes: RouteObject[] = [
   {
@@ -53,6 +55,16 @@ export const routes = [
     path: PATHS.CONTACT_US,
     element: <ContactusPage />,
   },
+  
+  {
+    path: PATHS.TRACK_AID,
+    element: <TrackAidPage />,
+  },
+  {
+    path: PATHS.DONATION,
+    element: <DonationPage />,
+  },
+  
   ...guestRoutes,
   ...userRoutes,
   ...errorRoutes,

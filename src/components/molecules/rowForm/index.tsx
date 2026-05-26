@@ -6,6 +6,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import Input from "../../atoms/input";
+import { INPUTS_TYPE_ERROR } from "../../../constants/forms";
 
 interface IRowLoginProps<
   TFromValues extends FieldValues,
@@ -35,8 +36,15 @@ const RowForm = <TFromValues extends FieldValues>({
         register={register}
         className={className}
       />
-      {messageError && (
-        <span className="text-sm text-rose-600">{String(messageError)}</span>
+
+      {messageError && errors[label]?.type === "typeError" ? (
+        <span className="text-sm text-rose-600">
+          {INPUTS_TYPE_ERROR[label]}
+        </span>
+      ) : (
+        messageError && (
+          <span className="text-sm text-rose-600">{String(messageError)}</span>
+        )
       )}
     </div>
   );
