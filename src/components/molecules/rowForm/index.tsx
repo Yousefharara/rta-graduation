@@ -1,4 +1,4 @@
-import React, { type InputHTMLAttributes } from "react";
+import { type InputHTMLAttributes } from "react";
 import type {
   FieldErrors,
   FieldValues,
@@ -39,7 +39,7 @@ const RowForm = <TFromValues extends FieldValues>({
 
       {messageError && errors[label]?.type === "typeError" ? (
         <span className="text-sm text-rose-600">
-          {INPUTS_TYPE_ERROR[label]}
+          {INPUTS_TYPE_ERROR[label as keyof typeof INPUTS_TYPE_ERROR]}
         </span>
       ) : (
         messageError && (

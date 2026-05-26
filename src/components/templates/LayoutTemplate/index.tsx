@@ -10,8 +10,10 @@ import { PATHS } from "@/routes/paths";
 const LayoutTemplate = ({ children } : {children: ReactNode}) => {
   const location = useLocation();
   // const { role } = useAppSelector((state) => state.auth);
-  const [isOpenAside, setIsOpenAside] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // const [isOpenAside, setIsOpenAside] = useState(false);
+  const [, setIsOpenAside] = useState(false);
+  // const [isMobile, setIsMobile] = useState(false);
+  const [, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (window.innerWidth < 1024) {
@@ -36,15 +38,15 @@ const LayoutTemplate = ({ children } : {children: ReactNode}) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleOpenAside = () => {
-    console.log("open is : ", isOpenAside);
-    setIsOpenAside(true);
-  };
+  // const handleOpenAside = () => {
+  //   console.log("open is : ", isOpenAside);
+  //   setIsOpenAside(true);
+  // };
 
-  const handleCloseAside = () => {
-    console.log("open is : ", isOpenAside);
-    setIsOpenAside(false);
-  };
+  // const handleCloseAside = () => {
+  //   console.log("open is : ", isOpenAside);
+  //   setIsOpenAside(false);
+  // };
 
   if (location.pathname === PATHS.HOME) {
     return (
