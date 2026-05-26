@@ -1,10 +1,6 @@
-import {
-  FieldErrors,
-  FieldValues,
-  Path,
-  UseFormRegister,
-} from "react-hook-form";
-import { InputHTMLAttributes } from "react";
+
+import type { InputHTMLAttributes } from "react";
+import type { FieldErrors, FieldValues, Path, UseFormRegister } from "react-hook-form";
 
 interface IInputProps<
   TFormValues extends FieldValues,

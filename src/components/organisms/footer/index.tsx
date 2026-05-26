@@ -1,4 +1,4 @@
-import { Globe2, Mail, PhoneCall } from "lucide-react";
+import { Mail, PhoneCall } from "lucide-react";
 
 const Footer = () => {
   return (

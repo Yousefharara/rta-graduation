@@ -5,12 +5,12 @@ import * as Yup from "yup";
 import Button from "../../atoms/button";
 import RowForm from "../../molecules/rowForm";
 import { Link, useNavigate } from "react-router-dom";
-import { PATHS } from "../../../routes/paths";
 import { useAppDispatch } from "../../../redux/store";
 import { login } from "../../../redux/slices/authSlice";
-import { ILoginForm } from "../../../@types/forms";
+import type { ILoginForm } from "@/@types/forms";
+import { PATHS } from "@/routes/paths";
 
-const schemaLoginFrom = Yup.object({
+const schemaLoginFrom: Yup.ObjectSchema<ILoginForm> = Yup.object({
   email: Yup.string().email().required(),
   password: Yup.string().required("password is required !"),
   remeberMe: Yup.boolean()

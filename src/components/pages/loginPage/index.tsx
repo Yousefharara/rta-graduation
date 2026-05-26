@@ -1,4 +1,4 @@
-import { Shield, ShieldAlert, ShieldCheck, ShieldCogCornerIcon, ShieldEllipsis } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import LoginForm from "../../organisms/loginForm";
 
 const LoginPage = () => {

@@ -1,7 +1,11 @@
-import React from "react";
+
 import "./style.css";
 import DonationForm from "../../organisms/donationForm";
 import { MapPin } from "lucide-react";
+import donationHero from '@/assets/images/Donatino-hero.png'
+import foodAid from '@/assets/images/Food-Aid.png'
+import medicalAid from '@/assets/images/Medical-Aid.png'
+import waterAid from '@/assets/images/Water-Projects.png'
 
 const DonationPage = () => {
   return (
@@ -10,7 +14,7 @@ const DonationPage = () => {
         <article className="flex flex-col justify-between gap-8 md:flex-row">
           <section className="flex flex-col gap-4">
             <h3 className="text-[#004AC6]">عطاؤك يصنع الفرق</h3>
-            <h2 className="font-medium" style={{fontSize: "clamp(22px, 5vw, 52px)"}}>شارك في كتابه فصه أمل جديده</h2>
+            <h2 className="font-medium" style={{ fontSize: "clamp(22px, 5vw, 52px)" }}>شارك في كتابه فصه أمل جديده</h2>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est,
               adipisci ipsum qui saepe eveniet harum consectetur earum hic
@@ -25,7 +29,7 @@ const DonationPage = () => {
             <div className="donation-hero relative w-full h-full overflow-hidden rounded-md">
               <img
                 className=" w-full h-full object-cover"
-                src="/Donatino hero.png"
+                src={donationHero}
                 alt=""
               />
               <div className="absolute bottom-5 right-5 text-white z-10">
@@ -36,28 +40,62 @@ const DonationPage = () => {
           </section>
         </article>
 
-{/* // ! Grid Form */}
+        {/* // ! Grid Form */}
         <article>
-            <DonationForm />
+          <DonationForm />
         </article>
 
         <article>
-            <h2>أثر تبرعاتكم في الميدان</h2>
-            <div>
-                <section className="rounded-lg bg-[#F8F9FF] border border-zinc-300 shadow-sm">
-                    <div className="w-full overflow-hidden rounded-t-lg ">
-                        <img src="./" alt="" className="w-full h-full rounded-t-lg object-cover" />
-                    </div>
-                    <div>
-                        <small>
-                            <MapPin />
-                            الشمال
-                        </small>
-                        <h3>حفر أبار المياه</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, reprehenderit?</p>
-                    </div>
-                </section>
-            </div>
+          <h2>أثر تبرعاتكم في الميدان</h2>
+          <div style={{gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))"}} className="grid gap-4">
+
+
+            <section className="rounded-lg bg-[#F8F9FF]  border border-zinc-300 shadow-sm">
+              <div className="w-full h-56 overflow-hidden rounded-t-lg ">
+                <img src={foodAid} alt="" className="w-full h-full rounded-t-lg object-cover" />
+              </div>
+              <div className="p-4 ">
+                <small className="flex items-center gap-3">
+                  <MapPin size={15} className="text-[#B5C6FF]" />
+                  غزة
+                </small>
+                <h3 className="font-semibold text-2xl">توزيع وجبات ساخنة</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, reprehenderit?</p>
+              </div>
+            </section>
+
+
+            <section className="rounded-lg bg-[#F8F9FF]  border border-zinc-300 shadow-sm">
+              <div className="w-full h-56 overflow-hidden rounded-t-lg ">
+                <img src={medicalAid} alt="" className="w-full h-full rounded-t-lg object-cover" />
+              </div>
+              <div className="p-4 ">
+                <small className="flex items-center gap-3">
+                  <MapPin size={15} className="text-[#B5C6FF]" />
+                  خانيونس
+                </small>
+                <h3 className="font-semibold text-2xl">العيادات المتنقلة</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, reprehenderit?</p>
+              </div>
+            </section>
+
+
+            <section className="rounded-lg bg-[#F8F9FF]  border border-zinc-300 shadow-sm">
+              <div className="w-full h-56 overflow-hidden rounded-t-lg ">
+                <img src={waterAid} alt="" className="w-full h-full rounded-t-lg object-cover" />
+              </div>
+              <div  className="p-4 ">
+                <small className="flex items-center gap-3">
+                  <MapPin size={15} className="text-[#B5C6FF]" />
+                  الشمال
+                </small>
+                <h3 className="font-semibold text-2xl">حفر أبار المياه</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, reprehenderit?</p>
+              </div>
+            </section>
+
+
+          </div>
         </article>
       </div>
     </section>

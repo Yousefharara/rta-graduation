@@ -35,8 +35,13 @@
   );
 }
 
-.lable-gaza input[type="radio"]:checked {
-  background-color: orange;
+label:has(input[type="radio"]:checked) {
+  background-color: #e0e9fd;
+  border: 2px solid #004ac6;
+}
+
+input[type="radio"]:checked + .lable-check-icon {
+  display: flex !important;
 }
 
 .donation-grid {
@@ -46,4 +51,26 @@
     "    item1 item1 item3 "
     "    item2 item2 item3 "
     "    .     .     item3 ";
+}
+
+@media (max-width: 985px) {
+  .donation-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr) auto;
+    grid-template-areas:
+      "    item1 item3 item3 "
+      "    item2 item3 item3 "
+      "    .     .     .  ";
+  }
+}
+
+@media (max-width: 787px) {
+  .donation-grid {
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(3, auto);
+    grid-template-areas:
+      "    item1 "
+      "    item2 "
+      "    item3 ";
+  }
 }

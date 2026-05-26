@@ -2,8 +2,9 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "../../../redux/store";
+import type { ReactNode } from "react";
 
-const ProviderTemplate = ({ children }) => {
+const ProviderTemplate = ({ children } : {children: ReactNode}) => {
   return (
     <HelmetProvider>
       <Helmet>
@@ -11,6 +12,7 @@ const ProviderTemplate = ({ children }) => {
       </Helmet>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
+          {/* <Toaster /> */}
           {children}
         </PersistGate>
       </Provider>

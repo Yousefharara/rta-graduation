@@ -1,12 +1,12 @@
-import { Navigate, RouteObject } from "react-router-dom";
-import { PATHS } from "./paths";
+import { Navigate, type RouteObject } from "react-router-dom";
 import { lazy } from "react";
 import GuestGuard from "../guards/guestGuard";
 import UserGuard from "../guards/userGuard";
+import { PATHS } from "./paths";
 
 const AboutPage = lazy(() => import("../components/pages/aboutPage"));
-const HomePage = lazy(() => import("../components/pages/homePage"));
-const LoginPage = lazy(() => import("../components/pages/loginPage"));
+const HomePage = lazy(() => import("@/components/pages/homePage"));
+const LoginPage = lazy(() => import("@/components/pages/loginPage"));
 const ContactusPage = lazy(() => import("../components/pages/contactusPage"));
 const TrackAidPage = lazy(() => import("../components/pages/trackAidPage"));
 const DonationPage = lazy(() => import("../components/pages/donationPage"));

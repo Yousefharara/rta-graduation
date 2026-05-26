@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
-import { PATHS } from "../../../routes/paths";
 import ScrollToTop from "../../atoms/scrollToTop";
-import Navbar from "../../organisms/navbar";
 import { isAuthPath } from "../../../utils/router.helper";
-import DashbaordTemplate from "../DashboardTemplate";
-import { useAppSelector } from "../../../redux/store";
-import Footer from "../../organisms/footer";
+import Navbar from "@/components/organisms/navbar";
+import Footer from "@/components/organisms/footer";
+import { PATHS } from "@/routes/paths";
+// import { useAppSelector } from "../../../redux/store";
 
-const LayoutTemplate = ({ children }) => {
+const LayoutTemplate = ({ children } : {children: ReactNode}) => {
   const location = useLocation();
-  const { role } = useAppSelector((state) => state.auth);
+  // const { role } = useAppSelector((state) => state.auth);
   const [isOpenAside, setIsOpenAside] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (window.innerWidth < 1024) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsMobile(true);
     } else {
       setIsMobile(false);

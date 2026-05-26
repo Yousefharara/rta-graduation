@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IPost, IPostState } from "../../@types/post";
-import { AppDispatch } from "../store";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import  {type IPost,type IPostState } from "../../@types/post";
+import {type AppDispatch } from "../store";
 import axios from "axios";
 import { API_KEY } from "../../config/api";
 import { PSOT_PATHS } from "../../constants/postPaths";

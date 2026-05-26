@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { PATHS } from "../routes/paths";
 import { useAppSelector } from "../redux/store";
+import { PATHS } from "@/routes/paths";
 
 const GuestGuard = ({ children } : {children: ReactNode}) => {
   const { role } = useAppSelector((state) => state.auth);

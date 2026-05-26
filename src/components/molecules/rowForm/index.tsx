@@ -1,5 +1,5 @@
-import React, { InputHTMLAttributes } from "react";
-import {
+import React, { type InputHTMLAttributes } from "react";
+import type {
   FieldErrors,
   FieldValues,
   Path,

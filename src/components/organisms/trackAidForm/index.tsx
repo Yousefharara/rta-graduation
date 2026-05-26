@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { ITrackAidForm } from "../../../@types/forms";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RowForm from "../../molecules/rowForm";
 import Button from "../../atoms/button";
 import { ArrowLeft } from "lucide-react";
+import type { ITrackAidForm } from "@/@types/forms";
 
-const schemaLoginFrom = Yup.object({
+const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
   IDNumber: Yup.number().required("ID is required !"),
   versionNumber: Yup.date().required("version is required !"),
 });

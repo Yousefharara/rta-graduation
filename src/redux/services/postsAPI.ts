@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IPost } from "../../@types/post";
+import { type IPost } from "../../@types/post";
 import { PSOT_PATHS } from "../../constants/postPaths";
 import { API_KEY } from "../../config/api";
 

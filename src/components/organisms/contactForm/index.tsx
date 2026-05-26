@@ -1,14 +1,12 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { IContactForm } from "../../../@types/forms";
 import RowForm from "../../molecules/rowForm";
-import Input from "../../atoms/input";
 import Button from "../../atoms/button";
 import { Send } from "lucide-react";
+import type { IContactForm } from "@/@types/forms";
 
-const schemaLoginFrom = Yup.object({
+const schemaLoginFrom: Yup.ObjectSchema<IContactForm> = Yup.object({
   email: Yup.string().email().required(),
   fullName: Yup.string().required("full name is required !"),
   title: Yup.string().required("title is required !"),

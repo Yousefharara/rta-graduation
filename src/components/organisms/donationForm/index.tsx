@@ -1,17 +1,19 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import React from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { IDonationForm } from "../../../@types/forms";
 import "./style.css";
 import Input from "../../atoms/input";
-import { Heart, Lock, Shield, ShieldCheck } from "lucide-react";
+import { Check, Heart, Lock, ShieldCheck } from "lucide-react";
 import RowForm from "../../molecules/rowForm";
 import Button from "../../atoms/button";
+import type { IDonationForm } from "@/@types/forms";
 
-const schemaDonationFrom = Yup.object({
+const schemaDonationFrom: Yup.ObjectSchema<IDonationForm> = Yup.object({
   donationType: Yup.string().oneOf(["A", "B"]).required(),
-  budget: Yup.number().required(""),
+  budget: Yup.number().required("budget is required !"),
+  customBudget: Yup.number()
+    .transform((value, originalValue) => (originalValue === "" ? null : value)).nullable(),
   nameOfCard: Yup.string().required(""),
   cardNumber: Yup.string().required(""),
   endDate: Yup.date().required(""),
@@ -25,8 +27,20 @@ const DonationForm = () => {
     register,
   } = useForm<IDonationForm>({ resolver: yupResolver(schemaDonationFrom) });
 
+  useEffect(() => {
+
+    if (errors) {
+      console.log('Errors , ', errors);
+    }
+
+  }, [errors])
+
   const handleOnSubmit = (data: IDonationForm) => {
-    console.log("Data is , ", data);
+    const finalBudget = data.customBudget || data.budget;
+    console.log({
+      ...data,
+      budget: finalBudget,
+    });
   };
 
   return (
@@ -39,12 +53,16 @@ const DonationForm = () => {
         className="bg-white border h-fit border-zinc-300 py-3 px-6 rounded-lg"
       >
         <h3>اختر الحملة</h3>
-        <div className="flex justify-between gap-4">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row">
           <label
             htmlFor="r1"
-            className="lable-gaza  block w-full offer active border border-zinc-300 rounded-lg p-3"
+            className="lable-gaza flex flex-col w-full offer active border border-zinc-300 rounded-lg p-3"
           >
-            <input className="peer" type="radio" name="offer" id="r1" />
+            <input className="hidden" defaultChecked value={'A'} {...register("donationType")} type="radio" id="r1" />
+
+            <div className="lable-check-icon hidden rounded-full self-end text-end w-fit p-1 bg-[#004AC6] justify-center items-center">
+              <Check size={12} strokeWidth={3} className="text-white" />
+            </div>
             <h4 className="text-[#004AC6] text-sm">الأكثر احتياجا</h4>
             <p className="text-xl font-medium mb-4">إغاثة غزة العاجلة</p>
             <div className="donation-slider slider-gaza w-full h-2 bg-neutral-300 rounded-full"></div>
@@ -52,13 +70,17 @@ const DonationForm = () => {
               <small>تم جمع 75%</small>
               <small>المستهدف 1M$</small>
             </div>
+
           </label>
 
           <label
             htmlFor="r2"
-            className=" block w-full offer active border border-zinc-300 rounded-lg p-3"
+            className="flex flex-col w-full offer active border border-zinc-300 rounded-lg p-3"
           >
-            <input className="" type="radio" name="offer" id="r2" />
+            <input className="hidden" value={'B'} {...register("donationType")} type="radio" id="r2" />
+            <div className="lable-check-icon hidden rounded-full self-end text-end w-fit p-1 bg-[#004AC6] justify-center items-center">
+              <Check size={12} strokeWidth={3} className="text-white" />
+            </div>
             <h4 className="text-[#004AC6] text-sm">التعليم</h4>
             <p className="text-xl font-medium mb-4">كفالة طالب علم</p>
             <div className="donation-slider slider-learning w-full h-2 bg-neutral-300 rounded-full"></div>
@@ -78,37 +100,37 @@ const DonationForm = () => {
         <div className="flex justify-between gap-4">
           <label
             htmlFor="budget10"
-            className="block w-full rounded-lg px-4 py-3 border border-zinc-300"
+            className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
           >
-            <input type="radio" id="budget10" name="budget" />
-            <p>10$</p>
+            <input type="radio" {...register("budget")} value={10} className="hidden" id="budget10" />
+            <p className="text-center text-xl font-semibold">10$</p>
           </label>
           <label
             htmlFor="budget50"
-            className="block w-full rounded-lg px-4 py-3 border border-zinc-300"
+            className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
           >
-            <input type="radio" id="budget50" name="budget" />
-            <p>50$</p>
+            <input type="radio" {...register("budget")} value={50} className="hidden" id="budget50" />
+            <p className="text-center text-xl font-semibold">50$</p>
           </label>
           <label
             htmlFor="budget100"
-            className="block w-full rounded-lg px-4 py-3 border border-zinc-300"
+            className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
           >
-            <input type="radio" id="budget100" name="budget" />
-            <p>100$</p>
+            <input type="radio" {...register("budget")} value={100} className="hidden" id="budget100" />
+            <p className="text-center text-xl font-semibold">100$</p>
           </label>
           <label
             htmlFor="budget500"
-            className="block w-full rounded-lg px-4 py-3 border border-zinc-300"
+            className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
           >
-            <input type="radio" id="budget500" name="budget" />
-            <p>500$</p>
+            <input type="radio" {...register("budget")} value={500} className="hidden" id="budget500" />
+            <p className="text-center text-xl font-semibold">500$</p>
           </label>
         </div>
         <div>
           <Input
             errors={errors}
-            label="budget"
+            label="customBudget"
             register={register}
             placeholder="أو ادخل مبلغا أخر"
             type="number"
@@ -141,7 +163,7 @@ const DonationForm = () => {
             register={register}
             className="!bg-[#F8F9FF]"
           />
-          <div className="flex justify-between gap-3">
+          <div className="flex justify-between gap-3 ">
             <RowForm<IDonationForm>
               title="تاريخ الانتهاء"
               errors={errors}
@@ -171,8 +193,8 @@ const DonationForm = () => {
           </div>
           <Button variant="default" className="text-white w-full flex justify-center items-center">
             <div className=" flex items-center gap-3">
-                <Heart size={28} fill="white" strokeWidth={0}/>
-                <p className="font-semibold">أكمل التبرع</p>
+              <Heart size={28} fill="white" strokeWidth={0} />
+              <p className="font-semibold">أكمل التبرع</p>
             </div>
           </Button>
           <p className="mt-3 justify-center text-xs flex items-center gap-3">

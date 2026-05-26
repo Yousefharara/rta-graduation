@@ -17,7 +17,8 @@ export interface ITrackAidForm {
 }
 
 export interface IDonationForm {
-  donationType: 'A' | 'B';
+  donationType: "A" | "B";
+  customBudget?: number | null;
   budget: number;
   nameOfCard: string;
   cardNumber: string;
