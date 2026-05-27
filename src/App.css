@@ -46,10 +46,12 @@
   --color-sidebar-ring: var(--sidebar-ring);
   /* !------------ */
   --color-blue-primary: var(--blue-primary);
+  --color-dashboar-primary: var(--dashboar-primary);
 }
 
 :root {
   --blue-primary: #004AC6;
+  --dashboar-primary: #002046;
   /* !------------ */
   --radius: 0.625rem;
   --background: oklch(1 0 0);

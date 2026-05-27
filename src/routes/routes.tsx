@@ -3,6 +3,7 @@ import { lazy } from "react";
 import GuestGuard from "../guards/guestGuard";
 import UserGuard from "../guards/userGuard";
 import { PATHS } from "./paths";
+import AdminGuard from "@/guards/adminGuard";
 
 const AboutPage = lazy(() => import("../components/pages/aboutPage"));
 const HomePage = lazy(() => import("@/components/pages/homePage"));
@@ -11,6 +12,7 @@ const ContactusPage = lazy(() => import("../components/pages/contactusPage"));
 const TrackAidPage = lazy(() => import("../components/pages/trackAidPage"));
 const DonationPage = lazy(() => import("../components/pages/donationPage"));
 const TrackAidUser = lazy(() => import("@/components/pages/trackAidPage/trackAidUser"));
+const DashboardPage = lazy(() => import("@/components/pages/dashboard/admin/dashboardHome"));
 
 const userRoutes: RouteObject[] = [
   {
@@ -30,6 +32,19 @@ const userRoutes: RouteObject[] = [
       {
         index: true,
         element: <TrackAidUser />,
+      },
+    ],
+  },
+];
+
+const adminRoutes: RouteObject[] = [
+  {
+    path: PATHS.DASHBOARD,
+    element: <AdminGuard />,
+    children: [
+      {
+        index: true,
+        element: <DashboardPage />,
       },
     ],
   },
@@ -74,7 +89,7 @@ export const routes = [
     path: PATHS.DONATION,
     element: <DonationPage />,
   },
-  
+  ...adminRoutes,
   ...guestRoutes,
   ...userRoutes,
   ...errorRoutes,

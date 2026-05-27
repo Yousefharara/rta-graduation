@@ -1,10 +1,9 @@
-import React from 'react';
 
 const DashboardPage = () => {
     return (
-        <div>
+        <section>
             <h1>Dashboard Page is Here !</h1>
-        </div>
+        </section>
     );
 }
 
