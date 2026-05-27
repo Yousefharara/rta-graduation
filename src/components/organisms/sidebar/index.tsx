@@ -11,7 +11,6 @@ import { NavLink } from "react-router-dom";
 import "./style.css";
 import { useAppDispatch } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
-import Button from "@/components/atoms/button";
 
 interface ISidebar {
   isOpenAside: boolean;
@@ -64,7 +63,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
           <li>
             <NavLink
               className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
-              to={PATHS.DASHBOARD}
+              to={PATHS.DASHBOARD.ROOT}
             >
               <LayoutPanelTop />
               <p className="font-semibold">لوحة التحكم</p>

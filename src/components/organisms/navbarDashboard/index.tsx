@@ -1,6 +1,6 @@
 import { PATHS } from "../../../routes/paths";
 import { Link } from "react-router-dom";
-import { AppWindowMac, Bell, CircleDivide } from "lucide-react";
+import { AppWindowMac, Bell } from "lucide-react";
 import logo from "@/assets/images/logo.png"
 
 interface INavbarDashboard {

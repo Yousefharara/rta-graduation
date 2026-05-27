@@ -34,7 +34,7 @@ const LoginForm = () => {
       dispatch(
         login({
           role: "user",
-          user: "yousef_user",
+          user: 1,
           token: "yousef_ghazi",
         }),
       );
@@ -44,7 +44,7 @@ const LoginForm = () => {
       dispatch(
         login({
           role: "admin",
-          user: "yousef_admin",
+          user: 2,
           token: "yousef_ghazi",
         }),
       );

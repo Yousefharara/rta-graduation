@@ -27,7 +27,8 @@ const TrackAidUserTableAids = () => {
   );
   const dispatch = useAppDispatch();
 
-  const [filteredName, setFilteredName] = useState<string>("");
+  // const [filteredName, setFilteredName] = useState<string>("");
+  const [filteredName,] = useState<string>("");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
