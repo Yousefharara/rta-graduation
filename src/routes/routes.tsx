@@ -39,7 +39,7 @@ const userRoutes: RouteObject[] = [
 
 const adminRoutes: RouteObject[] = [
   {
-    path: PATHS.DASHBOARD,
+    path: PATHS.DASHBOARD.ROOT,
     element: <AdminGuard />,
     children: [
       {
