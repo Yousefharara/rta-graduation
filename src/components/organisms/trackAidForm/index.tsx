@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,11 +8,12 @@ import { ArrowLeft } from "lucide-react";
 import type { ITrackAidForm } from "@/@types/forms";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/routes/paths";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { login } from "@/redux/slices/authSlice";
+import { getUsers } from "@/redux/slices/users";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
-  IDNumber: Yup.number().required("ID is required !"),
+  IDNumber: Yup.string().required("ID is required !"),
   versionNumber: Yup.date().required("version is required !"),
 });
 
@@ -24,22 +25,34 @@ const TrackAidForm = () => {
   } = useForm<ITrackAidForm>({ resolver: yupResolver(schemaLoginFrom) });
 
   const navigate = useNavigate();
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const { users, isLoading, errorMessage } = useAppSelector(
+    (state) => state.users,
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (errors) {
-      console.log("errors , ", errors);
-    }
-  }, [errors]);
+    dispatch(getUsers());
+  }, [dispatch])
+
+  if (errorMessage) return <h1>Error here</h1>;
 
   const handleOnSubmit = (data: ITrackAidForm) => {
-    console.log("Data is , ", data);
-    dispatch(login({
-      role: "user",
-      user: "yousef",
-      token: 'ksdhfahf'
-    }))
-    navigate(PATHS.TRACK_AID.USER)
+    const checkUser = users.find((u) => u.id_card === data.IDNumber);
+
+    if (checkUser && !isLoading) {
+      dispatch(
+        login({
+          role: "user",
+          user: checkUser.id,
+          token: checkUser.token,
+        }),
+      );
+      navigate(PATHS.TRACK_AID.USER);
+    } else {
+      setIsAuth(true);
+    }
+
   };
 
   return (
@@ -68,10 +81,17 @@ const TrackAidForm = () => {
         className="text-white w-full flex justify-center items-center py-3"
       >
         <div className="flex items-center gap-3 w-fit">
-          <p className="text-lg">تتبع</p>
+          {isLoading ? (
+            <p className="text-lg">تحميل ...</p>
+          ) : (
+            <p className="text-lg">تتبع</p>
+          )}
           <ArrowLeft size={18} className="" />
         </div>
       </Button>
+      {isAuth && (
+        <p className="text-rose-700">ID card or version is incorrect !!</p>
+      )}
     </form>
   );
 };

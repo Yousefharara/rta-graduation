@@ -7,7 +7,7 @@ import Footer from "@/components/organisms/footer";
 import { PATHS } from "@/routes/paths";
 // import { useAppSelector } from "../../../redux/store";
 
-const LayoutTemplate = ({ children } : {children: ReactNode}) => {
+const LayoutTemplate = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   // const { role } = useAppSelector((state) => state.auth);
   // const [isOpenAside, setIsOpenAside] = useState(false);
@@ -53,7 +53,8 @@ const LayoutTemplate = ({ children } : {children: ReactNode}) => {
       <article className="min-h-screen flex flex-col justify-between">
         <ScrollToTop />
         <Navbar />
-        {children}
+        <div className="mt-20">{children}</div>
+
         <Footer />
       </article>
     );
@@ -63,7 +64,8 @@ const LayoutTemplate = ({ children } : {children: ReactNode}) => {
     return (
       <article className="flex flex-col gap-20 bg-[#F8F9FF]">
         <Navbar />
-        {children}
+        <div className="mt-20">{children}</div>
+
         <Footer />
       </article>
     );
@@ -86,7 +88,8 @@ const LayoutTemplate = ({ children } : {children: ReactNode}) => {
     <article className="">
       <ScrollToTop />
       <Navbar />
-      {children}
+      <div className="mt-20">{children}</div>
+
       <Footer />
     </article>
   );

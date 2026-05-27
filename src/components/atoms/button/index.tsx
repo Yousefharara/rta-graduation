@@ -13,7 +13,7 @@ type Size = "small" | "medium" | "large";
 
 const variantClasses: Record<Variant, string> = {
   default: "bg-[#004AC6] text-white",
-  outline: "border",
+  outline: "border border-primary text-primary",
   ghost: "text-gray-500",
   secondary: "bg-cyan-500 text-white hover:bg-cyan-600 transition-colors",
   destructive: "bg-red-500 text-white",
@@ -45,6 +45,7 @@ const Button = ({
       {...restProps}
       className={`
         rounded-md
+        cursor-pointer
         ${variantClasses[variant]}
         ${sizeClasses[size]}
         ${className} 

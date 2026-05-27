@@ -1,0 +1,4 @@
+.step-shadow {
+    box-shadow: 0 0 0 3px #fff,
+    0 0 0 6px var(--secondary);
+}

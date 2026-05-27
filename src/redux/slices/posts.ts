@@ -9,10 +9,10 @@ const initialState: IPostState = {
   isLoading: false,
   errorMessage: "",
   posts: [],
-  post: null,
+  post: null, 
 };
 
-export const postsSlice = createSlice({
+const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {

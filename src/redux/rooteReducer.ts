@@ -1,7 +1,9 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import CounterReducer from "./slices/counter";
 import PostReducer from "./slices/posts";
 import authSlice from "./slices/authSlice";
+import UserReducer from "./slices/users";
+import AidReducer from "./slices/aids";
+import userAidsReducer from "./slices/userAids";
 
 import storage from "redux-persist/lib/storage"; // localStorage'
 import { persistReducer } from "redux-persist";
@@ -22,7 +24,9 @@ const persistedAuthReducer = persistReducer(
 
 export const RootReducer = combineReducers({
   auth: persistedAuthReducer,
-  counter: CounterReducer,
   posts: PostReducer,
+  users: UserReducer,
+  aids: AidReducer,
+  userAids: userAidsReducer,
   [postsApi.reducerPath]: postsApi.reducer,
 });

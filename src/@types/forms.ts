@@ -12,12 +12,12 @@ export interface IContactForm {
 }
 
 export interface ITrackAidForm {
-  IDNumber: number;
+  IDNumber: string;
   versionNumber: Date;
 }
 
 export interface IDonationForm {
-  donationType: "A" | "B";
+  donationCampaign: "learning" | "relife";
   customBudget?: number | null;
   budget: number;
   nameOfCard: string;

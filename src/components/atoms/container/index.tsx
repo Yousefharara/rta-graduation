@@ -1,8 +1,8 @@
 import { type ReactNode } from 'react';
 
-const Container = ({ children }: { children: ReactNode }) => {
+const Container = ({ children, className }: { children: ReactNode, className: string }) => {
     return (
-        <div className='mx-auto' style={{ width: "min(1250px, 90%)" }}>
+        <div className={`mx-auto ${className}`} style={{ width: "min(1250px, 90%)" }}>
             {children}
         </div>
     );

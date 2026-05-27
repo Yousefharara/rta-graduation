@@ -3,8 +3,6 @@ import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux
 import { RootReducer } from "./rooteReducer";
 import { persistStore } from "redux-persist";
 import { postsApi } from "./services/postsAPI";
-// import CounterReducer from "./slices/counter";
-// import PostReducer from "./slices/posts";
 
 export const store = configureStore({
   reducer: RootReducer,

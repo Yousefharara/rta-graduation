@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 type RoleType =  'guest' | 'user' | 'admin' | 'org';
 
 interface IInitialState {
-  user: string | null;
+  user: number | null;
   token: string | null;
   role: RoleType
 }

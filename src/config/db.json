@@ -2,24 +2,99 @@
   "users": [
     {
       "id": 1,
-      "name": "yousef",
-      "token": "1245kasdjflakd",
-      "role": "user",
-      "aids": "502"
+      "username": "ahemd",
+      "id_card": "1234",
+      "name": "Ahmed Ali",
+      "token": "usr_tok_1"
     },
     {
       "id": 2,
-      "name": "ahmed",
-      "token": "2245kasdjflakd",
-      "role": "user",
-      "aids": "502"
+      "username": "sara",
+      "id_card": "456",
+      "name": "Sara Khaled",
+      "token": "usr_tok_2"
     },
     {
       "id": 3,
-      "name": "ali",
-      "token": "3245kasdjflakd",
-      "role": "user",
-      "aids": "502"
+      "username": "mohammed",
+      "id_card": "789",
+      "name": "Mohammed Yousef",
+      "token": "usr_tok_3"
+    },
+    {
+      "id": 4,
+      "username": "lina",
+      "id_card": "000",
+      "name": "Lina Hassan",
+      "token": "usr_tok_4"
+    }
+  ],
+
+  "aids": [
+    {
+      "id": 1,
+      "code_number": "AID-1001",
+      "category": "Food Assistance"
+    },
+    {
+      "id": 2, 
+      "code_number": "AID-1002",
+      "category": "Medical Support"
+    },
+    {
+      "id": 3,
+      "code_number": "AID-1003",
+      "category": "Cash"
+    },
+    {
+      "id": 4,
+      "code_number": "AID-1004",
+      "category": "Food Assistance"
+    }
+  ],
+
+  "user_aids": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "aid_id": 1,
+      "status": "pending",
+      "assigned_at": "2026-05-26"
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "aid_id": 2,
+      "status": "approved",
+      "assigned_at": "2026-05-26"
+    },
+    {
+      "id": 3,
+      "user_id": 2,
+      "aid_id": 2,
+      "status": "approved",
+      "assigned_at": "2026-05-25"
+    },
+    {
+      "id": 4,
+      "user_id": 3,
+      "aid_id": 3,
+      "status": "rejected",
+      "assigned_at": "2026-05-24"
+    },
+    {
+      "id": 5,
+      "user_id": 4,
+      "aid_id": 4,
+      "status": "approved",
+      "assigned_at": "2026-05-23"
+    },
+    {
+      "id": 6,
+      "user_id": 2,
+      "aid_id": 1,
+      "status": "pending",
+      "assigned_at": "2026-05-22"
     }
   ]
 }
