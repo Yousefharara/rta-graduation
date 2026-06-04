@@ -4,7 +4,6 @@ import ScrollToTop from "../../atoms/scrollToTop";
 import { isAdminPath, isAuthPath } from "../../../utils/router.helper";
 import Navbar from "@/components/organisms/navbar";
 import Footer from "@/components/organisms/footer";
-import { PATHS } from "@/routes/paths";
 import DashbaordTemplate from "../DashboardTemplate";
 import { useAppSelector } from "@/redux/store";
 
