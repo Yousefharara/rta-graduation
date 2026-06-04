@@ -16,16 +16,6 @@ const DashboardPage = lazy(() => import("@/components/pages/dashboard/admin/dash
 
 const userRoutes: RouteObject[] = [
   {
-    path: PATHS.ABOUT,
-    element: <UserGuard />,
-    children: [
-      {
-        index: true,
-        element: <AboutPage />,
-      },
-    ],
-  },
-  {
     path: PATHS.TRACK_AID.USER,
     element: <UserGuard />,
     children: [
@@ -80,6 +70,10 @@ export const routes = [
   {
     path: PATHS.CONTACT_US,
     element: <ContactusPage />,
+  },
+  {
+    path: PATHS.ABOUT,
+    element: <AboutPage />,
   },
   {
     path: PATHS.TRACK_AID.ROOT,
