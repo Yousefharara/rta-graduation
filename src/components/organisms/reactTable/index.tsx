@@ -7,6 +7,7 @@ import {
   type PaginationState,
 } from "@tanstack/react-table";
 import Button from "../../atoms/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ReactTableProps<T> {
   columns: ColumnDef<T, unknown>[];
@@ -73,10 +74,10 @@ const ReactTable = <T,>({
             onClick={table.previousPage}
             disabled={!table.getCanPreviousPage()}
             size="small"
-            className="disabled:cursor-not-allowed disabled:bg-gray-200"
+            className="disabled:cursor-not-allowed disabled:bg-zinc-50 rounded-full! w-fit! h-ft! p-1!"
             variant="outline"
           >
-            Previous
+            <ChevronRight />
           </Button>
           <p className="text-xs">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
@@ -85,11 +86,11 @@ const ReactTable = <T,>({
           <Button
             variant="outline"
             onClick={table.nextPage}
-            className="disabled:cursor-not-allowed disabled:bg-gray-200"
+            className="disabled:cursor-not-allowed disabled:bg-zinc-50 rounded-full! w-fit! h-ft! p-1!"
             size="small"
             disabled={!table.getCanNextPage()}
           >
-            Next
+            <ChevronLeft />
           </Button>
         </div>
       )}

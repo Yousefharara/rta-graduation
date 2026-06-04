@@ -1,8 +1,8 @@
-.donation-slider {
+.slider-color {
   position: relative;
 }
 
-.donation-slider::before {
+.slider-color::before {
   content: "";
   position: absolute;
   border-radius: 50px;
@@ -22,6 +22,8 @@
     transparent 100%
   );
 }
+
+
 .slider-learning {
   --gaza-learn: 23%;
 }
