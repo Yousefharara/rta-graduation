@@ -9,6 +9,27 @@ import RowForm from "../../molecules/rowForm";
 import Button from "../../atoms/button";
 import type { IDonationForm } from "@/@types/forms";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+import {  Input as InputUI } from "@/components/ui/input";
+
+
+const defaultValues: IDonationForm = {
+  donationCampaign: "relife",
+  budget: 0,
+  customBudget: undefined,
+  nameOfCard: "",
+  cardNumber: "",
+  endDate: new Date(),
+  CVV: 0,
+};
 
 const schemaDonationFrom: Yup.ObjectSchema<IDonationForm> = Yup.object({
   donationCampaign: Yup.string().oneOf(["learning", "relife"]).required(),
@@ -26,11 +47,18 @@ const DonationForm = () => {
   const {
     formState: { errors },
     handleSubmit,
+    reset,
     watch,
     register,
   } = useForm<IDonationForm>({ resolver: yupResolver(schemaDonationFrom) });
 
+  const [open, setOpen] = useState(false);
+const [email, setEmail] = useState("");
+const [pendingData, setPendingData] =
+  useState<IDonationForm | null>(null);
+
   const [budget, setBudget] = useState<number>(0);
+
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/incompatible-library
@@ -48,15 +76,48 @@ const DonationForm = () => {
   }, [errors]);
 
   const handleOnSubmit = (data: IDonationForm) => {
-    const finalBudget = data.customBudget || data.budget;
-    console.log({
-      ...data,
-      budget: finalBudget,
-    });
-    toast.success("تمت عملية التبرع بنجاح ❤️");
-  };
+  setPendingData(data);
+  setOpen(true);
+};
+
+const confirmDonation = () => {
+
+  if (!pendingData) return;
+
+  const finalBudget =
+    pendingData.customBudget ||
+    pendingData.budget;
+
+  console.log({
+    ...pendingData,
+    budget: finalBudget,
+    email,
+  });
+
+  toast.success("تمت عملية التبرع بنجاح ❤️");
+
+  reset(defaultValues);
+
+  setBudget(0);
+
+  setEmail("");
+  setPendingData(null);
+  setOpen(false);
+};
+
+  // const handleOnSubmit = (data: IDonationForm) => {
+  //   const finalBudget = data.customBudget || data.budget;
+  //   console.log({
+  //     ...data,
+  //     budget: finalBudget,
+  //   });
+  //   toast.success("تمت عملية التبرع بنجاح ❤️");
+  //   reset(defaultValues);
+  //   setBudget(0);
+  // };
 
   return (
+    <>
     <form
       className="donation-grid grid gap-8"
       onSubmit={handleSubmit(handleOnSubmit)}
@@ -258,6 +319,40 @@ const DonationForm = () => {
         </article>
       </section>
     </form>
+    
+<Dialog open={open} onOpenChange={setOpen}>
+  <DialogContent>
+
+    <DialogHeader>
+      <DialogTitle>
+        هل ترغب بإضافة بريد إلكتروني؟
+      </DialogTitle>
+
+      <DialogDescription>
+        سنرسل لك إشعارًا بحالة التبرع لاحقًا (اختياري)
+      </DialogDescription>
+    </DialogHeader>
+
+    <InputUI
+      type="email"
+      placeholder="example@email.com"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+
+    <DialogFooter>
+      <Button
+        type="button"
+        onClick={confirmDonation}
+      >
+        متابعة التبرع
+      </Button>
+    </DialogFooter>
+
+  </DialogContent>
+</Dialog>
+
+    </>
   );
 };
 

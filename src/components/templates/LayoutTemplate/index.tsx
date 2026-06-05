@@ -47,7 +47,7 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
     setIsOpenAside(false);
   };
 
-  if (location.pathname === PATHS.HOME) {
+  if (location.pathname === PATHS.HOME || location.pathname === PATHS.ABOUT) {
     return (
       <article className="min-h-screen flex flex-col justify-between">
         <ScrollToTop />

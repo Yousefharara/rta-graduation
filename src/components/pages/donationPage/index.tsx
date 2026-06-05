@@ -15,7 +15,7 @@ const DonationPage = () => {
         <article className="flex flex-col justify-between gap-8 md:flex-row">
           <section className="flex flex-col gap-4">
             <h3 className="text-[#004AC6]">عطاؤك يصنع الفرق</h3>
-            <h2 className="font-medium" style={{ fontSize: "clamp(22px, 5vw, 52px)" }}>شارك في كتابه فصة أمل جديده</h2>
+            <h2 className="font-medium" style={{ fontSize: "clamp(22px, 5vw, 52px)" }}>شارك في كتابه قصة أمل جديده</h2>
             <p>
               تبرعك اليوم ليس مجرد رقم، بل هو وجبة لطفل جائع، دواء لمريض، وخيمة تأوي عائلة. مع Relief
               Track Aid، نضمن وصول كل قرش إلى مستحقيه بشفافية تامة.
