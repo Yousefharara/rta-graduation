@@ -11,7 +11,7 @@ const NavbarDashboard = ({ handleOpenAside }: INavbarDashboard) => {
 
 
   return (
-    <nav className="bg-white/80 border-b border-b-gray-300 rounded-lg sticky backdrop-blur-md top-0">
+    <nav className="bg-white/80 border-b border-b-gray-300 rounded-lg sticky backdrop-blur-md top-0 z-20">
       <ul className="flex px-4 py-2 items-center justify-between">
         <div className="flex items-center gap-10">
           <div

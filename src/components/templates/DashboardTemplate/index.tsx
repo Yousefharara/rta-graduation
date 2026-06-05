@@ -32,10 +32,9 @@ const DashbaordTemplate = ({
       />
       <main className="w-full min-h-screen flex flex-col gap-4">
         <NavbarDashboard handleOpenAside={handleOpenAside} />
-        <article className="w-full rounded-lg border min-h-screen p-4">
+        <article className="w-full rounded-lg my-10 min-h-screen p-4">
           {/* main content */}
-          <div className="rounded-lg w-full h-[300vh] ">
-            <h1>Dashboard</h1>
+          <div className="w-full ">
             {children}
           </div>
         </article>

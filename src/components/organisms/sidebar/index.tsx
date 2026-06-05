@@ -73,7 +73,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
           <li>
             <NavLink
               className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
-              to={"/"}
+              to={PATHS.DASHBOARD.AID_ORDERS}
             >
               <FolderClosed />
               <p className="font-semibold">طلبات المساعدة</p>
@@ -83,7 +83,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
           <li>
             <NavLink
               className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
-              to={"/"}
+              to={PATHS.DASHBOARD.BENEFICIARIES_MANAGEMENT}
             >
               <Users />
               <p className="font-semibold">إدارة المستفيدين</p>

@@ -146,7 +146,7 @@ const confirmDonation = () => {
             </div>
             <h4 className="text-[#004AC6] text-sm">الأكثر احتياجا</h4>
             <p className="text-xl font-medium mb-4">إغاثة غزة العاجلة</p>
-            <div className="donation-slider slider-gaza w-full h-2 bg-neutral-300 rounded-full"></div>
+            <div className="slider-color slider-gaza w-full h-2 bg-neutral-300 rounded-full"></div>
             <div className="flex justify-between items-center">
               <small>تم جمع 75%</small>
               <small>المستهدف 1M$</small>
@@ -169,7 +169,7 @@ const confirmDonation = () => {
             </div>
             <h4 className="text-[#004AC6] text-sm">التعليم</h4>
             <p className="text-xl font-medium mb-4">كفالة طالب علم</p>
-            <div className="donation-slider slider-learning w-full h-2 bg-neutral-300 rounded-full"></div>
+            <div className="slider-color slider-learning w-full h-2 bg-neutral-300 rounded-full"></div>
             <div className="flex justify-between items-center">
               <small>تم جمع 40%</small>
               <small>المستهدف 200K$</small>

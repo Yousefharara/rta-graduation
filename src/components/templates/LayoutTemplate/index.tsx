@@ -1,10 +1,9 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollToTop from "../../atoms/scrollToTop";
-import { isAuthPath } from "../../../utils/router.helper";
+import { isAdminPath, isAuthPath } from "../../../utils/router.helper";
 import Navbar from "@/components/organisms/navbar";
 import Footer from "@/components/organisms/footer";
-import { PATHS } from "@/routes/paths";
 import DashbaordTemplate from "../DashboardTemplate";
 import { useAppSelector } from "@/redux/store";
 
@@ -47,16 +46,16 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
     setIsOpenAside(false);
   };
 
-  if (location.pathname === PATHS.HOME || location.pathname === PATHS.ABOUT) {
-    return (
-      <article className="min-h-screen flex flex-col justify-between">
-        <ScrollToTop />
-        <Navbar />
-        <div className="mt-20">{children}</div>
-        <Footer />
-      </article>
-    );
-  }
+  // if (location.pathname === PATHS.HOME) {
+  //   return (
+  //     <article className="min-h-screen flex flex-col justify-between">
+  //       <ScrollToTop />
+  //       <Navbar />
+  //       <div className="mt-20">{children}</div>
+  //       <Footer />
+  //     </article>
+  //   );
+  // }
 
   if (isAuthPath(location.pathname)) {
     return (
@@ -68,7 +67,7 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  if (role === "admin") {
+  if (role === "admin" && isAdminPath(location.pathname)) {
     return (
       <DashbaordTemplate
         handleCloseAside={handleCloseAside}

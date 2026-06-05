@@ -12,7 +12,9 @@ const ContactusPage = lazy(() => import("../components/pages/contactusPage"));
 const TrackAidPage = lazy(() => import("../components/pages/trackAidPage"));
 const DonationPage = lazy(() => import("../components/pages/donationPage"));
 const TrackAidUser = lazy(() => import("@/components/pages/trackAidPage/trackAidUser"));
-const DashboardPage = lazy(() => import("@/components/pages/dashboard/admin/dashboardHome"));
+const DashboardHomePage = lazy(() => import("@/components/pages/dashboard/dashboardHome"));
+const DashboardAidOrders = lazy(() => import("@/components/pages/dashboard/dashbaordAidOrders"));
+const DashboardBeneficiariesManagement = lazy(() => import("@/components/pages/dashboard/dashboardBeneficiariesManagement"));
 
 const userRoutes: RouteObject[] = [
   {
@@ -34,7 +36,27 @@ const adminRoutes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: <DashboardHomePage />,
+      },
+    ],
+  },
+  {
+    path: PATHS.DASHBOARD.AID_ORDERS,
+    element: <AdminGuard />,
+    children: [
+      {
+        index: true,
+        element: <DashboardAidOrders />,
+      },
+    ],
+  },
+  {
+    path: PATHS.DASHBOARD.BENEFICIARIES_MANAGEMENT,
+    element: <AdminGuard />,
+    children: [
+      {
+        index: true,
+        element: <DashboardBeneficiariesManagement />,
       },
     ],
   },
@@ -70,6 +92,10 @@ export const routes = [
   {
     path: PATHS.CONTACT_US,
     element: <ContactusPage />,
+  },
+  {
+    path: PATHS.ABOUT,
+    element: <AboutPage />,
   },
   {
     path: PATHS.TRACK_AID.ROOT,
