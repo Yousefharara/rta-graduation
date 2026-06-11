@@ -71,7 +71,7 @@ const TrackAidUserHero = () => {
 
   useEffect(() => {
     
-    dispatch(setCurrentStep(stepMap["تم التوصيل"]));
+    dispatch(setCurrentStep(stepMap["جاري التوزيع"]));
     
   }, [dispatch]);
 
@@ -207,7 +207,7 @@ const TrackAidUserHero = () => {
             </div>
 
             <DialogFooter>
-              <Button disabled={currentStep !== 4} type="submit">
+              <Button disabled={currentStep !== 4} className="disabled:bg-zinc-300 disabled:cursor-not-allowed" type="submit">
                 ارسال الطلب
               </Button>
             </DialogFooter>
