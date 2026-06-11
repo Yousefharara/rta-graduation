@@ -44,7 +44,7 @@ const userRoutes: RouteObject[] = [
 const adminRoutes: RouteObject[] = [
   {
     path: PATHS.DASHBOARD.ROOT,
-    element: <AdminGuard allowedRoles={['admin']} />,
+    element: <AdminGuard allowedRoles={['admin', 'org']} />,
     children: [
       {
         index: true,
@@ -58,7 +58,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.AID_ORDERS,
-    element: <AdminGuard allowedRoles={['admin']} />,
+    element: <AdminGuard allowedRoles={['admin', 'org']} />,
     children: [
       {
         index: true,
@@ -68,7 +68,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.BENEFICIARIES_MANAGEMENT,
-    element: <AdminGuard allowedRoles={['admin']} />,
+    element: <AdminGuard allowedRoles={['admin', 'org']} />,
     children: [
       {
         index: true,
@@ -78,7 +78,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.ORG_REGISTER,
-    element: <AdminGuard allowedRoles={['admin', 'org']} />,
+    element: <AdminGuard allowedRoles={['admin']} />,
     children: [
       {
         index: true,

@@ -40,7 +40,7 @@ const Navbar = () => {
   }, [])
 
   useEffect(() => {
-    console.log("is open , ", isOpen);
+    console.log("is open  navbar :  ", isOpen);
 
   }, [isOpen])
 
