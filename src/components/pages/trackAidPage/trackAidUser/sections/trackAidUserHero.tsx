@@ -183,7 +183,7 @@ const TrackAidUserHero = () => {
                 ))}
               </select>
               {messageTypeAidError && (
-                <span className="span__error">
+                <span className="text-sm text-rose-600">
                   {messageTypeAidError}
                 </span>
               )}

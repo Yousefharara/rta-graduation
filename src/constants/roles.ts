@@ -4,3 +4,6 @@ export const ROLES = {
   ADMIN: "admin",
   ORG: "org", // org --> Organization
 };
+
+
+export type roles = 'guest' | 'user' | 'admin' | "org";

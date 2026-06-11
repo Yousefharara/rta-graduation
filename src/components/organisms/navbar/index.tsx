@@ -85,7 +85,7 @@ const Navbar = () => {
               </li>
             </>
           )}
-          {(role === "admin" || role === "user") && (
+          {(role !== 'guest') && (
             <li>
               <Button onClick={() => {
                 handleClose();

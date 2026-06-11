@@ -9,7 +9,7 @@ const GuestGuard = ({ children }: { children: ReactNode }) => {
   if (role === "user") {
     return <Navigate to={PATHS.ABOUT} />;
   }
-  if (role === "admin") {
+  if (role === "admin" || role === "org") {
     return <Navigate to={PATHS.DASHBOARD.ROOT} replace={true} />;
   }
 

@@ -35,7 +35,7 @@ const LoginForm = () => {
         login({
           role: "user",
           user: 1,
-          token: "yousef_ghazi",
+          token: "yousef_user",
         }),
       );
       setIsAuth(false);
@@ -45,12 +45,22 @@ const LoginForm = () => {
         login({
           role: "admin",
           user: 2,
-          token: "yousef_ghazi",
+          token: "yousef_admin",
         }),
       );
       setIsAuth(false);
       navigate(PATHS.ABOUT);
-    } else {
+    } else if (data.email === "org@org.com" && data.password === "org") {
+      dispatch(
+        login({
+          role: "org",
+          user: 3,
+          token: "yousef_org",
+        }),
+      );
+      setIsAuth(false);
+      navigate(PATHS.ABOUT);
+    }else {
       setIsAuth(true);
     }
   };

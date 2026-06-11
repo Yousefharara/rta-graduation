@@ -15,6 +15,13 @@ const TrackAidUser = lazy(() => import("@/components/pages/trackAidPage/trackAid
 const DashboardHomePage = lazy(() => import("@/components/pages/dashboard/dashboardHome"));
 const DashboardAidOrders = lazy(() => import("@/components/pages/dashboard/dashbaordAidOrders"));
 const DashboardBeneficiariesManagement = lazy(() => import("@/components/pages/dashboard/dashboardBeneficiariesManagement"));
+const DashboardOrgRegister = lazy(() => import("@/components/pages/dashboard/dashboardOrgRegister"));
+
+
+// ! -----------------------------------------------------------------
+// ? ------------------- User Routes ---------------------------------
+// ! -----------------------------------------------------------------
+
 
 const userRoutes: RouteObject[] = [
   {
@@ -29,10 +36,15 @@ const userRoutes: RouteObject[] = [
   },
 ];
 
+
+// ! -----------------------------------------------------------------
+// ? ------------------- Admin Routes --------------------------------
+// ! -----------------------------------------------------------------
+
 const adminRoutes: RouteObject[] = [
   {
     path: PATHS.DASHBOARD.ROOT,
-    element: <AdminGuard />,
+    element: <AdminGuard allowedRoles={['admin']} />,
     children: [
       {
         index: true,
@@ -41,8 +53,12 @@ const adminRoutes: RouteObject[] = [
     ],
   },
   {
+    path: "/dashboard",
+    element: <Navigate to={PATHS.DASHBOARD.ROOT} />
+  },
+  {
     path: PATHS.DASHBOARD.AID_ORDERS,
-    element: <AdminGuard />,
+    element: <AdminGuard allowedRoles={['admin']} />,
     children: [
       {
         index: true,
@@ -52,7 +68,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.BENEFICIARIES_MANAGEMENT,
-    element: <AdminGuard />,
+    element: <AdminGuard allowedRoles={['admin']} />,
     children: [
       {
         index: true,
@@ -60,7 +76,24 @@ const adminRoutes: RouteObject[] = [
       },
     ],
   },
+  {
+    path: PATHS.DASHBOARD.ORG_REGISTER,
+    element: <AdminGuard allowedRoles={['admin', 'org']} />,
+    children: [
+      {
+        index: true,
+        element: <DashboardOrgRegister />,
+      },
+    ],
+  },
 ];
+
+
+// ! -----------------------------------------------------------------
+// ? -------------------- Guest Routes -------------------------------
+// ! -----------------------------------------------------------------
+
+
 
 const guestRoutes: RouteObject[] = [
   {
@@ -73,6 +106,13 @@ const guestRoutes: RouteObject[] = [
   },
 ];
 
+
+// ! -----------------------------------------------------------------
+// ? -------------------- Error Routes ---------------------------------
+// ! -----------------------------------------------------------------
+
+
+
 const errorRoutes: RouteObject[] = [
   {
     path: PATHS.ERROR.PAGE_NOT_FOUNT,
@@ -83,6 +123,12 @@ const errorRoutes: RouteObject[] = [
     element: <Navigate to={"/404"} replace={true} />,
   },
 ];
+
+
+// ! -----------------------------------------------------------------
+// ? -------------------- Routes Routes ---------------------------------
+// ! -----------------------------------------------------------------
+
 
 export const routes = [
   {

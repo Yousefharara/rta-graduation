@@ -1,12 +1,17 @@
 import { PATHS } from '@/routes/paths';
 import { useAppSelector } from '../redux/store';
 import { Navigate, Outlet } from 'react-router-dom';
+import type { roles } from '@/constants/roles';
 
-const AdminGuard = () => {
+interface Props {
+    allowedRoles: roles[]
+}
 
-    const {role} = useAppSelector(state => state.auth)
+const AdminGuard = ({allowedRoles} : Props) => {
 
-    if(role === "admin") return <Outlet />;
+    const { role } = useAppSelector(state => state.auth)
+
+    if (allowedRoles.includes(role)) return <Outlet />;
 
     return <Navigate to={PATHS.AUTH.LOGIN} replace={true} />
 }

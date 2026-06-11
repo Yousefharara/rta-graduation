@@ -1,15 +1,15 @@
 import { PATHS } from "@/routes/paths";
 import {
   FolderClosed,
-  TicketsPlane,
   LayoutPanelTop,
   Users,
   X,
   LogOut,
+  Plus,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "./style.css";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
 
 interface ISidebar {
@@ -19,6 +19,7 @@ interface ISidebar {
 }
 
 const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
+  const {role} = useAppSelector(state => state.auth)
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
@@ -89,23 +90,20 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
               <p className="font-semibold">إدارة المستفيدين</p>
             </NavLink>
           </li>
-
-          <li>
-            <NavLink
-              className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
-              to={"/"}
-            >
-              <TicketsPlane />
-              <p className="font-semibold">التقارير</p>
-            </NavLink>
-          </li>
         </ul>
       </article>
 
-      <div className="flex items-center gap-3 mt-auto justify-center py-3 text-red-800 cursor-pointer border-t border-t-zinc-400">
+      <div className="mt-auto">
+        {role !== "org" && <NavLink to={PATHS.DASHBOARD.ORG_REGISTER} className="sidebar-org rounded-md flex items-center gap-3 justify-center py-3 cursor-pointer">
+        <Plus size={18}/>
+        <p className="font-semibold"> تسجيل منظمه
+          </p>
+      </NavLink>}
+      <div className="flex items-center gap-3 justify-center py-3 text-red-800 cursor-pointer border-t border-t-zinc-400">
         <LogOut size={18}/>
         <p className="font-semibold" onClick={handleLogout}> تسجيل الخروج
           </p>
+      </div>
       </div>
     </aside>
   );
