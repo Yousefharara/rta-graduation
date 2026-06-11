@@ -1,12 +1,68 @@
 import Button from "@/components/atoms/button";
 import StepsAid from "@/components/organisms/setps";
-import { PATHS } from "@/routes/paths";
-import { LineChart, Pencil, Search, Truck } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+// import { PATHS } from "@/routes/paths";
+import { LineChart, Pencil, Search, SquareRoundCorner, Truck } from "lucide-react";
+import { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+import { Input as InputUI } from "@/components/ui/input";
+import type { ISendOrderForm } from "@/@types/forms";
+import * as Yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import RowForm from "@/components/molecules/rowForm";
+import { aidCategoryArr } from "@/@types/aid";
+import { toast } from "sonner";
+
+
+const defaultValues: ISendOrderForm = {
+  reason: "",
+  typeAid: "Food Assistance"
+};
 
 const TrackAidUserHero = () => {
 
-  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+
+
+
+  const schemaSendOrderFrom: Yup.ObjectSchema<ISendOrderForm> = Yup.object({
+    reason: Yup.string().required("السبب مطلوب"),
+    typeAid: Yup.string().oneOf(["Food Assistance", "Medical Support", "Cash"]).required(),
+  });
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    reset,
+    register,
+  } = useForm<ISendOrderForm>({ resolver: yupResolver(schemaSendOrderFrom) });
+
+  const messageError = errors["reason"]?.message;
+
+  const handleOnSubmit = (data: ISendOrderForm) => {
+
+    setOpen(false)
+    console.log('data is : ', data);
+      toast.success("تمت عملية الطلب بنجاح ❤️");
+    reset(defaultValues)
+
+  };
+
+  // const confirmOrderAid = () => {
+  // };
+
+
+  useEffect(() => {
+    if (errors) {
+      console.log("Errors here is , ", errors);
+
+    }
+  }, [errors])
+
+
+
 
   return (
     <>
@@ -24,7 +80,7 @@ const TrackAidUserHero = () => {
       <section className="rounded-lg bg-white border border-zinc-300 px-6 py-4 flex flex-wrap justify-between gap-4 items-center">
         <div className="flex gap-2 items-center">
           <div className="flex justify-center items-center p-2 rounded-full bg-muted">
-            <Truck size={30}/>
+            <Truck size={30} />
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex gap-2 items-center">
@@ -39,20 +95,9 @@ const TrackAidUserHero = () => {
             تعديل البيانات
             <Pencil />
           </Button>
-          <Button onClick={() => navigate(PATHS.CONTACT_US)} className="flex gap-3 items-center font-semibold">
-            تواصل مع الدعم
-            <svg
-              width="20"
-              height="18"
-              viewBox="0 0 20 18"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M9 18V16H17V8.9C17 6.95 16.3208 5.29583 14.9625 3.9375C13.6042 2.57917 11.95 1.9 10 1.9C8.05 1.9 6.39583 2.57917 5.0375 3.9375C3.67917 5.29583 3 6.95 3 8.9V15H2C1.45 15 0.979167 14.8042 0.5875 14.4125C0.195833 14.0208 0 13.55 0 13V11C0 10.65 0.0875 10.3208 0.2625 10.0125C0.4375 9.70417 0.683333 9.45833 1 9.275L1.075 7.95C1.20833 6.81667 1.5375 5.76667 2.0625 4.8C2.5875 3.83333 3.24583 2.99167 4.0375 2.275C4.82917 1.55833 5.7375 1 6.7625 0.6C7.7875 0.2 8.86667 0 10 0C11.1333 0 12.2083 0.2 13.225 0.6C14.2417 1 15.15 1.55417 15.95 2.2625C16.75 2.97083 17.4083 3.80833 17.925 4.775C18.4417 5.74167 18.775 6.79167 18.925 7.925L19 9.225C19.3167 9.375 19.5625 9.6 19.7375 9.9C19.9125 10.2 20 10.5167 20 10.85V13.15C20 13.4833 19.9125 13.8 19.7375 14.1C19.5625 14.4 19.3167 14.625 19 14.775V16C19 16.55 18.8042 17.0208 18.4125 17.4125C18.0208 17.8042 17.55 18 17 18H9ZM7 11C6.71667 11 6.47917 10.9042 6.2875 10.7125C6.09583 10.5208 6 10.2833 6 10C6 9.71667 6.09583 9.47917 6.2875 9.2875C6.47917 9.09583 6.71667 9 7 9C7.28333 9 7.52083 9.09583 7.7125 9.2875C7.90417 9.47917 8 9.71667 8 10C8 10.2833 7.90417 10.5208 7.7125 10.7125C7.52083 10.9042 7.28333 11 7 11ZM13 11C12.7167 11 12.4792 10.9042 12.2875 10.7125C12.0958 10.5208 12 10.2833 12 10C12 9.71667 12.0958 9.47917 12.2875 9.2875C12.4792 9.09583 12.7167 9 13 9C13.2833 9 13.5208 9.09583 13.7125 9.2875C13.9042 9.47917 14 9.71667 14 10C14 10.2833 13.9042 10.5208 13.7125 10.7125C13.5208 10.9042 13.2833 11 13 11ZM4.025 9.45C3.90833 7.68333 4.44167 6.16667 5.625 4.9C6.80833 3.63333 8.28333 3 10.05 3C11.5333 3 12.8375 3.47083 13.9625 4.4125C15.0875 5.35417 15.7667 6.55833 16 8.025C14.4833 8.00833 13.0875 7.6 11.8125 6.8C10.5375 6 9.55833 4.91667 8.875 3.55C8.60833 4.88333 8.04583 6.07083 7.1875 7.1125C6.32917 8.15417 5.275 8.93333 4.025 9.45Z"
-                fill="white"
-              />
-            </svg>
+          <Button onClick={() => setOpen(true)} className="flex gap-3 items-center font-semibold">
+            أضافة طلب جديد
+            <SquareRoundCorner />
           </Button>
         </div>
       </section>
@@ -64,6 +109,88 @@ const TrackAidUserHero = () => {
         </div>
         <StepsAid />
       </section>
+
+
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="p-0 bg-[#EFF4FF]">
+
+          <DialogHeader className="mt-10 px-6 text-start!">
+            <DialogTitle dir="rtl">
+              تقديم طلب مساعدة جديد
+            </DialogTitle>
+
+            <DialogDescription dir="rtl" className="">
+              يرجى تعبئة النموذج أدناه بدقة لضمان سرعة معالجة طلبكم والوصول إلى المساعدات
+              المطلوبة.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex items-center gap-4 px-6 flex-wrap">
+            <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 11L10.85 6.95C10.3333 6.45 9.89583 5.89583 9.5375 5.2875C9.17917 4.67917 9 4.01667 9 3.3C9 2.38333 9.32083 1.60417 9.9625 0.9625C10.6042 0.320833 11.3833 0 12.3 0C12.8333 0 13.3333 0.1125 13.8 0.3375C14.2667 0.5625 14.6667 0.866667 15 1.25C15.3333 0.866667 15.7333 0.5625 16.2 0.3375C16.6667 0.1125 17.1667 0 17.7 0C18.6167 0 19.3958 0.320833 20.0375 0.9625C20.6792 1.60417 21 2.38333 21 3.3C21 4.01667 20.825 4.67917 20.475 5.2875C20.125 5.89583 19.6917 6.45 19.175 6.95L15 11ZM15 8.2L17.725 5.525C18.0417 5.20833 18.3333 4.87083 18.6 4.5125C18.8667 4.15417 19 3.75 19 3.3C19 2.93333 18.875 2.625 18.625 2.375C18.375 2.125 18.0667 2 17.7 2C17.4667 2 17.2458 2.04583 17.0375 2.1375C16.8292 2.22917 16.65 2.36667 16.5 2.55L15 4.35L13.5 2.55C13.35 2.36667 13.1708 2.22917 12.9625 2.1375C12.7542 2.04583 12.5333 2 12.3 2C11.9333 2 11.625 2.125 11.375 2.375C11.125 2.625 11 2.93333 11 3.3C11 3.75 11.1333 4.15417 11.4 4.5125C11.6667 4.87083 11.9583 5.20833 12.275 5.525L15 8.2ZM6 16.5L12.95 18.4L18.9 16.55C18.8167 16.4 18.6958 16.2708 18.5375 16.1625C18.3792 16.0542 18.2 16 18 16H12.95C12.5 16 12.1417 15.9833 11.875 15.95C11.6083 15.9167 11.3333 15.85 11.05 15.75L8.725 14.975L9.275 13.025L11.3 13.7C11.5833 13.7833 11.9167 13.85 12.3 13.9C12.6833 13.95 13.25 13.9833 14 14C14 13.8167 13.9458 13.6417 13.8375 13.475C13.7292 13.3083 13.6 13.2 13.45 13.15L7.6 11H6V16.5ZM0 20V9H7.6C7.71667 9 7.83333 9.0125 7.95 9.0375C8.06667 9.0625 8.175 9.09167 8.275 9.125L14.15 11.3C14.7 11.5 15.1458 11.85 15.4875 12.35C15.8292 12.85 16 13.4 16 14H18C18.8333 14 19.5417 14.275 20.125 14.825C20.7083 15.375 21 16.1 21 17V18L13 20.5L6 18.55V20H0ZM2 18H4V11H2V18Z" fill="#004AC6" />
+            </svg>
+            <p>تقديم طلب مساعدة جديد</p>
+
+          </div>
+
+          <form
+            className="bg-white p-6 flex flex-col gap-2 rounded-b-md"
+            onSubmit={handleSubmit(handleOnSubmit)}
+          >
+            {/* <div className="bg-white p-6 flex flex-col gap-4 rounded-b-md"> */}
+
+            <div className="flex flex-col gap-2 my-4 w-full">
+              <label className="text-sm font-semibold"> نوع المساعدة المطلوبة</label>
+
+              <select
+                defaultValue={"select"}
+                {...register("typeAid")}
+              >
+                <option disabled value="select">
+                  Select
+                </option>
+                {aidCategoryArr.map((aid) => (
+                  <option key={aid} value={aid}>{aid}</option>
+                ))}
+              </select>
+              {errors["typeAid"] && (
+                <span className="span__error">
+                  {errors["typeAid"]?.message}
+                </span>)}
+            </div>
+
+
+            <div className="flex flex-col gap-4 my-4">
+              <label className="text-sm font-semibold">سبب طلب المساعدة</label>
+
+              <textarea
+                {...register("reason")}
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${messageError ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                placeholder="يرجى شرح الحالة الإنسانية أو الظروف التي تستدعي طلب المساعدة..."
+                rows={5}
+              ></textarea>
+
+              {messageError && (
+                <span className="text-sm text-rose-600">{String(messageError)}</span>
+              )}
+            </div>
+
+
+
+            <DialogFooter>
+              <Button
+              disabled
+                type="submit"
+              >
+                ارسال الطلب
+              </Button>
+            </DialogFooter>
+            {/* </div> */}
+          </form>
+
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

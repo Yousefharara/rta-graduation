@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./setps.css";
+import { useAppSelector } from "@/redux/store";
 
 const steps = [
   "قيد المراجعة",
@@ -9,10 +10,11 @@ const steps = [
   "تم التوصيل",
 ];
 
-const currentStep = 2;
+// const currentStep = 2;
 
 const StepsAid = () => {
   const [isMobile, setIsMobiel] = useState<boolean>(false);
+  const {currentStep} = useAppSelector(state => state.aidState)
 
   const handleResize = () => {
     setIsMobiel(window.innerWidth < 768);

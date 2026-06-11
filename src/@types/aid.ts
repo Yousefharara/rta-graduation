@@ -1,5 +1,7 @@
 export type AidCategoryType = "Food Assistance" | "Medical Support" | "Cash";
 
+export const aidCategoryArr: AidCategoryType[] = ['Cash', 'Food Assistance', 'Medical Support']
+
 export interface IAidState {
   isLoading: boolean;
   errorMessage: string;

@@ -4,6 +4,7 @@ import authSlice from "./slices/authSlice";
 import UserReducer from "./slices/users";
 import AidReducer from "./slices/aids";
 import userAidsReducer from "./slices/userAids";
+import aidStateReducer from "./slices/aidState";
 
 import storage from "redux-persist/lib/storage"; // localStorage'
 import { persistReducer } from "redux-persist";
@@ -28,5 +29,6 @@ export const RootReducer = combineReducers({
   users: UserReducer,
   aids: AidReducer,
   userAids: userAidsReducer,
+  aidState: aidStateReducer,
   [postsApi.reducerPath]: postsApi.reducer,
 });

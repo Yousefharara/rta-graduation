@@ -1,3 +1,5 @@
+import type { AidCategoryType } from "./aid";
+
 export interface ILoginForm {
   email: string;
   password: string;
@@ -24,4 +26,10 @@ export interface IDonationForm {
   cardNumber: string;
   endDate: Date;
   CVV: number;
+}
+
+
+export interface ISendOrderForm {
+  typeAid: AidCategoryType;
+  reason: string;
 }

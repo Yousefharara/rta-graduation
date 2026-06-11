@@ -99,7 +99,7 @@ const confirmDonation = () => {
   reset(defaultValues);
 
   setBudget(0);
-
+  
   setEmail("");
   setPendingData(null);
   setOpen(false);
