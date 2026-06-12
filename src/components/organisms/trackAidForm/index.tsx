@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/routes/paths";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { login } from "@/redux/slices/authSlice";
+import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
 // import { getUsers } from "@/redux/slices/users";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
@@ -26,13 +27,13 @@ const TrackAidForm = () => {
 
   const navigate = useNavigate();
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { users, isLoading, errorMessage } = useAppSelector(
-    (state) => state.users,
+  const { beneficiary, isLoading, errorMessage } = useAppSelector(
+    (state) => state.beneficiaries,
   );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getUsers());
+    dispatch(getBeneficiaries());
   }, [dispatch])
 
   if (errorMessage) return <h1>Error here</h1>;

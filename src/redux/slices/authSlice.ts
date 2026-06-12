@@ -4,11 +4,11 @@ import type { AppDispatch } from "../store";
 import axios from "axios";
 import { AUTH_PATHS } from "@/constants/apiPaths";
 import { API_KEY } from "@/config/api";
-import type { IAuth } from "@/@types/auth";
-import type { IUsers } from "@/@types/users";
+import type { IAuth, ILoginAuth } from "@/@types/auth";
+import type { IUser } from "@/@types/user";
 
 interface IInitialState {
-  user: IUsers | null;
+  user: IUser | null;
   accessToken: string | null;
   role: RoleType | undefined;
   isLoading: boolean;
@@ -33,7 +33,7 @@ const authSlice = createSlice({
     setError: (state, action: PayloadAction<string>) => {
       state.errorMessage = action.payload;
     },
-    login: (state, action: PayloadAction<IInitialState>) => {
+    login: (state, action: PayloadAction<IAuth>) => {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
       state.role = action.payload.user?.role;
@@ -54,10 +54,10 @@ export default authSlice.reducer;
 // ! ///////////////// Action ////////////////////////
 // ? /////////////////////////////////////////////////
 
-export const setLogin = (body: IAuth) => async (dispatch: AppDispatch) => {
+export const setLogin = (body: ILoginAuth) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
-    const { data } = await axios.post(API_KEY + AUTH_PATHS.LOGIN, body);
+    const { data } = await axios.post<IAuth>(API_KEY + AUTH_PATHS.LOGIN, body);
     console.log('data test login : ', data);
     dispatch(login(data));
   } catch (err) {

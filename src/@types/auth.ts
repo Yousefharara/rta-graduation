@@ -1,4 +1,12 @@
+import type { IUser } from "./user";
+
+export interface ILoginAuth {
+  password: string;
+  email: string;
+}
+
 export interface IAuth {
-    password: string;
-    email: string;
+  accessToken: string;
+  refreshToken: string;
+  user: IUser;
 }

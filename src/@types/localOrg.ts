@@ -1,11 +1,11 @@
-export interface IUsersState {
+export interface ILocalOrgState {
   isLoading: boolean;
   errorMessage: string;
-  users: IUsers[];
-  user: IUsers | null;
+  users: ILocalOrg[];
+  user: ILocalOrg | null;
 }
 
-export interface IUsers {
+export interface ILocalOrg {
   id: number;
   user_id: number;
   org_name: string;

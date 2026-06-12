@@ -1,9 +1,17 @@
-import type { IUsers, IUsersState } from "@/@types/users";
+import type { IUser } from "@/@types/user";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { AppDispatch } from "../store";
 import axios from "axios";
 import { API_KEY } from "@/config/api";
+import { USER_PAHTS } from "@/constants/apiPaths";
 // import { USER_PAHTS } from "@/constants/usersPaths";
+
+export interface IUsersState {
+  isLoading: boolean;
+  errorMessage: string;
+  users: IUser[];
+  user: IUser | null;
+}
 
 const initialState: IUsersState = {
   errorMessage: "",
@@ -22,10 +30,10 @@ const userSlice = createSlice({
     setError: (state, action: PayloadAction<string>) => {
       state.errorMessage = action.payload;
     },
-    setUsers: (state, action: PayloadAction<IUsers[]>) => {
+    setUsers: (state, action: PayloadAction<IUser[]>) => {
       state.users = action.payload;
     },
-    setUser: (state, action: PayloadAction<IUsers>) => {
+    setUser: (state, action: PayloadAction<IUser>) => {
       state.user = action.payload;
     },
   },

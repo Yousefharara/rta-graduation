@@ -109,7 +109,7 @@ const Navbar = () => {
           )}
         </ul>
         <ul className={`flex flex-col items-center gap-4 md:flex-row md:items-start`}>
-          {(role === "guest" || role === "user") && (
+          {(role === "guest" || role === "beneficiary") && (
             <>
               <li>
                 <NavLink onClick={handleClose} to={PATHS.CONTACT_US}>تواصل معنا</NavLink>

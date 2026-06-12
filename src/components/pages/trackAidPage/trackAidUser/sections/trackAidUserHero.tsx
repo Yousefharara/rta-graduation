@@ -26,6 +26,8 @@ import { aidCategoryArr } from "@/@types/aid";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { setCurrentStep } from "@/redux/slices/aidState";
+import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
+import type { IBeneficiary } from "@/@types/beneficiary";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
@@ -42,8 +44,26 @@ const stepMap = {
 
 const TrackAidUserHero = () => {
   const [open, setOpen] = useState(false);
-  const {currentStep} = useAppSelector(state => state.aidState)
+  const { currentStep } = useAppSelector((state) => state.aidState);
+
+  // ! --
+  const { user } = useAppSelector((state) => state.auth);
+  const { beneficiaries } = useAppSelector(state => state.beneficiaries);
+  const [beneficiary, setBeneficiary] = useState<IBeneficiary>();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getBeneficiaries())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (user) {
+      const r = beneficiaries.find((b) => (b.user_id === user?.id));
+      console.log("result is : ", r);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setBeneficiary(r);
+    }
+  }, [beneficiaries, user])
 
   const schemaSendOrderFrom: Yup.ObjectSchema<ISendOrderForm> = Yup.object({
     reason: Yup.string().required("السبب مطلوب"),
@@ -70,9 +90,10 @@ const TrackAidUserHero = () => {
   };
 
   useEffect(() => {
-    
     dispatch(setCurrentStep(stepMap["جاري التوزيع"]));
   }, [dispatch]);
+
+  if (!user) return;
 
   return (
     <>
@@ -83,7 +104,9 @@ const TrackAidUserHero = () => {
         </div>
         <div className="rounded-full flex items-center gap-2 bg-primary/10 py-2 px-3">
           <Search size={15} />
-          <small>رقم الهويه: 12345</small>
+          <small>
+            رقم الهويه: {user?.name} | {beneficiary?.national_id}
+          </small>
         </div>
       </section>
 
@@ -206,8 +229,14 @@ const TrackAidUserHero = () => {
             </div>
 
             <DialogFooter className="flex items-center flex-wrap gap-2">
-              <p className="text-red-600">{currentStep < 4 && "لديك طلب بالفعل !!"}</p>
-              <Button disabled={currentStep !== 4} className="disabled:bg-zinc-300 disabled:cursor-not-allowed" type="submit">
+              <p className="text-red-600">
+                {currentStep < 4 && "لديك طلب بالفعل !!"}
+              </p>
+              <Button
+                disabled={currentStep !== 4}
+                className="disabled:bg-zinc-300 disabled:cursor-not-allowed"
+                type="submit"
+              >
                 ارسال الطلب
               </Button>
             </DialogFooter>

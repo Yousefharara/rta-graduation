@@ -1,13 +1,6 @@
 import type { RoleType } from "@/constants/roles";
 
-export interface IUsersState {
-  isLoading: boolean;
-  errorMessage: string;
-  users: IUsers[];
-  user: IUsers | null;
-}
-
-export interface IUsers {
+export interface IUser {
   id: number;
   name: string;
   email: string;
@@ -16,3 +9,4 @@ export interface IUsers {
   is_active: boolean;
   created_at: string;
 }
+

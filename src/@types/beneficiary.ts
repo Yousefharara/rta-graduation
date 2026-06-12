@@ -1,11 +1,28 @@
-export interface IBeneficiaryState {
-  isLoading: boolean;
-  errorMessage: string;
-  users: IBeneficairy[];
-  user: IBeneficairy | null;
+import type { IUser } from "./user";
+
+
+
+export interface IBeneficiary {
+  id: number;
+  user_id: number;
+  national_id: string;
+  area_id: number;
+  family_size: number;
+
+  income: string;
+  priority_score: string;
+
+  patients_count: number;
+  disabled_count: number;
+  is_displaced: boolean;
+
+  status: string;
+  created_at: string;
+
+  users: IUser;
 }
 
-export interface IBeneficairy {
+export interface ICreateBeneficiary {
   name: string;
   email: string;
   password: string;
