@@ -1,15 +1,17 @@
 import { PATHS } from '@/routes/paths';
 import { useAppSelector } from '../redux/store';
 import { Navigate, Outlet } from 'react-router-dom';
-import type { roles } from '@/constants/roles';
+import type { RoleType } from '@/constants/roles';
 
 interface Props {
-    allowedRoles: roles[]
+    allowedRoles: RoleType[]
 }
 
-const AdminGuard = ({allowedRoles} : Props) => {
+const AdminGuard = ({ allowedRoles }: Props) => {
 
     const { role } = useAppSelector(state => state.auth)
+
+    if (!role) return;
 
     if (allowedRoles.includes(role)) return <Outlet />;
 

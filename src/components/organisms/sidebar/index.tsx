@@ -19,7 +19,7 @@ interface ISidebar {
 }
 
 const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
-  const {role} = useAppSelector(state => state.auth)
+  const {role, token} = useAppSelector(state => state.auth)
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
@@ -58,7 +58,9 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
               />
             </svg>
           </div>
-          <p className="text-2xl text-primary font-semibold">منظمة الإغاثة</p>
+          <p className="text-2xl text-primary font-semibold">
+            {role === 'admin' ? "منظمة الإغاثة" : token}
+          </p>
         </div>
         <ul className="sidebar-links flex flex-col gap-1 ">
           <li>
@@ -94,7 +96,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
       </article>
 
       <div className="mt-auto">
-        {role !== "org" && <NavLink to={PATHS.DASHBOARD.ORG_REGISTER} className="sidebar-org rounded-md flex items-center gap-3 justify-center py-3 cursor-pointer">
+        {role !== "local_org" && <NavLink to={PATHS.DASHBOARD.ORG_REGISTER} className="sidebar-org rounded-md flex items-center gap-3 justify-center py-3 cursor-pointer">
         <Plus size={18}/>
         <p className="font-semibold"> تسجيل منظمه
           </p>

@@ -206,7 +206,8 @@ const TrackAidUserHero = () => {
               )}
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="flex items-center flex-wrap gap-2">
+              <p className="text-red-600">{currentStep < 4 && "لديك طلب بالفعل !!"}</p>
               <Button disabled={currentStep !== 4} className="disabled:bg-zinc-300 disabled:cursor-not-allowed" type="submit">
                 ارسال الطلب
               </Button>

@@ -1,9 +1,12 @@
-export const ROLES = {
+export const ROLES : Record<string, RoleType> = {
   GUEST: "guest",
-  USER: "user", // user --> beneficiary
+  USER: "beneficiary", // user --> beneficiary
   ADMIN: "admin",
-  ORG: "org", // org --> Organization
+  ORG: "local_org", // org --> Organization
+  DONOR: "donor"
 };
 
 
-export type roles = 'guest' | 'user' | 'admin' | "org";
+export type RoleType =  'guest' | 'beneficiary' | 'admin' | 'local_org' | 'donor';
+
+

@@ -6,7 +6,7 @@ import Button from "../../atoms/button";
 import RowForm from "../../molecules/rowForm";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../../redux/store";
-import { login } from "../../../redux/slices/authSlice";
+import { login, setLogin } from "../../../redux/slices/authSlice";
 import type { ILoginForm } from "@/@types/forms";
 import { PATHS } from "@/routes/paths";
 
@@ -29,40 +29,44 @@ const LoginForm = () => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleOnSubmit = (data: ILoginForm) => {
-    console.log(data);
-    if (data.email === "user@user.com" && data.password === "user") {
-      dispatch(
-        login({
-          role: "user",
-          user: 1,
-          token: "yousef_user",
-        }),
-      );
-      setIsAuth(false);
-      navigate(PATHS.ABOUT);
-    } else if (data.email === "admin@admin.com" && data.password === "admin") {
-      dispatch(
-        login({
-          role: "admin",
-          user: 2,
-          token: "yousef_admin",
-        }),
-      );
-      setIsAuth(false);
-      navigate(PATHS.ABOUT);
-    } else if (data.email === "org@org.com" && data.password === "org") {
-      dispatch(
-        login({
-          role: "org",
-          user: 3,
-          token: "yousef_org",
-        }),
-      );
-      setIsAuth(false);
-      navigate(PATHS.ABOUT);
-    }else {
-      setIsAuth(true);
-    }
+    console.log('data in login form ', data);
+
+    dispatch(setLogin(data));
+
+
+    // if (data.email === "user@user.com" && data.password === "user") {
+    //   dispatch(
+    //     login({
+    //       role: "user",
+    //       user: 1,
+    //       token: "yousef_user",
+    //     }),
+    //   );
+    //   setIsAuth(false);
+    //   navigate(PATHS.ABOUT);
+    // } else if (data.email === "admin@admin.com" && data.password === "admin") {
+    //   dispatch(
+    //     login({
+    //       role: "admin",
+    //       user: 2,
+    //       token: "yousef_admin",
+    //     }),
+    //   );
+    //   setIsAuth(false);
+    //   navigate(PATHS.ABOUT);
+    // } else if (data.email === "org@org.com" && data.password === "org") {
+    //   dispatch(
+    //     login({
+    //       role: "org",
+    //       user: 3,
+    //       token: "yousef_org",
+    //     }),
+    //   );
+    //   setIsAuth(false);
+    //   navigate(PATHS.ABOUT);
+    // }else {
+    //   setIsAuth(true);
+    // }
   };
 
   useEffect(() => {

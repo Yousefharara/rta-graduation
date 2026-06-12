@@ -10,7 +10,7 @@ const TrackAidPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
+    if (user?.name) {
       console.log("user in track");
       navigate(PATHS.TRACK_AID.USER); 
     }
