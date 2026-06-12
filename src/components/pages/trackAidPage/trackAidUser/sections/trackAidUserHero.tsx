@@ -72,7 +72,6 @@ const TrackAidUserHero = () => {
   useEffect(() => {
     
     dispatch(setCurrentStep(stepMap["جاري التوزيع"]));
-    
   }, [dispatch]);
 
   return (
