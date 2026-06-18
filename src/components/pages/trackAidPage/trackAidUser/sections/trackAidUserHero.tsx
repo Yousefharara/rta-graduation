@@ -26,8 +26,8 @@ import { aidCategoryArr } from "@/@types/aid";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { setCurrentStep } from "@/redux/slices/aidState";
-import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
-import type { IBeneficiary } from "@/@types/beneficiary";
+// import type { IBeneficiary } from "@/@types/beneficiary";
+import { getBeneficiary } from "@/redux/slices/beneficiarySlice";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
@@ -48,22 +48,19 @@ const TrackAidUserHero = () => {
 
   // ! --
   const { user } = useAppSelector((state) => state.auth);
-  const { beneficiaries } = useAppSelector(state => state.beneficiaries);
-  const [beneficiary, setBeneficiary] = useState<IBeneficiary>();
+  const { beneficiary } = useAppSelector((state) => state.beneficiaries);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getBeneficiaries())
-  }, [dispatch])
+    if (user) {
+      dispatch(getBeneficiary(user?.id));
+    }
+  }, [dispatch, user]);
 
   useEffect(() => {
-    if (user) {
-      const r = beneficiaries.find((b) => (b.user_id === user?.id));
-      console.log("result is : ", r);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBeneficiary(r);
-    }
-  }, [beneficiaries, user])
+    console.log('beneficiary : ', beneficiary);
+  }, [beneficiary])
+
 
   const schemaSendOrderFrom: Yup.ObjectSchema<ISendOrderForm> = Yup.object({
     reason: Yup.string().required("السبب مطلوب"),

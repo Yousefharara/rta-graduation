@@ -50,7 +50,7 @@ export default userSlice.reducer;
 export const getUsers = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
-    const { data } = await axios.get(API_KEY + USER_PAHTS.GET_USERS);
+    const { data } = await axios.get<IUser[]>(API_KEY + USER_PAHTS.GET_USERS);
     // console.log("data users is , ", data);
     dispatch(setUsers(data));
   } catch (err) {
@@ -63,11 +63,11 @@ export const getUsers = () => async (dispatch: AppDispatch) => {
 export const getUser = (id: number) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
-    const { data } = await axios.get(
+    const { data } = await axios.get<IUser>(
       API_KEY + USER_PAHTS.GET_USER.replace(":id", String(id)),
     );
 
-    // console.log("data user is , ", data);
+    console.log("data user is , ", data);
 
     dispatch(setUser(data));
   } catch (err) {

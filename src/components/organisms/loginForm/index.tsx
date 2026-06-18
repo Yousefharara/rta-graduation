@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import Button from "../../atoms/button";
 import RowForm from "../../molecules/rowForm";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { login, setLogin } from "../../../redux/slices/authSlice";
 import type { ILoginForm } from "@/@types/forms";
 import { PATHS } from "@/routes/paths";
@@ -26,12 +26,36 @@ const LoginForm = () => {
   } = useForm<ILoginForm>({ resolver: yupResolver(schemaLoginFrom) });
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { user, isLoading } = useAppSelector(state => state.auth)
   const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleOnSubmit = (data: ILoginForm) => {
     console.log('data in login form ', data);
 
     dispatch(setLogin(data));
+
+    if (!isLoading) {
+      if (user) {
+        console.log('user is ', user);
+      } else {
+        console.log('no user found');
+      }
+    }
+
+    // if (isLoading) return
+    // if (user?.role === 'admin' || user?.role === 'local_org') {
+    //   setIsAuth(false)
+    //   console.log('user , ', user);
+    //   navigate(PATHS.DASHBOARD.ROOT)
+    // } else if (user?.role === 'beneficiary') {
+    //   setIsAuth(false)
+    //   console.log('user , ', user);
+    //   navigate(PATHS.TRACK_AID.USER)
+    // }
+    // else {
+    //   setIsAuth(true)
+    // }
+
 
 
     // if (data.email === "user@user.com" && data.password === "user") {

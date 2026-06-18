@@ -7,7 +7,7 @@ const GuestGuard = ({ children }: { children: ReactNode }) => {
   const { role } = useAppSelector((state) => state.auth);
 
   if (role === "beneficiary") {
-    return <Navigate to={PATHS.ABOUT} />;
+    return <Navigate to={PATHS.TRACK_AID.USER} />;
   }
   if (role === "admin" || role === "local_org") {
     return <Navigate to={PATHS.DASHBOARD.ROOT} replace={true} />;
