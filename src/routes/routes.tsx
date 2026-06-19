@@ -16,6 +16,7 @@ const DashboardHomePage = lazy(() => import("@/components/pages/dashboard/dashbo
 const DashboardAidOrders = lazy(() => import("@/components/pages/dashboard/dashbaordAidOrders"));
 const DashboardBeneficiariesManagement = lazy(() => import("@/components/pages/dashboard/dashboardBeneficiariesManagement"));
 const DashboardOrgRegister = lazy(() => import("@/components/pages/dashboard/dashboardOrgRegister"));
+const DashboardBeneficiaryRegister = lazy(() => import("@/components/pages/dashboard/dashboardBeneficiaryRegister"));
 
 
 // ! -----------------------------------------------------------------
@@ -73,6 +74,16 @@ const adminRoutes: RouteObject[] = [
       {
         index: true,
         element: <DashboardBeneficiariesManagement />,
+      },
+    ],
+  },
+  {
+    path: PATHS.DASHBOARD.BENEFICIARY_REGISTER,
+    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    children: [
+      {
+        index: true,
+        element: <DashboardBeneficiaryRegister />,
       },
     ],
   },

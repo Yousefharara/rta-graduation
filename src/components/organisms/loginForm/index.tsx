@@ -26,7 +26,7 @@ const LoginForm = () => {
   } = useForm<ILoginForm>({ resolver: yupResolver(schemaLoginFrom) });
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user, isLoading } = useAppSelector(state => state.auth)
+  const { user, isLoading, errorMessage } = useAppSelector(state => state.auth)
   const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleOnSubmit = (data: ILoginForm) => {
@@ -195,7 +195,7 @@ const LoginForm = () => {
           {errors["remeberMe"]?.message}
         </span>
       )}
-      <Button
+      {isLoading ? <p className="text-center mt-5 text-lg underline"></p> : <Button
         variant="default"
         type="submit"
         className="
@@ -204,7 +204,7 @@ const LoginForm = () => {
         "
       >
         تسجيل الدخول
-      </Button>
+      </Button>}
       {isAuth && (
         <p
           className="
@@ -213,6 +213,10 @@ const LoginForm = () => {
         >
           Password or Email Error
         </p>
+      )}
+
+      {errorMessage && (
+        <p className="text-rose-600 font-medium mt-10">{errorMessage}</p>
       )}
     </form>
   );

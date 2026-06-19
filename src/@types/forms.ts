@@ -33,3 +33,17 @@ export interface ISendOrderForm {
   typeAid: AidCategoryType;
   reason: string;
 }
+
+type beneficiaryStatusType = 'pending' | 'agreenment' | "rejected";
+
+export interface IRegisterBeneficiaryForm {
+  name: string;
+  nationalId: string;
+  mobileNumber: string;
+  email?:string | null;
+  familySize: number;
+  patientCount: number;
+  disableCount: number;
+  status: beneficiaryStatusType;
+  income: number;
+}

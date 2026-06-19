@@ -4,6 +4,7 @@ export const PATHS = {
     ROOT: "/dashboard/home",
     AID_ORDERS: "/dashboard/aid-orders",
     BENEFICIARIES_MANAGEMENT: "/dashboard/benefciaries-management",
+    BENEFICIARY_REGISTER: "/dashboard/benefciary-register",
     ORG_REGISTER: "/dashboard/org-register",
   },
   ABOUT: "/about",
