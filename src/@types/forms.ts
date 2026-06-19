@@ -1,4 +1,6 @@
 import type { AidCategoryType } from "./aid";
+import type { ICreateBeneficiary } from "./beneficiary";
+import type { ICreateLocalOrg } from "./localOrg";
 
 export interface ILoginForm {
   email: string;
@@ -34,16 +36,16 @@ export interface ISendOrderForm {
   reason: string;
 }
 
-type beneficiaryStatusType = 'pending' | 'agreenment' | "rejected";
+export interface IRegisterBeneficiaryForm
+  extends Omit<ICreateBeneficiary, 'email' | 'password' | "disabled_count"> {
+  email?: string | null;
+  password?: string;
+  disabled_count?: number;
+  status: 'single' | 'married';
+}
 
-export interface IRegisterBeneficiaryForm {
-  name: string;
-  nationalId: string;
-  mobileNumber: string;
-  email?:string | null;
-  familySize: number;
-  patientCount: number;
-  disableCount: number;
-  status: beneficiaryStatusType;
-  income: number;
+
+export interface IRegisterLocalOrgForm extends Omit<ICreateLocalOrg, "password"> {
+  orgType: string;
+  password?: string;
 }

@@ -46,17 +46,6 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
     setIsOpenAside(false);
   };
 
-  // if (location.pathname === PATHS.HOME) {
-  //   return (
-  //     <article className="min-h-screen flex flex-col justify-between">
-  //       <ScrollToTop />
-  //       <Navbar />
-  //       <div className="mt-20">{children}</div>
-  //       <Footer />
-  //     </article>
-  //   );
-  // }
-
   if (isAuthPath(location.pathname)) {
     return (
       <article className="flex flex-col gap-20 bg-[#F8F9FF]">
@@ -67,7 +56,7 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  if ((role === "admin" || role === 'org') && isDashboardPath(location.pathname)) {
+  if ((role === "admin" || role === 'local_org') && isDashboardPath(location.pathname)) {
     return (
       <DashbaordTemplate
         handleCloseAside={handleCloseAside}

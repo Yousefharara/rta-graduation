@@ -35,6 +35,7 @@ export const AID_CATEGORY_PATHS = {
 export const BENEFICIARY_PATHS = {
     CREATE_BENEFICIARY: "/api/beneficiaries",
     GET_BENEFICIARIES: "/api/beneficiaries",
+    // api/beneficiaries
     GET_BENEFICIARY: "/api/beneficiaries/:id",
     EDIT_BENEFICIARY: "/api/beneficiaries/:id",
     DELETE_BENEFICIARY: "/api/beneficiaries/:id",

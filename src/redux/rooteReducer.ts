@@ -14,7 +14,7 @@ import { postsApi } from "./services/postsAPI";
 
 
 const persistedAuthReducer = persistReducer(
-  { key: "auth", storage, whitelist: ["user", "accessToken", "role"], },
+  { key: "auth", storage, whitelist: ["user", "accessToken", "role", "beneficiary", "refreshToken"], },
   authSlice,
 );
 

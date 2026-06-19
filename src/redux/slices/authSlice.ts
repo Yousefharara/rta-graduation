@@ -6,11 +6,14 @@ import { AUTH_PATHS } from "@/constants/apiPaths";
 import { API_KEY } from "@/config/api";
 import type { IAuth, ILoginAuth } from "@/@types/auth";
 import type { IUser } from "@/@types/user";
+import type { IBeneficiary } from "@/@types/beneficiary";
 
 interface IInitialState {
   user: IUser | null;
   accessToken: string | null;
+  refreshToken: string | null;
   role: RoleType | undefined;
+  beneficiary: IBeneficiary | null;
   isLoading: boolean;
   errorMessage: string;
 }
@@ -18,7 +21,9 @@ interface IInitialState {
 const initialState: IInitialState = {
   user: null,
   accessToken: null,
+  refreshToken: null,
   role: "guest",
+  beneficiary: null,
   errorMessage: "",
   isLoading: false,
 };
@@ -37,6 +42,8 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
       state.role = action.payload.user?.role;
+      state.beneficiary = action.payload.beneficiary
+      state.refreshToken = action.payload.refreshToken;
     },
     logout: (state) => {
       state.accessToken = null;

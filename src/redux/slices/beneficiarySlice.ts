@@ -67,11 +67,16 @@ export default beneficiarySlice.reducer;
 // ! ///////////////// Action ////////////////////////
 // ? /////////////////////////////////////////////////
 
-export const getBeneficiaries = () => async (dispatch: AppDispatch) => {
+export const getBeneficiaries = (token: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
     const { data } = await axios.get<IBeneficiary[]>(
       API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARIES,
+      {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
     );
 
     dispatch(setBeneficiaries(data));
@@ -83,12 +88,18 @@ export const getBeneficiaries = () => async (dispatch: AppDispatch) => {
 };
 
 export const addBeneficiaryAction =
-  (body: ICreateBeneficiary) => async (dispatch: AppDispatch) => {
+  (body: ICreateBeneficiary, token: string) =>
+  async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
     try {
       const { data } = await axios.post<IBeneficiary>(
         API_KEY + BENEFICIARY_PATHS.CREATE_BENEFICIARY,
         body,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       dispatch(addBeneficiary(data));
     } catch (err) {
@@ -98,11 +109,15 @@ export const addBeneficiaryAction =
     }
   };
 
-export const getBeneficiary = (id: number) => async (dispatch: AppDispatch) => {
+export const getBeneficiary = (id: number, token: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
     const { data } = await axios.get<IBeneficiary>(
-      API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARY.replace(":id", String(id)),
+      API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARY.replace(":id", String(id)), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
     );
 
     dispatch(setBeneficiary(data));

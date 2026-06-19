@@ -1,6 +1,6 @@
 import type { IUser } from "./user";
 
-
+type beneficiaryStatusType = "pending" | "eligible" | "not_eligible";
 
 export interface IBeneficiary {
   id: number;
@@ -16,7 +16,7 @@ export interface IBeneficiary {
   disabled_count: number;
   is_displaced: boolean;
 
-  status: string;
+  status: beneficiaryStatusType;
   created_at: string;
 
   users: IUser;
@@ -33,5 +33,5 @@ export interface ICreateBeneficiary {
   income: number;
   patients_count: number;
   disabled_count: number;
-  is_displaced: boolean;
+  is_displaced?: boolean;
 }

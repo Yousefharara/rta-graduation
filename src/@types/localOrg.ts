@@ -1,8 +1,19 @@
+import type { IUser } from "./user";
+
 export interface ILocalOrgState {
   isLoading: boolean;
   errorMessage: string;
   users: ILocalOrg[];
   user: ILocalOrg | null;
+}
+
+export interface ICreateLocalOrg {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  org_name: string;
+  area_id: number;
 }
 
 export interface ILocalOrg {
@@ -11,6 +22,5 @@ export interface ILocalOrg {
   org_name: string;
   area_id: number;
   is_verified: boolean;
+  users: IUser;
 }
-
-

@@ -1,70 +1,74 @@
+import type { IBeneficiary } from "@/@types/beneficiary";
 import ReactTable from "@/components/organisms/reactTable";
+import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { generateRandomAlgorithm } from "@/utils/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Eye, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-interface IDataTable {
-  beneficiaryName: string;
-  idCard: string;
-  familySize: number;
-  algorithm: number;
-}
+type IDataTable = IBeneficiary
+
+
+// const orgs: IDataTable[] = [
+//   {
+//     beneficiaryName: "محمد علي",
+//     familySize: 8,
+//     idCard: "23425",
+//     algorithm: 99,
+//   },
+//   {
+//     beneficiaryName: "يوسف",
+//     algorithm: 80,
+//     familySize: 8,
+//     idCard: "23425",
+//   },
+//   {
+//     beneficiaryName: "احمد",
+
+//     algorithm: 20,
+
+//     familySize: 8,
+//     idCard: "23425",
+//   },
+//   {
+//     beneficiaryName: "ابراهيم",
+//     algorithm: 70,
+//     familySize: 8,
+//     idCard: "23425",
+//   },
+// ];
 
 const PAGE_SIZE = 5;
 
-const orgs: IDataTable[] = [
-  {
-    beneficiaryName: "محمد علي",
-    familySize: 8,
-    idCard: "23425",
-    algorithm: 99,
-  },
-  {
-    beneficiaryName: "يوسف",
-    algorithm: 80,
-    familySize: 8,
-    idCard: "23425",
-  },
-  {
-    beneficiaryName: "احمد",
-
-    algorithm: 20,
-
-    familySize: 8,
-    idCard: "23425",
-  },
-  {
-    beneficiaryName: "ابراهيم",
-    algorithm: 70,
-    familySize: 8,
-    idCard: "23425",
-  },
-];
 
 const DashbaordBMTable = () => {
   const [search, setSearch] = useState("");
+
+  const dispatch = useAppDispatch();
+  const { accessToken } = useAppSelector(state => state.auth)
+  const { beneficiaries } = useAppSelector(state => state.beneficiaries)
+
+
+  useEffect(() => {
+    dispatch(getBeneficiaries(accessToken || ""))
+  }, [dispatch, accessToken])
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
 
-  const [dataTable, setDataTable] = useState<IDataTable[]>([]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDataTable(orgs);
-  }, []);
 
   const filteredData = useMemo(() => {
-    return dataTable.filter((item) => {
+    return beneficiaries.filter((item) => {
       const matchesSearch =
-        item.beneficiaryName.toLowerCase().includes(search.toLowerCase()) ||
-        item.idCard.toLowerCase().includes(search.toLowerCase());
+        item.users.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.national_id.toLowerCase().includes(search.toLowerCase());
 
       return matchesSearch;
     });
-  }, [dataTable, search]);
+  }, [beneficiaries, search]);
 
   const pageCount = Math.ceil(filteredData.length / PAGE_SIZE);
 
@@ -78,27 +82,27 @@ const DashbaordBMTable = () => {
     return [
       {
         header: "اسم المستفيد",
-        accessorFn: (row) => `${row.beneficiaryName}`,
+        accessorFn: (row) => `${row.users.name}`,
       },
       {
         header: "الرقم التعريفي",
-        accessorFn: (row) => `${row.idCard}`,
+        accessorFn: (row) => `${row.national_id}`,
       },
       {
         header: "حجم العائلة",
         accessorKey: "familySize",
-        cell: ({row}) => {
-            const {familySize} = row.original;
-            return(
-                <p>{familySize} أفراد</p>
-            )
+        cell: ({ row }) => {
+          const { family_size } = row.original;
+          return (
+            <p>{family_size} أفراد</p>
+          )
         }
       },
       {
         header: "الأولويه (الخوارزميه)",
         accessorKey: "algorithm",
-        cell: ({ row }) => {
-          const { algorithm } = row.original;
+        cell: () => {
+          const algorithm = generateRandomAlgorithm();
           return (
             <p className="flex items-center gap-2">
               <div className="relative h-2 w-15">

@@ -14,6 +14,8 @@ interface IRowLoginProps<
   label: Path<TFromValues>;
   register: UseFormRegister<TFromValues>;
   errors: FieldErrors<TFromValues>;
+    onlyPositiveNumbers?: boolean;
+
 }
 
 const RowForm = <TFromValues extends FieldValues>({
@@ -22,6 +24,7 @@ const RowForm = <TFromValues extends FieldValues>({
   register,
   errors,
   className,
+  onlyPositiveNumbers,
   ...restProps
 }: IRowLoginProps<TFromValues>) => {
   const messageError = errors[label]?.message;
@@ -35,6 +38,7 @@ const RowForm = <TFromValues extends FieldValues>({
         label={label}
         register={register}
         className={className}
+        onlyPositiveNumbers={onlyPositiveNumbers}
       />
 
       {messageError && errors[label]?.type === "typeError" ? (

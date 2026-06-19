@@ -46,19 +46,17 @@ const TrackAidUserHero = () => {
   const [open, setOpen] = useState(false);
   const { currentStep } = useAppSelector((state) => state.aidState);
 
-  // ! --
-  const { user } = useAppSelector((state) => state.auth);
-  const { beneficiary } = useAppSelector((state) => state.beneficiaries);
+  const { user,  accessToken, beneficiary} = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (user) {
-      dispatch(getBeneficiary(user?.id));
+    if (beneficiary) {
+      dispatch(getBeneficiary(Number(beneficiary?.id), accessToken));
     }
-  }, [dispatch, user]);
+  }, [dispatch, beneficiary, accessToken]);
 
   useEffect(() => {
-    console.log('beneficiary : ', beneficiary);
+    console.log('beneficiary : >>', beneficiary);
   }, [beneficiary])
 
 
@@ -102,7 +100,7 @@ const TrackAidUserHero = () => {
         <div className="rounded-full flex items-center gap-2 bg-primary/10 py-2 px-3">
           <Search size={15} />
           <small>
-            رقم الهويه: {user?.name} | {beneficiary?.national_id}
+            رقم الهويه: {beneficiary?.national_id}
           </small>
         </div>
       </section>
