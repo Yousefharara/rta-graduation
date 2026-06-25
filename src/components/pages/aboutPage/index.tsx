@@ -1,20 +1,27 @@
-import { useEffect } from 'react';
-import { useAppSelector } from '../../../redux/store';
+import Container from "@/components/atoms/container";
+import HeroAbout from "./section/heroAbout";
+import StatisticsAbout from "./section/statisticsAbout";
+import VisionAbout from "./section/visionAbout";
+import ValueAbout from "./section/valueAbout";
+import TeamsAbout from "./section/teamsAbout";
 
 const About = () => {
+  return (
+    <section className="flex flex-col gap-12">
+      <HeroAbout />
+      <Container>
+        <StatisticsAbout />
+      </Container>
 
-    const {role} = useAppSelector(state => state.auth);
+      <VisionAbout />
 
-    useEffect(() => {
-        console.log("Role , ", typeof role);
-    }, [role]);
+      <Container>
+        <ValueAbout />
+      </Container>
 
-    return (
-        <div className='p-8'>
-            <h2>About page</h2>
-            <p className='rounded-md w-fit border border-gray-300 p-4 text-emerald-600'>Role is : {role.toString()}</p>
-        </div>
-    );
-}
+      <TeamsAbout />
+    </section>
+  );
+};
 
 export default About;

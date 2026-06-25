@@ -4,11 +4,10 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import Button from "../../atoms/button";
 import RowForm from "../../molecules/rowForm";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { login, setLogin } from "../../../redux/slices/authSlice";
+import { setLogin } from "../../../redux/slices/authSlice";
 import type { ILoginForm } from "@/@types/forms";
-import { PATHS } from "@/routes/paths";
 
 const schemaLoginFrom: Yup.ObjectSchema<ILoginForm> = Yup.object({
   email: Yup.string().email().required(),
@@ -24,16 +23,14 @@ const LoginForm = () => {
     handleSubmit,
     register,
   } = useForm<ILoginForm>({ resolver: yupResolver(schemaLoginFrom) });
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user, isLoading, errorMessage } = useAppSelector(state => state.auth)
   const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleOnSubmit = (data: ILoginForm) => {
-    console.log('data in login form ', data);
 
     dispatch(setLogin(data));
-
+    setIsAuth(false)
     if (!isLoading) {
       if (user) {
         console.log('user is ', user);
@@ -41,62 +38,22 @@ const LoginForm = () => {
         console.log('no user found');
       }
     }
-
-    // if (isLoading) return
-    // if (user?.role === 'admin' || user?.role === 'local_org') {
-    //   setIsAuth(false)
-    //   console.log('user , ', user);
-    //   navigate(PATHS.DASHBOARD.ROOT)
-    // } else if (user?.role === 'beneficiary') {
-    //   setIsAuth(false)
-    //   console.log('user , ', user);
-    //   navigate(PATHS.TRACK_AID.USER)
-    // }
-    // else {
-    //   setIsAuth(true)
-    // }
-
-
-
-    // if (data.email === "user@user.com" && data.password === "user") {
-    //   dispatch(
-    //     login({
-    //       role: "user",
-    //       user: 1,
-    //       token: "yousef_user",
-    //     }),
-    //   );
-    //   setIsAuth(false);
-    //   navigate(PATHS.ABOUT);
-    // } else if (data.email === "admin@admin.com" && data.password === "admin") {
-    //   dispatch(
-    //     login({
-    //       role: "admin",
-    //       user: 2,
-    //       token: "yousef_admin",
-    //     }),
-    //   );
-    //   setIsAuth(false);
-    //   navigate(PATHS.ABOUT);
-    // } else if (data.email === "org@org.com" && data.password === "org") {
-    //   dispatch(
-    //     login({
-    //       role: "org",
-    //       user: 3,
-    //       token: "yousef_org",
-    //     }),
-    //   );
-    //   setIsAuth(false);
-    //   navigate(PATHS.ABOUT);
-    // }else {
-    //   setIsAuth(true);
-    // }
   };
+
 
   useEffect(() => {
     console.log("Errors");
+    if (errorMessage) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsAuth(true)
+    }
+    if (errorMessage) {
+      console.log('errorMessage ', errorMessage);
+    }
     console.log(errors);
-  }, [errors]);
+  }, [errors, errorMessage, user]);
+
+
 
   return (
     <form onSubmit={handleSubmit(handleOnSubmit)}>
@@ -195,7 +152,7 @@ const LoginForm = () => {
           {errors["remeberMe"]?.message}
         </span>
       )}
-      {isLoading ? <p className="text-center mt-5 text-lg underline"></p> : <Button
+      {isLoading ? <p className="text-center mt-5 text-lg underline">Loading ....</p> : <Button
         variant="default"
         type="submit"
         className="
@@ -215,9 +172,9 @@ const LoginForm = () => {
         </p>
       )}
 
-      {errorMessage && (
+      {/* {errorMessage && (
         <p className="text-rose-600 font-medium mt-10">{errorMessage}</p>
-      )}
+      )} */}
     </form>
   );
 };

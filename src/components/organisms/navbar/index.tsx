@@ -7,6 +7,7 @@ import Button from "@/components/atoms/button";
 import logo from '@/assets/images/logo.png'
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
+import Container from "@/components/atoms/container";
 
 const mobileRange = 768;
 const Navbar = () => {
@@ -58,9 +59,11 @@ const Navbar = () => {
 
   return (
 
-    <nav className="w-full bg-white z-20 fixed top-0 backdrop-blur-sm mx-auto border-b border-b-gray-300 px-8 py-[.7rem] flex items-center justify-between">
+    <nav className="w-full bg-white z-20 fixed top-0 backdrop-blur-sm mx-auto border-b border-b-gray-300 py-[.7rem] ">
 
-      <div
+      <Container className="flex items-center justify-between">
+
+<div
         id="navBgMobile"
         onClick={handleClose}
         className={`${isOpen ? "block" : "hidden"} z-20 fixed left-0 top-0 w-full h-screen bg-black/90 md:hidden`}
@@ -136,6 +139,8 @@ const Navbar = () => {
           <img className="w-full h-full object-cover scale-125" src={logo} alt="" />
         </li>
       </ul>
+        
+      </Container>
     </nav>
   );
 };

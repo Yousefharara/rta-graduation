@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { setCurrentStep } from "@/redux/slices/aidState";
 // import type { IBeneficiary } from "@/@types/beneficiary";
-import { getBeneficiary } from "@/redux/slices/beneficiarySlice";
+import { getBeneficiary } from "@/redux/slices/beneficiary/beneficiarySlice";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
@@ -51,7 +51,7 @@ const TrackAidUserHero = () => {
 
   useEffect(() => {
     if (beneficiary) {
-      dispatch(getBeneficiary(Number(beneficiary?.id), accessToken));
+      dispatch(getBeneficiary(Number(beneficiary?.id), accessToken || ""));
     }
   }, [dispatch, beneficiary, accessToken]);
 

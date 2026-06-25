@@ -97,3 +97,7 @@ body {
   overflow-x: hidden;
   transition: background .4s;
 }
+
+.span__error {
+  color: red;
+}

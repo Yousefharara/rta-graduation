@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/routes/paths";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { login } from "@/redux/slices/authSlice";
-import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
+import { getBeneficiaries } from "@/redux/slices/beneficiary/beneficiarySlice";
 // import { getUsers } from "@/redux/slices/users";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
@@ -32,27 +32,23 @@ const TrackAidForm = () => {
   );
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(getBeneficiaries());
-  }, [dispatch])
 
   if (errorMessage) return <h1>Error here</h1>;
 
   const handleOnSubmit = (data: ITrackAidForm) => {
-    const checkUser = users.find((u) => u.id_card === data.IDNumber);
 
-    if (checkUser && !isLoading) {
-      dispatch(
-        login({
-          role: "user",
-          user: checkUser.id,
-          token: checkUser.token,
-        }),
-      );
-      navigate(PATHS.TRACK_AID.USER);
-    } else {
-      setIsAuth(true);
-    }
+    // if (checkUser && !isLoading) {
+    //   dispatch(
+    //     login({
+    //       role: "user",
+    //       user: checkUser.id,
+    //       token: checkUser.token,
+    //     }),
+    //   );
+    //   navigate(PATHS.TRACK_AID.USER);
+    // } else {
+    //   setIsAuth(true);
+    // }
 
   };
 

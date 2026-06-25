@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AppDispatch } from "../store";
+import type { AppDispatch } from "../../store";
 import axios from "axios";
 import { API_KEY } from "@/config/api";
 import { BENEFICIARY_PATHS } from "@/constants/apiPaths";

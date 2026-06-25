@@ -8,23 +8,26 @@ import { useEffect, useState } from "react";
 import { GOVERNORATES } from "@/constants/governorates";
 import Button from "@/components/atoms/button";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { addBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
+import { addBeneficiaryAction } from "@/redux/slices/beneficiary/beneficiarySlice";
 import { generateRandomEmail } from "@/utils/utils";
+import { useBeneficiaryValidation } from "@/hooks/useBeneficiaryValidation";
+import { toast } from "sonner";
+import { INPUTS_TYPE_ERROR } from "@/constants/forms";
 
-// const defaultValues: IRegisterBeneficiaryForm = {
-//   name: "",
-//   disabled_count: 0,
-//   area_id: 1,
-//   family_size: 0,
-//   national_id: "",
-//   password: "",
-//   patients_count: 0,
-//   phone: "",
-//   is_displaced: false,
-//   income: 0,
-//   status: "single",
-//   email: "",
-// };
+const defaultValues: IRegisterBeneficiaryForm = {
+  name: "",
+  disabled_count: 0,
+  area_id: 1,
+  family_size: 0,
+  national_id: "",
+  password: "",
+  patients_count: 0,
+  phone: "",
+  is_displaced: false,
+  income: 0,
+  status: "single",
+  email: "",
+};
 
 const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> =
   Yup.object({
@@ -33,7 +36,9 @@ const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> 
 
     phone: Yup.string().required("رقم الهاتف مطلوب"),
     national_id: Yup.string().required("رقم الهويه مطلوبه"),
-    area_id: Yup.number().required("المحافظه مطلوب"),
+    area_id: Yup.number()
+      .transform((value, originalValue) => (originalValue === "" ? -1 : value))
+      .required("المحافظه مطلوب"),
 
     family_size: Yup.number().required("عدد الافراد مطلوب"),
     income: Yup.number().required("الدخل مطلوب"),
@@ -44,19 +49,20 @@ const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> 
 
     email: Yup.string(),
     status: Yup.mixed<"single" | "married">()
-      .oneOf(["single", "married"])
+      .oneOf(["single", "married"], "حالة المستفيد مطلوبه")
       .required(""),
   });
 
 const DashboardBeneficiaryRegister = () => {
   const [region, setRegion] = useState<number>();
-  const {accessToken} = useAppSelector(state => state.auth);
+  const { accessToken } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const { isNationalIdExists } = useBeneficiaryValidation();
 
   const {
     formState: { errors },
     handleSubmit,
-    // reset,
+    reset,
     register,
   } = useForm<IRegisterBeneficiaryForm>({
     resolver: yupResolver(schemaRegisterBeneficiaryFrom),
@@ -67,24 +73,31 @@ const DashboardBeneficiaryRegister = () => {
   }, [errors]);
 
   const handleOnSubmit = (data: IRegisterBeneficiaryForm) => {
-    console.log("data , ", data);
-    console.log('password , ', data.email || generateRandomEmail());
+    if (isNationalIdExists(data.national_id)) {
+      toast.error("رقم الهوية موجود مسبقاً");
+      return;
+    }
+
     dispatch(
-      addBeneficiaryAction({
-        area_id: data.area_id,
-        disabled_count: data.disabled_count || 0,
-        email: data.email || generateRandomEmail(),
-        family_size: data.family_size,
-        income: data.income,
-        name: data.name,
-        national_id: data.national_id,
-        password: data.password || "password123",
-        patients_count: data.patients_count,
-        phone: data.phone,
-        is_displaced: false
-      }, accessToken || ""),
+      addBeneficiaryAction(
+        {
+          area_id: data.area_id,
+          disabled_count: data.disabled_count || 0,
+          email: data.email || generateRandomEmail(),
+          family_size: data.family_size,
+          income: data.income,
+          name: data.name,
+          national_id: data.national_id,
+          password: data.password || "password123",
+          patients_count: data.patients_count,
+          phone: data.phone,
+          is_displaced: false,
+        },
+        accessToken || "",
+      ),
     );
-    // reset(defaultValues);
+    reset(defaultValues);
+    toast.success("تم تسجيل المستفيد");
   };
 
   return (
@@ -217,6 +230,10 @@ const DashboardBeneficiaryRegister = () => {
                   </option>
                 ))}
               </select>
+
+              {errors["area_id"] && (
+                <span className="span__error">المحافظه مطلوبه</span>
+              )}
             </div>
 
             <div className="flex flex-col gap-4 my-4 w-full">
@@ -241,10 +258,21 @@ const DashboardBeneficiaryRegister = () => {
                   },
                 )}
               </select>
-              {errors["area_id"] && (
-                <span className="span__error">
-                  {errors["area_id"]?.message}
+
+              {errors["area_id"] && errors["area_id"]?.type === "typeError" ? (
+                <span className="text-sm text-rose-600">
+                  {
+                    INPUTS_TYPE_ERROR[
+                      "area_id" as keyof typeof INPUTS_TYPE_ERROR
+                    ]
+                  }
                 </span>
+              ) : (
+                errors["area_id"] && (
+                  <span className="text-sm text-rose-600">
+                    {String(errors["area_id"])}
+                  </span>
+                )
               )}
             </div>
           </div>

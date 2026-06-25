@@ -5,7 +5,8 @@ import UserReducer from "./slices/userSlice";
 import AidReducer from "./slices/aids";
 import userAidsReducer from "./slices/userAids";
 import aidStateReducer from "./slices/aidState";
-import beneficiaryReducer from "./slices/beneficiarySlice";
+import beneficiaryReducer from "./slices/beneficiary/beneficiarySlice";
+import localOrgReducer from "./slices/localOrgSlice";
 
 import storage from "redux-persist/lib/storage"; // localStorage'
 import { persistReducer } from "redux-persist";
@@ -26,5 +27,6 @@ export const RootReducer = combineReducers({
   aids: AidReducer,
   userAids: userAidsReducer,
   aidState: aidStateReducer,
+  localOrg: localOrgReducer,
   [postsApi.reducerPath]: postsApi.reducer,
 });
