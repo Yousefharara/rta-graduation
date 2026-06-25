@@ -18,23 +18,13 @@ interface IDataTable {
 const PAGE_SIZE = 5;
 
 const TrackAidUserTableAids = () => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { beneficiary } = useAppSelector((state) => state.auth);
 
-
-  // const { aids, isLoading: loadingAids } = useAppSelector(
-  //   (state) => state.aids,
-  // );
-
-
-  // const { userAids, isLoading: loadingUserAids } = useAppSelector(
-  //   (state) => state.userAids,
-  // );
 
 
 
   // const dispatch = useAppDispatch();
 
-  // const [filteredName, setFilteredName] = useState<string>("");
   const [filteredName,] = useState<string>("");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -69,20 +59,14 @@ const TrackAidUserTableAids = () => {
   //   }
   // }, [aids, loadingAids, loadingUserAids, user, userAids]);
 
-  const filteredData = useMemo(() => {
-    console.log("filterd name ", filteredName);
-    return dataTable.filter((data) =>
-      data.name.toLowerCase().includes(filteredName.toLowerCase()),
-    );
-  }, [filteredName, dataTable]);
 
-  const pageCount = Math.ceil(filteredData.length / PAGE_SIZE);
+  const pageCount = Math.ceil(dataTable.length / PAGE_SIZE);
 
   const paginationData = useMemo(() => {
     const start = pagination.pageIndex * pagination.pageSize;
     const end = start + pagination.pageSize;
-    return filteredData.slice(start, end);
-  }, [pagination, filteredData]);
+    return dataTable.slice(start, end);
+  }, [pagination, dataTable]);
 
   const columns = useMemo<ColumnDef<IDataTable>[]>(() => {
     return [
@@ -107,16 +91,10 @@ const TrackAidUserTableAids = () => {
       },
       {
         header: "التاريخ",
-        accessorFn: (row) => `${row.date}`,
-        // accessorKey: "phoneNumber",
-        // cell: ({ row }) => {
-        //   const { phoneNumber } = row.original;
-        //   return <div>{phoneNumber}</div>;
-        // },
+        accessorFn: (row) => `${row.date}`
       },
       {
         header: "مكان الاستلام",
-        // accessorFn: row => row.salary
         accessorKey: "pickupLocation",
         cell: ({ row }) => {
           const { pickupLocation } = row.original;
@@ -125,7 +103,6 @@ const TrackAidUserTableAids = () => {
       },
       {
         header: "الحالة",
-        // accessorFn: row => row.salary
         accessorKey: "status",
         cell: ({ row }) => {
           const { status } = row.original;

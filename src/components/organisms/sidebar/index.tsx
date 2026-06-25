@@ -19,7 +19,7 @@ interface ISidebar {
 }
 
 const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
-  const {role, token} = useAppSelector(state => state.auth)
+  const {role, accessToken} = useAppSelector(state => state.auth)
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
@@ -59,7 +59,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
             </svg>
           </div>
           <p className="text-2xl text-primary font-semibold">
-            {role === 'admin' ? "منظمة الإغاثة" : token}
+            {role === 'admin' ? "منظمة الإغاثة" : accessToken}
           </p>
         </div>
         <ul className="sidebar-links flex flex-col gap-1 ">

@@ -1,17 +1,11 @@
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RowForm from "../../molecules/rowForm";
-import Button from "../../atoms/button";
-import { ArrowLeft } from "lucide-react";
+// import Button from "../../atoms/button";
+// import { ArrowLeft } from "lucide-react";
 import type { ITrackAidForm } from "@/@types/forms";
-import { useNavigate } from "react-router-dom";
-import { PATHS } from "@/routes/paths";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { login } from "@/redux/slices/authSlice";
-import { getBeneficiaries } from "@/redux/slices/beneficiary/beneficiarySlice";
-// import { getUsers } from "@/redux/slices/users";
+// import { useNavigate } from "react-router-dom";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
   IDNumber: Yup.string().required("ID is required !"),
@@ -25,18 +19,16 @@ const TrackAidForm = () => {
     register,
   } = useForm<ITrackAidForm>({ resolver: yupResolver(schemaLoginFrom) });
 
-  const navigate = useNavigate();
-  const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { beneficiary, isLoading, errorMessage } = useAppSelector(
-    (state) => state.beneficiaries,
-  );
-  const dispatch = useAppDispatch();
+  // const [isAuth, setIsAuth] = useState<boolean>(false);
+  // const { beneficiary, isLoading, errorMessage } = useAppSelector(
+  //   (state) => state.beneficiaries,
+  // );
 
 
-  if (errorMessage) return <h1>Error here</h1>;
+  // if (errorMessage) return <h1>Error here</h1>;
 
   const handleOnSubmit = (data: ITrackAidForm) => {
-
+    console.log(data);
     // if (checkUser && !isLoading) {
     //   dispatch(
     //     login({
@@ -73,7 +65,7 @@ const TrackAidForm = () => {
         placeholder="10/10/2020"
         className="w-full bg-[#E0E9FD]!"
       />
-      <Button
+      {/* <Button
         variant="default"
         className="text-white w-full flex justify-center items-center py-3"
       >
@@ -88,7 +80,7 @@ const TrackAidForm = () => {
       </Button>
       {isAuth && (
         <p className="text-rose-700">ID card or version is incorrect !!</p>
-      )}
+      )} */}
     </form>
   );
 };
