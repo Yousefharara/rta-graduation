@@ -2,7 +2,8 @@ import { Mail, PhoneCall } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col gap-12 bg-[#213145] text-[#B5C6FF] p-8 mt-12 mx-auto" style={{width: "min(1400px, 100%)"}}>
+    <footer className="mx-auto bg-[#213145] w-full">
+      <section className="flex flex-col gap-12 text-[#B5C6FF] p-8 mt-12 mx-auto" style={{width: "min(1450px, 100%)"}}>
       <article
         className="grid gap-4 place-items-center"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))" }}
@@ -44,6 +45,7 @@ const Footer = () => {
           © 2026 جميع الحقوق محفوظة لمنصة RTA - Relief Track Aid
         </p>
       </article>
+    </section>
     </footer>
   );
 };
