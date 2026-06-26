@@ -6,15 +6,21 @@ import { BENEFICIARY_PATHS } from "@/constants/apiPaths";
 import type { IBeneficiary, ICreateBeneficiary } from "@/@types/beneficiary";
 
 export interface IBeneficiaryState {
-  isLoading: boolean;
+  isFetching: boolean;
+  isCreating: boolean;
+  isUpdating: boolean;
+  isDeleting: boolean;
   errorMessage: string;
   beneficiaries: IBeneficiary[];
   beneficiary: IBeneficiary | null;
 }
 
 const initialState: IBeneficiaryState = {
+  isFetching: false,
+  isCreating: false,
+  isUpdating: false,
+  isDeleting: false,
   errorMessage: "",
-  isLoading: false,
   beneficiaries: [],
   beneficiary: null,
 };
@@ -23,8 +29,20 @@ const beneficiarySlice = createSlice({
   name: "beneficiaries",
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    setFetching(state, action: PayloadAction<boolean>) {
+      state.isFetching = action.payload;
+    },
+
+    setCreating(state, action: PayloadAction<boolean>) {
+      state.isCreating = action.payload;
+    },
+
+    setUpdating(state, action: PayloadAction<boolean>) {
+      state.isUpdating = action.payload;
+    },
+
+    setDeleting(state, action: PayloadAction<boolean>) {
+      state.isDeleting = action.payload;
     },
     setError: (state, action: PayloadAction<string>) => {
       state.errorMessage = action.payload;
@@ -52,7 +70,10 @@ const beneficiarySlice = createSlice({
 });
 
 export const {
-  setLoading,
+  setFetching,
+  setCreating,
+  setUpdating,
+  setDeleting,
   setError,
   setBeneficiaries,
   setBeneficiary,
@@ -67,31 +88,32 @@ export default beneficiarySlice.reducer;
 // ! ///////////////// Action ////////////////////////
 // ? /////////////////////////////////////////////////
 
-export const getBeneficiaries = (token: string) => async (dispatch: AppDispatch) => {
-  dispatch(setLoading(true));
-  dispatch(setError(""));
-  try {
-    const { data } = await axios.get<IBeneficiary[]>(
-      API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARIES,
-      {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-    );
+export const getBeneficiaries =
+  (token: string) => async (dispatch: AppDispatch) => {
+    dispatch(setFetching(true));
+    dispatch(setError(""));
+    try {
+      const { data } = await axios.get<IBeneficiary[]>(
+        API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARIES,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-    dispatch(setBeneficiaries(data));
-  } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+      dispatch(setBeneficiaries(data));
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
 
 export const addBeneficiaryAction =
   (body: ICreateBeneficiary, token: string) =>
   async (dispatch: AppDispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setCreating(true));
     dispatch(setError(""));
     try {
       const { data } = await axios.post<IBeneficiary>(
@@ -107,33 +129,35 @@ export const addBeneficiaryAction =
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setCreating(false));
     }
   };
 
-export const getBeneficiary = (id: number, token: string) => async (dispatch: AppDispatch) => {
-  dispatch(setLoading(true));
-  dispatch(setError(""));
-  try {
-    const { data } = await axios.get<IBeneficiary>(
-      API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARY.replace(":id", String(id)), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-    );
+export const getBeneficiary =
+  (id: number, token: string) => async (dispatch: AppDispatch) => {
+    dispatch(setFetching(true));
+    dispatch(setError(""));
+    try {
+      const { data } = await axios.get<IBeneficiary>(
+        API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARY.replace(":id", String(id)),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-    dispatch(setBeneficiary(data));
-  } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+      dispatch(setBeneficiary(data));
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
 
 export const editBeneficiaryAction =
   (body: IBeneficiary) => async (dispatch: AppDispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setUpdating(true));
     dispatch(setError(""));
     try {
       console.log("Inside editing >>>>>>");
@@ -147,13 +171,13 @@ export const editBeneficiaryAction =
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setUpdating(false));
     }
   };
 
 export const deleteBeneficiaryAction =
   (id: number) => async (dispatch: AppDispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setDeleting(true));
     dispatch(setError(""));
     try {
       await axios.delete(
@@ -164,6 +188,6 @@ export const deleteBeneficiaryAction =
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setDeleting(false));
     }
   };

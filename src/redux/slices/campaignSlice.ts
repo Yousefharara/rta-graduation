@@ -6,15 +6,21 @@ import type { ICampaign, ICreateCampaign } from "@/@types/campaign";
 import { CAMPAIGN_PATHS } from "@/constants/apiPaths";
 
 export interface ICampaignState {
-  isLoading: boolean;
+  isFetching: boolean;
+  isCreating: boolean;
+  isUpdating: boolean;
+  isDeleting: boolean;
   errorMessage: string | null;
   campaigns: ICampaign[];
   campaign: ICampaign | null;
 }
 
 const initialState: ICampaignState = {
+  isFetching: false,
+  isCreating: false,
+  isUpdating: false,
+  isDeleting: false,
   errorMessage: null,
-  isLoading: false,
   campaigns: [],
   campaign: null,
 };
@@ -23,8 +29,20 @@ const campaignSlice = createSlice({
   name: "campaigns",
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    setFetching(state, action: PayloadAction<boolean>) {
+        state.isFetching = action.payload;
+    },
+
+    setCreating(state, action: PayloadAction<boolean>) {
+        state.isCreating = action.payload;
+    },
+
+    setUpdating(state, action: PayloadAction<boolean>) {
+        state.isUpdating = action.payload;
+    },
+
+    setDeleting(state, action: PayloadAction<boolean>) {
+        state.isDeleting = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.errorMessage = action.payload;
@@ -52,7 +70,10 @@ const campaignSlice = createSlice({
 });
 
 export const {
-  setLoading,
+  setFetching,
+  setCreating,
+  setUpdating,
+  setDeleting,
   setError,
   setCampaigns,
   setCampaign,
@@ -68,7 +89,7 @@ export default campaignSlice.reducer;
 // ? /////////////////////////////////////////////////
 
 export const getCampaigns = () => async (dispatch: AppDispatch) => {
-  dispatch(setLoading(true));
+  dispatch(setFetching(true));
   dispatch(setError(null));
   try {
     const { data } = await axios.get<ICampaign[]>(
@@ -79,14 +100,14 @@ export const getCampaigns = () => async (dispatch: AppDispatch) => {
   } catch (err) {
     if (err instanceof Error) dispatch(setError(err.message));
   } finally {
-    dispatch(setLoading(false));
+    dispatch(setFetching(false));
   }
 };
 
 export const addCampaignAction =
   (body: ICreateCampaign, token: string) =>
   async (dispatch: AppDispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setCreating(true));
     dispatch(setError(null));
     try {
       const { data } = await axios.post<ICampaign>(
@@ -102,12 +123,12 @@ export const addCampaignAction =
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setCreating(false));
     }
   };
 
 export const getCampaign = (id: number, token: string) => async (dispatch: AppDispatch) => {
-  dispatch(setLoading(true));
+  dispatch(setFetching(true));
   dispatch(setError(null));
   try {
     const { data } = await axios.get<ICampaign>(
@@ -122,13 +143,13 @@ export const getCampaign = (id: number, token: string) => async (dispatch: AppDi
   } catch (err) {
     if (err instanceof Error) dispatch(setError(err.message));
   } finally {
-    dispatch(setLoading(false));
+    dispatch(setFetching(false));
   }
 };
 
 export const editCampaignAction =
   (body: ICampaign) => async (dispatch: AppDispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setUpdating(true));
     dispatch(setError(null));
     try {
       console.log("Inside editing >>>>>>");
@@ -142,13 +163,13 @@ export const editCampaignAction =
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setUpdating(false));
     }
   };
 
 export const deleteCampaignAction =
   (id: number) => async (dispatch: AppDispatch) => {
-    dispatch(setLoading(true));
+    dispatch(setDeleting(true));
     dispatch(setError(null));
     try {
       await axios.delete(
@@ -159,6 +180,6 @@ export const deleteCampaignAction =
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setDeleting(false));
     }
   };

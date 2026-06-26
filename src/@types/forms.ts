@@ -21,7 +21,7 @@ export interface ITrackAidForm {
 }
 
 export interface IDonationForm {
-  donationCampaign: "learning" | "relife";
+  donationCampaign: string;
   customBudget?: number | null;
   budget: number;
   nameOfCard: string;
