@@ -15,12 +15,12 @@ export const USER_PAHTS = {
 };
 
 
-export const COMPAIGN_PATHS = {
-    CREATE_COMPAIGN: '/api/campaigns',
-    GET_COMPAIGNS: '/api/campaigns',
-    GET_COMPAIGN: '/api/campaigns/:id',
-    EDIT_COMPAIGN: '/api/campaigns/:id',
-    DELETE_COMPAIGN: '/api/campaigns/:id',
+export const CAMPAIGN_PATHS = {
+    CREATE_CAMPAIGN: '/api/campaigns',
+    GET_CAMPAIGNS: '/api/campaigns',
+    GET_CAMPAIGN: '/api/campaigns/:id',
+    EDIT_CAMPAIGN: '/api/campaigns/:id',
+    DELETE_CAMPAIGN: '/api/campaigns/:id',
 }
 
 export const AID_CATEGORY_PATHS = {
@@ -57,17 +57,3 @@ export const DONATION_PATHS = {
     GET_DONATIONS: "/api/donations"
 }
 
-
-// {
-//   "name": "ياسر الكحلوت",
-//   "email": "yasser.b@example.com",
-//   "password": "password123",
-//   "phone": "+970599222333",
-//   "national_id": "401234567",
-//   "area_id": 1,
-//   "family_size": 5,
-//   "income": 350.50,
-//   "patients_count": 1,
-//   "disabled_count": 0,
-//   "is_displaced": true
-// }

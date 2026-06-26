@@ -69,6 +69,7 @@ export default localOrgSlice.reducer;
 
 export const getLocalOrgs = (token: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
+  dispatch(setError(""));
   try {
     const { data } = await axios.get<ILocalOrg[]>(
       API_KEY + ORG_PATHS.GET_ORGS,
@@ -81,7 +82,7 @@ export const getLocalOrgs = (token: string) => async (dispatch: AppDispatch) => 
 
     dispatch(setLocalOrgs(data));
   } catch (err) {
-    if (err instanceof Error) setError(err.message);
+    if (err instanceof Error) dispatch(setError(err.message));
   } finally {
     dispatch(setLoading(false));
   }
@@ -91,6 +92,7 @@ export const addLocalOrgAction =
   (body: ICreateLocalOrg, token: string) =>
   async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
+    dispatch(setError(""));
     try {
       const { data } = await axios.post<ILocalOrg>(
         API_KEY + ORG_PATHS.CREATE_ORG,
@@ -111,6 +113,7 @@ export const addLocalOrgAction =
 
 export const getLocalOrg = (id: number, token: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
+  dispatch(setError(""));
   try {
     const { data } = await axios.get<ILocalOrg>(
       API_KEY + ORG_PATHS.GET_ORG.replace(":id", String(id)), {
@@ -122,7 +125,7 @@ export const getLocalOrg = (id: number, token: string) => async (dispatch: AppDi
 
     dispatch(setLocalOrg(data));
   } catch (err) {
-    if (err instanceof Error) setError(err.message);
+    if (err instanceof Error) dispatch(setError(err.message));
   } finally {
     dispatch(setLoading(false));
   }
@@ -131,6 +134,7 @@ export const getLocalOrg = (id: number, token: string) => async (dispatch: AppDi
 export const editLocalOrgAction =
   (body: ILocalOrg) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
+    dispatch(setError(""));
     try {
       console.log("Inside editing >>>>>>");
       const { data } = await axios.patch<ILocalOrg>(
@@ -150,6 +154,7 @@ export const editLocalOrgAction =
 export const deleteLocalOrgAction =
   (id: number) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
+    dispatch(setError(""));
     try {
       await axios.delete(
         API_KEY +

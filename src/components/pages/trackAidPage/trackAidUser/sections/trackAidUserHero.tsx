@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { setCurrentStep } from "@/redux/slices/aidState";
 // import type { IBeneficiary } from "@/@types/beneficiary";
-import { getBeneficiary } from "@/redux/slices/beneficiary/beneficiarySlice";
+import { getBeneficiary } from "@/redux/slices/beneficiarySlice";
 
 const defaultValues: ISendOrderForm = {
   reason: "",

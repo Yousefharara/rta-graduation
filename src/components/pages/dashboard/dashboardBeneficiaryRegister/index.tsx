@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { GOVERNORATES } from "@/constants/governorates";
 import Button from "@/components/atoms/button";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { addBeneficiaryAction } from "@/redux/slices/beneficiary/beneficiarySlice";
+import { addBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
 import { generateRandomEmail } from "@/utils/utils";
 import { useBeneficiaryValidation } from "@/hooks/useBeneficiaryValidation";
 import { toast } from "sonner";

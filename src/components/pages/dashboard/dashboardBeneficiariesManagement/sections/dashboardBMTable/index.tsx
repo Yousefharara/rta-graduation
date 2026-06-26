@@ -1,6 +1,6 @@
 import type { IBeneficiary } from "@/@types/beneficiary";
 import ReactTable from "@/components/organisms/reactTable";
-import { getBeneficiaries } from "@/redux/slices/beneficiary/beneficiarySlice";
+import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { generateRandomAlgorithm } from "@/utils/utils";
 import type { ColumnDef } from "@tanstack/react-table";

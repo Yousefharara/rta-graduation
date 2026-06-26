@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AppDispatch } from "../../store";
+import type { AppDispatch } from "../store";
 import axios from "axios";
 import { API_KEY } from "@/config/api";
 import { BENEFICIARY_PATHS } from "@/constants/apiPaths";
@@ -69,6 +69,7 @@ export default beneficiarySlice.reducer;
 
 export const getBeneficiaries = (token: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
+  dispatch(setError(""));
   try {
     const { data } = await axios.get<IBeneficiary[]>(
       API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARIES,
@@ -81,7 +82,7 @@ export const getBeneficiaries = (token: string) => async (dispatch: AppDispatch)
 
     dispatch(setBeneficiaries(data));
   } catch (err) {
-    if (err instanceof Error) setError(err.message);
+    if (err instanceof Error) dispatch(setError(err.message));
   } finally {
     dispatch(setLoading(false));
   }
@@ -91,6 +92,7 @@ export const addBeneficiaryAction =
   (body: ICreateBeneficiary, token: string) =>
   async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
+    dispatch(setError(""));
     try {
       const { data } = await axios.post<IBeneficiary>(
         API_KEY + BENEFICIARY_PATHS.CREATE_BENEFICIARY,
@@ -111,6 +113,7 @@ export const addBeneficiaryAction =
 
 export const getBeneficiary = (id: number, token: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
+  dispatch(setError(""));
   try {
     const { data } = await axios.get<IBeneficiary>(
       API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARY.replace(":id", String(id)), {
@@ -122,7 +125,7 @@ export const getBeneficiary = (id: number, token: string) => async (dispatch: Ap
 
     dispatch(setBeneficiary(data));
   } catch (err) {
-    if (err instanceof Error) setError(err.message);
+    if (err instanceof Error) dispatch(setError(err.message));
   } finally {
     dispatch(setLoading(false));
   }
@@ -131,6 +134,7 @@ export const getBeneficiary = (id: number, token: string) => async (dispatch: Ap
 export const editBeneficiaryAction =
   (body: IBeneficiary) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
+    dispatch(setError(""));
     try {
       console.log("Inside editing >>>>>>");
       const { data } = await axios.patch<IBeneficiary>(
@@ -150,6 +154,7 @@ export const editBeneficiaryAction =
 export const deleteBeneficiaryAction =
   (id: number) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
+    dispatch(setError(""));
     try {
       await axios.delete(
         API_KEY +
