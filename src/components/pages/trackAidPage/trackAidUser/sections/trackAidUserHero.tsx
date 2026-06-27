@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-// import { PATHS } from "@/routes/paths";
 import {
   LineChart,
   Pencil,
@@ -17,7 +16,6 @@ import {
   Truck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
 import type { ISendOrderForm } from "@/@types/forms";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
@@ -26,12 +24,19 @@ import { aidCategoryArr } from "@/@types/aid";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { setCurrentStep } from "@/redux/slices/aidState";
-// import type { IBeneficiary } from "@/@types/beneficiary";
 import { getBeneficiary } from "@/redux/slices/beneficiarySlice";
+import { createBeneficiaryOrderAction } from "@/redux/slices/beneficiaryOrderSlice";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
   typeAid: "Food Assistance",
+};
+
+// خريطة نوع المساعدة إلى aid_type_id (عدّل حسب قاعدة بياناتك)
+const aidTypeIdMap: Record<string, number> = {
+  "Food Assistance": 1,
+  "Medical Support": 2,
+  "Cash": 3,
 };
 
 const stepMap = {
@@ -46,7 +51,10 @@ const TrackAidUserHero = () => {
   const [open, setOpen] = useState(false);
   const { currentStep } = useAppSelector((state) => state.aidState);
 
-  const { user,  accessToken, beneficiary} = useAppSelector((state) => state.auth);
+  const { user, accessToken, beneficiary } = useAppSelector(
+    (state) => state.auth,
+  );
+  const { isCreating } = useAppSelector((state) => state.beneficiaryOrders);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -56,9 +64,8 @@ const TrackAidUserHero = () => {
   }, [dispatch, beneficiary, accessToken]);
 
   useEffect(() => {
-    console.log('beneficiary : >>', beneficiary);
-  }, [beneficiary])
-
+    console.log("beneficiary : >>", beneficiary);
+  }, [beneficiary]);
 
   const schemaSendOrderFrom: Yup.ObjectSchema<ISendOrderForm> = Yup.object({
     reason: Yup.string().required("السبب مطلوب"),
@@ -77,15 +84,34 @@ const TrackAidUserHero = () => {
   const messageError = errors["reason"]?.message;
   const messageTypeAidError = errors["typeAid"]?.message;
 
-  const handleOnSubmit = (data: ISendOrderForm) => {
-    setOpen(false);
-    console.log("data is : ", data);
-    toast.success("تمت عملية الطلب بنجاح ❤️");
-    reset(defaultValues);
+  const handleOnSubmit = async (data: ISendOrderForm) => {
+    if (!beneficiary) {
+      toast.error("لم يتم العثور على بيانات المستفيد");
+      return;
+    }
+
+    const result = await dispatch(
+      createBeneficiaryOrderAction(
+        {
+          beneficiary_id: beneficiary.id,
+          aid_type_id: aidTypeIdMap[data.typeAid] ?? 1,
+          description: data.reason,
+        },
+        accessToken || "",
+      ),
+    );
+
+    if (result?.success) {
+      setOpen(false);
+      toast.success("تمت عملية الطلب بنجاح ❤️");
+      reset(defaultValues);
+    } else {
+      toast.error("حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مجدداً");
+    }
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(stepMap["جاري التوزيع"]));
+    dispatch(setCurrentStep(stepMap["تم التوصيل"]));
   }, [dispatch]);
 
   if (!user) return;
@@ -99,9 +125,7 @@ const TrackAidUserHero = () => {
         </div>
         <div className="rounded-full flex items-center gap-2 bg-primary/10 py-2 px-3">
           <Search size={15} />
-          <small>
-            رقم الهويه: {beneficiary?.national_id}
-          </small>
+          <small>رقم الهويه: {beneficiary?.national_id}</small>
         </div>
       </section>
 
@@ -177,8 +201,6 @@ const TrackAidUserHero = () => {
             className="bg-white p-6 flex flex-col gap-2 rounded-b-md"
             onSubmit={handleSubmit(handleOnSubmit)}
           >
-            {/* <div className="bg-white p-6 flex flex-col gap-4 rounded-b-md"> */}
-
             <div className="flex flex-col gap-2 my-4 w-full">
               <label className="text-sm font-semibold">
                 {" "}
@@ -228,14 +250,13 @@ const TrackAidUserHero = () => {
                 {currentStep < 4 && "لديك طلب بالفعل !!"}
               </p>
               <Button
-                disabled={currentStep !== 4}
+                disabled={currentStep !== 4 || isCreating}
                 className="disabled:bg-zinc-300 disabled:cursor-not-allowed"
                 type="submit"
               >
-                ارسال الطلب
+                {isCreating ? "جاري الإرسال..." : "ارسال الطلب"}
               </Button>
             </DialogFooter>
-            {/* </div> */}
           </form>
         </DialogContent>
       </Dialog>

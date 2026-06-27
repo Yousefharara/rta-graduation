@@ -27,6 +27,7 @@ const defaultValues: IRegisterBeneficiaryForm = {
   income: 0,
   status: "single",
   email: "",
+  release_date: new Date().toISOString()
 };
 
 const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> =
@@ -36,6 +37,7 @@ const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> 
 
     phone: Yup.string().required("رقم الهاتف مطلوب"),
     national_id: Yup.string().required("رقم الهويه مطلوبه"),
+    release_date: Yup.string().required("رقم الهويه مطلوبه"),
     area_id: Yup.number()
       .transform((value, originalValue) => (originalValue === "" ? -1 : value))
       .required("المحافظه مطلوب"),
@@ -92,6 +94,7 @@ const DashboardBeneficiaryRegister = () => {
           patients_count: data.patients_count,
           phone: data.phone,
           is_displaced: false,
+          release_date: data.release_date
         },
         accessToken || "",
       ),
@@ -127,6 +130,14 @@ const DashboardBeneficiaryRegister = () => {
               register={register}
               placeholder="0000000000"
               onlyPositiveNumbers
+            />
+            <RowForm<IRegisterBeneficiaryForm>
+              errors={errors}
+              label="release_date"
+              title="تاريخ الاصدار"
+              register={register}
+              type="date"
+              placeholder="2020-10-10"
             />
           </div>
 

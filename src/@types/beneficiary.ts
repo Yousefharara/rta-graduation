@@ -18,6 +18,7 @@ export interface IBeneficiary {
 
   status: beneficiaryStatusType;
   created_at: string;
+  release_date: Date;
 
   users: IUser;
 }
@@ -25,6 +26,7 @@ export interface IBeneficiary {
 export interface ICreateBeneficiary {
   name: string;
   email: string;
+  release_date: string;
   password: string;
   phone: string;
   national_id: string;

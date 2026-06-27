@@ -6,6 +6,11 @@ export interface ILoginAuth {
   email: string;
 }
 
+export interface ILoginBeneficiary {
+  national_id: string;
+  release_date: string;
+}
+
 export interface IAuth {
   accessToken: string;
   refreshToken: string;

@@ -1,12 +1,9 @@
 import type { AidCategoryType } from "@/@types/aid";
 import type { AidStatusType } from "@/@types/userAids";
 import ReactTable from "@/components/organisms/reactTable";
-import { getAids } from "@/redux/slices/aids";
-import { getUserAids } from "@/redux/slices/userAids";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Archive } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 interface IDataTable {
   name: AidCategoryType | "";
@@ -18,19 +15,11 @@ interface IDataTable {
 const PAGE_SIZE = 5;
 
 const TrackAidUserTableAids = () => {
-  const { beneficiary } = useAppSelector((state) => state.auth);
-
-
-
-
-  // const dispatch = useAppDispatch();
-
-  const [filteredName,] = useState<string>("");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const [dataTable, setDataTable] = useState<IDataTable[]>([]);
+  const [dataTable] = useState<IDataTable[]>([]);
 
   // useEffect(() => {
   //   dispatch(getAids());

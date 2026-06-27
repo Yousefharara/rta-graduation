@@ -4,6 +4,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "../../../redux/store";
 import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { SessionTimeoutManager } from "@/components/organisms/sessionTimeoutManager/SessionTimeoutManager";
 
 const ProviderTemplate = ({ children } : {children: ReactNode}) => {
   return (
@@ -14,6 +15,7 @@ const ProviderTemplate = ({ children } : {children: ReactNode}) => {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Toaster />
+          <SessionTimeoutManager />
           {children}
         </PersistGate>
       </Provider>

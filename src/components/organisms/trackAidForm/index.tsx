@@ -2,14 +2,17 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RowForm from "../../molecules/rowForm";
-// import Button from "../../atoms/button";
-// import { ArrowLeft } from "lucide-react";
+import Button from "../../atoms/button";
+import { ArrowLeft } from "lucide-react";
 import type { ITrackAidForm } from "@/@types/forms";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { loginBeneficiaryAction } from "@/redux/slices/authSlice";
+import { formatDate } from "@/utils/utils";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
-  IDNumber: Yup.string().required("ID is required !"),
-  versionNumber: Yup.date().required("version is required !"),
+  IDNumber: Yup.string().required("رقم الهوية مطلوب !"),
+  versionNumber: Yup.date().required("رقم الإصدار مطلوب !"),
 });
 
 const TrackAidForm = () => {
@@ -19,33 +22,34 @@ const TrackAidForm = () => {
     register,
   } = useForm<ITrackAidForm>({ resolver: yupResolver(schemaLoginFrom) });
 
-  // const [isAuth, setIsAuth] = useState<boolean>(false);
-  // const { beneficiary, isLoading, errorMessage } = useAppSelector(
-  //   (state) => state.beneficiaries,
-  // );
-
-
-  // if (errorMessage) return <h1>Error here</h1>;
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isLoading, errorMessage } = useAppSelector((state) => state.auth);
 
   const handleOnSubmit = (data: ITrackAidForm) => {
-    console.log(data);
-    // if (checkUser && !isLoading) {
-    //   dispatch(
-    //     login({
-    //       role: "user",
-    //       user: checkUser.id,
-    //       token: checkUser.token,
-    //     }),
-    //   );
-    //   navigate(PATHS.TRACK_AID.USER);
-    // } else {
-    //   setIsAuth(true);
-    // }
 
+    console.log('data submit is : ', data, ' | release is ', data.versionNumber instanceof Date
+        ? formatDate(data.versionNumber)
+        : String(data.versionNumber));
+    // تحويل التاريخ إلى string بصيغة YYYY-MM-DD
+    const release_date =
+      data.versionNumber instanceof Date
+        ? formatDate(data.versionNumber)
+        : String(data.versionNumber);
+
+    dispatch(
+      loginBeneficiaryAction(
+        {
+          national_id: data.IDNumber,
+          release_date,
+        },
+        navigate,
+      ),
+    );
   };
 
   return (
-    <form className="flex flex-col" onSubmit={handleSubmit(handleOnSubmit)}>
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit(handleOnSubmit)}>
       <RowForm<ITrackAidForm>
         title="رقم الهويه الوطنيه"
         errors={errors}
@@ -65,7 +69,12 @@ const TrackAidForm = () => {
         placeholder="10/10/2020"
         className="w-full bg-[#E0E9FD]!"
       />
-      {/* <Button
+
+      {errorMessage && (
+        <p className="text-rose-700 text-sm text-center">{errorMessage}</p>
+      )}
+
+      <Button
         variant="default"
         className="text-white w-full flex justify-center items-center py-3"
       >
@@ -75,12 +84,9 @@ const TrackAidForm = () => {
           ) : (
             <p className="text-lg">تتبع</p>
           )}
-          <ArrowLeft size={18} className="" />
+          <ArrowLeft size={18} />
         </div>
       </Button>
-      {isAuth && (
-        <p className="text-rose-700">ID card or version is incorrect !!</p>
-      )} */}
     </form>
   );
 };

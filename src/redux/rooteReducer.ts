@@ -7,6 +7,8 @@ import aidStateReducer from "./slices/aidState";
 import beneficiaryReducer from "./slices/beneficiarySlice";
 import localOrgReducer from "./slices/localOrgSlice";
 import campaignsReducer from "./slices/campaignSlice";
+import verificationReducer from "./slices/verificationSlice";
+import beneficiaryOrderReducer from "./slices/beneficiaryOrderSlice";
 
 import storage from "redux-persist/lib/storage"; // localStorage'
 import { persistReducer } from "redux-persist";
@@ -16,7 +18,7 @@ const persistedAuthReducer = persistReducer(
   {
     key: "auth",
     storage,
-    whitelist: ["user", "accessToken", "role", "beneficiary", "refreshToken"],
+    whitelist: ["user", "accessToken", "role", "beneficiary", "refreshToken", "tokenAcquiredAt"],
   },
   authSlice,
 );
@@ -27,6 +29,8 @@ export const RootReducer = combineReducers({
   localOrg: localOrgReducer,
   beneficiaries: beneficiaryReducer,
   campaigns: campaignsReducer,
+  verifications: verificationReducer,
+  beneficiaryOrders: beneficiaryOrderReducer,
   // ! Edit here >>>>>>>>
   aids: AidReducer,
   userAids: userAidsReducer,

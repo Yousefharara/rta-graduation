@@ -1,59 +1,19 @@
-import { CircleCheck, CircleX, Eye, Search, X } from "lucide-react";
+import { Check, CircleCheck, CircleX, Eye, Search, X } from "lucide-react";
 import "./style.css";
 import ReactTable from "@/components/organisms/reactTable";
 import { useEffect, useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useTranslate } from "@/hooks/useTranslate";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  getBeneficiaryOrders,
+  updateBeneficiaryOrderStatusAction,
+} from "@/redux/slices/beneficiaryOrderSlice";
+import type { IBeneficiaryOrder } from "@/@types/beneficiaryOrder";
 
-type orderAidStatus = "agreement" | "rejected" | "pending";
-type aidCategoryType =
-  | "Food"
-  | "Medical"
-  | "Financial"
-  | "Clothing"
-  | "Shelter"
-  | "Educational";
-
-interface IDataTable {
-  orderNum: string;
-  beneficiaryName: string;
-  aidCategory: aidCategoryType;
-  algorithm: number;
-  status: orderAidStatus;
-}
+type orderAidStatus = "pending" | "approved" | "rejected";
 
 const PAGE_SIZE = 5;
-
-const orgs: IDataTable[] = [
-  {
-    orderNum: "#AID-8842",
-    beneficiaryName: "محمد علي",
-    aidCategory: "Financial",
-    algorithm: 99,
-    status: "agreement",
-  },
-  {
-    orderNum: "#AID-8843",
-    beneficiaryName: "يوسف",
-    aidCategory: "Food",
-    algorithm: 80,
-    status: "pending",
-  },
-  {
-    orderNum: "#AID-8844",
-    beneficiaryName: "احمد",
-    aidCategory: "Food",
-    algorithm: 20,
-    status: "agreement",
-  },
-  {
-    orderNum: "#AID-8845",
-    beneficiaryName: "ابراهيم",
-    aidCategory: "Financial",
-    algorithm: 70,
-    status: "rejected",
-  },
-];
 
 const DashboardAidOrdersTable = () => {
   const [search, setSearch] = useState("");
@@ -63,37 +23,33 @@ const DashboardAidOrdersTable = () => {
 
   const { translate } = useTranslate();
 
+  const dispatch = useAppDispatch();
+  const { accessToken } = useAppSelector((state) => state.auth);
+  const { orders, isFetching, isUpdating } = useAppSelector(
+    (state) => state.beneficiaryOrders,
+  );
+
+  useEffect(() => {
+    dispatch(getBeneficiaryOrders(accessToken || ""));
+  }, [dispatch, accessToken]);
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const [dataTable, setDataTable] = useState<IDataTable[]>([]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDataTable(orgs);
-  }, []);
-
-  const updateOrderStatus = (orderNumber: string, status: orderAidStatus) => {
-    setDataTable((prev) =>
-      prev.map((item) =>
-        item.orderNum === orderNumber ? { ...item, status } : item,
-      ),
-    );
-  };
 
   const filteredData = useMemo(() => {
-    return dataTable.filter((item) => {
+    return orders.filter((item) => {
       const matchesSearch =
-        item.beneficiaryName.toLowerCase().includes(search.toLowerCase()) ||
-        item.orderNum.toLowerCase().includes(search.toLowerCase());
+        String(item.id).includes(search) ||
+        String(item.beneficiary_id).includes(search);
 
       const matchesStatus =
         statusFilter === "all" ? true : item.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
-  }, [dataTable, search, statusFilter]);
+  }, [orders, search, statusFilter]);
 
   const pageCount = Math.ceil(filteredData.length / PAGE_SIZE);
 
@@ -103,104 +59,118 @@ const DashboardAidOrdersTable = () => {
     return filteredData.slice(start, end);
   }, [pagination, filteredData]);
 
-  const columns = useMemo<ColumnDef<IDataTable>[]>(() => {
+  const handleUpdateStatus = (id: number, status: IBeneficiaryOrder["status"]) => {
+    dispatch(updateBeneficiaryOrderStatusAction(id, status, accessToken || ""));
+  };
+
+  const columns = useMemo<ColumnDef<IBeneficiaryOrder>[]>(() => {
     return [
       {
         header: "رقم الطلب",
-        accessorKey: "orderNum",
         cell: ({ row }) => {
-          const { orderNum } = row.original;
-          return <p className="text-primary font-medium">{orderNum}</p>;
+          return (
+            <p className="text-primary font-medium">#{row.original.id}</p>
+          );
         },
       },
       {
-        header: "اسم المستفيد",
-        accessorFn: (row) => `${row.beneficiaryName}`,
+        header: "رقم المستفيد",
+        cell: ({ row }) => {
+          return <p>{row.original.beneficiary_id}</p>;
+        },
       },
       {
         header: "نوع المساعده",
-        accessorKey: "aidCategory",
         cell: ({ row }) => {
-          const { aidCategory } = row.original;
           return (
-            <p
-              className={`px-4 text-sm font-semibold border border-zinc-400 py-2 w-fit rounded-md`}
-            >
-              {translate(aidCategory)}
+            <p className="px-4 text-sm font-semibold border border-zinc-400 py-2 w-fit rounded-md">
+              {translate(String(row.original.aid_type_id))}
             </p>
           );
         },
       },
       {
-        header: "الأولويه (الخوارزميه)",
-        accessorKey: "algorithm",
+        header: "الوصف",
         cell: ({ row }) => {
-          const { algorithm } = row.original;
           return (
-            <p className="flex items-center gap-2">
-              
-
-              <div className="relative h-2 w-15">
-                {/* الخلفية */}
-                <div className="absolute inset-0 bg-zinc-200 rounded-md" />
-
-                {/* الشريط */}
-                <div
-                  style={{
-                    background: `linear-gradient(
-                                to left,
-                                ${algorithm > 90 ? "red" : algorithm > 70 ? "orange" : algorithm > 50 ? "blue" : "green"} 0%,
-                                ${algorithm > 90 ? "red" : algorithm > 70 ? "orange" : algorithm > 50 ? "blue" : "green"} ${algorithm}%,
-                                transparent ${algorithm}%,
-                                transparent 100%
-                            )`,
-                  }}
-                  className="absolute inset-0 rounded-md z-10"
-                />
-              </div>
-              
-              
-              {algorithm > 90
-                ? "حرجه"
-                : algorithm > 70
-                  ? "عاليه"
-                  : algorithm > 50
-                    ? "متوسطه"
-                    : "عاديه"}
+            <p className="max-w-[200px] truncate text-sm text-zinc-600">
+              {row.original.description}
             </p>
           );
         },
       },
+      {
+        header: "الحالة",
+        cell: ({ row }) => {
+          const { status } = row.original;
 
+          if (status === "pending") {
+            return (
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                قيد الانتظار
+              </span>
+            );
+          }
+
+          if (status === "approved") {
+            return (
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                <Check size={12} />
+                موافق عليه
+              </span>
+            );
+          }
+
+          return (
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+              <X size={12} />
+              مرفوض
+            </span>
+          );
+        },
+      },
       {
         header: "الاجراءات",
         cell: ({ row }) => {
-          const { status, orderNum } = row.original;
+          const { status, id } = row.original;
 
           return (
             <div className="flex items-center gap-3">
-              {status === "agreement" ? (
-                <Eye
-                  strokeWidth={1.3}
-                  className="text-primary cursor-pointer"
-                />
-              ) : status === "rejected" ? (
-                <X size={25} className="text-red-700" />
-              ) : (
-                <>
-                  <CircleCheck
-                    size={25}
-                    strokeWidth={1.3}
-                    className="text-green-700 cursor-pointer"
-                    onClick={() => updateOrderStatus(orderNum, "agreement")}
-                  />
+              <button
+                title="عرض التفاصيل"
+                className="text-primary hover:text-blue-700 transition-colors cursor-pointer"
+              >
+                <Eye strokeWidth={1.3} size={20} />
+              </button>
 
-                  <CircleX
-                    size={25}
-                    strokeWidth={1.3}
-                    className="text-red-700 cursor-pointer"
-                    onClick={() => updateOrderStatus(orderNum, "rejected")}
-                  />
+              {status === "pending" && (
+                <>
+                  <button
+                    title="قبول الطلب"
+                    disabled={isUpdating}
+                    onClick={() => handleUpdateStatus(id, "approved")}
+                    className="cursor-pointer disabled:opacity-40"
+                  >
+                    <CircleCheck
+                      size={22}
+                      strokeWidth={1.3}
+                      className="text-green-700"
+                    />
+                  </button>
+
+                  <button
+                    title="رفض الطلب"
+                    disabled={isUpdating}
+                    onClick={() => handleUpdateStatus(id, "rejected")}
+                    className="cursor-pointer disabled:opacity-40"
+                  >
+                    <CircleX
+                      size={22}
+                      strokeWidth={1.3}
+                      className="text-red-700"
+                    />
+                  </button>
                 </>
               )}
             </div>
@@ -208,7 +178,16 @@ const DashboardAidOrdersTable = () => {
         },
       },
     ];
-  }, [translate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUpdating, translate]);
+
+  if (isFetching) {
+    return (
+      <div className="flex justify-center items-center h-40 text-zinc-500">
+        جاري تحميل الطلبات...
+      </div>
+    );
+  }
 
   return (
     <section className="flex flex-col gap-4 p-3 border border-zinc-400 bg-white rounded-md">
@@ -233,9 +212,9 @@ const DashboardAidOrdersTable = () => {
           </p>
 
           <p
-            onClick={() => setStatusFilter("agreement")}
+            onClick={() => setStatusFilter("approved")}
             className={`px-3 py-2 rounded-md cursor-pointer ${
-              statusFilter === "agreement"
+              statusFilter === "approved"
                 ? "bg-primary text-white"
                 : "bg-white"
             }`}
@@ -260,7 +239,7 @@ const DashboardAidOrdersTable = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="min-w-64 outline-0"
-            placeholder="بحث عن اسم أو رقم الطلب..."
+            placeholder="بحث عن رقم الطلب أو رقم المستفيد..."
           />
         </div>
       </article>
