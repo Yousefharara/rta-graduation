@@ -1,10 +1,15 @@
-export enum EBeneficiaryAidStatus {
-  rejected = "rejected",
-  approved = "approved",
-  preparing = "preparing",
-  shipping = "shipping",
-  delivered = "delivered",
-}
+export const BeneficiaryAidStatus = {
+  rejected: "rejected",
+  approved: "approved",
+  preparing: "preparing",
+  shipping: "shipping",
+  delivered: "delivered",
+} as const;
+
+
+export type BeneficiaryAidStatus =
+  (typeof BeneficiaryAidStatus)[keyof typeof BeneficiaryAidStatus];
+
 
 export interface IBeneficiaryAid {
   id: number;
@@ -13,6 +18,6 @@ export interface IBeneficiaryAid {
   pickup_location_id: number | null;
   org_id: number;
   order_id: number | null;
-  status: EBeneficiaryAidStatus;
+  status: BeneficiaryAidStatus;
 }
 
