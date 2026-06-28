@@ -1,7 +1,20 @@
 import { Package } from "lucide-react";
 import "./style.css";
+import { useAppSelector } from "@/redux/store";
 
-const DashboardAidOrdersHero = () => {
+interface HeroProps {
+  statusFilter: "all" | "pending" | "approved" | "rejected";
+  setStatusFilter: (status: "all" | "pending" | "approved" | "rejected") => void;
+}
+
+const DashboardAidOrdersHero = ({ statusFilter, setStatusFilter }: HeroProps) => {
+  const { orders } = useAppSelector((state) => state.beneficiaryOrders);
+
+  const totalOrders = orders.length;
+  const pendingOrders = orders.filter((o) => o.status === "pending").length;
+  const approvedOrders = orders.filter((o) => o.status === "approved").length;
+  const rejectedOrders = orders.filter((o) => o.status === "rejected").length;
+
   return (
     <section className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold">إدارة طلبات المساعدة</h1>
@@ -9,17 +22,27 @@ const DashboardAidOrdersHero = () => {
         className="manage-orders__grid grid gap-6"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}
       >
-        <div className="px-6 py-4 rounded-md border border-zinc-400 bg-white flex flex-col gap-1">
+        <div 
+          onClick={() => setStatusFilter("all")}
+          className={`px-6 py-4 rounded-md border transition-all duration-200 cursor-pointer flex flex-col gap-1 hover:shadow-md ${
+            statusFilter === "all" ? "border-primary bg-blue-50/20 ring-1 ring-primary" : "border-zinc-400 bg-white"
+          }`}
+        >
           <div className="bg-[#E0E3E5] p-3 rounded-md w-fit">
             <Package className="text-zinc-600" />
           </div>
 
-          <p>جميع الطلبات</p>
+          <p className="font-medium text-zinc-700">جميع الطلبات</p>
 
-          <small className="font-semibold text-lg">5,000</small>
+          <small className="font-bold text-xl">{totalOrders}</small>
         </div>
 
-        <div className="px-6 py-4 rounded-md border border-zinc-400 bg-white flex flex-col gap-1">
+        <div 
+          onClick={() => setStatusFilter("pending")}
+          className={`px-6 py-4 rounded-md border transition-all duration-200 cursor-pointer flex flex-col gap-1 hover:shadow-md ${
+            statusFilter === "pending" ? "border-primary bg-blue-50/20 ring-1 ring-primary" : "border-zinc-400 bg-white"
+          }`}
+        >
           <div className="bg-[#DBE1FF] p-3 rounded-md w-fit">
             <svg
               width="19"
@@ -35,12 +58,17 @@ const DashboardAidOrdersHero = () => {
             </svg>
           </div>
 
-          <p>طلبات قيد الانتظار</p>
+          <p className="font-medium text-zinc-700">طلبات قيد الانتظار</p>
 
-          <small className="font-semibold text-lg">1,284</small>
+          <small className="font-bold text-xl">{pendingOrders}</small>
         </div>
 
-        <div className="px-6 py-4 rounded-md border border-zinc-400 bg-white flex flex-col gap-1">
+        <div 
+          onClick={() => setStatusFilter("approved")}
+          className={`px-6 py-4 rounded-md border transition-all duration-200 cursor-pointer flex flex-col gap-1 hover:shadow-md ${
+            statusFilter === "approved" ? "border-primary bg-blue-50/20 ring-1 ring-primary" : "border-zinc-400 bg-white"
+          }`}
+        >
           <div className="bg-[#6FFBBE] p-3 rounded-md w-fit">
             <svg
               width="22"
@@ -56,12 +84,17 @@ const DashboardAidOrdersHero = () => {
             </svg>
           </div>
 
-          <p>تمت الموافقة</p>
+          <p className="font-medium text-zinc-700">تمت الموافقة</p>
 
-          <small className="font-semibold text-lg">3,592</small>
+          <small className="font-bold text-xl">{approvedOrders}</small>
         </div>
 
-        <div className="px-6 py-4 rounded-md border border-zinc-400 bg-white flex flex-col gap-1">
+        <div 
+          onClick={() => setStatusFilter("rejected")}
+          className={`px-6 py-4 rounded-md border transition-all duration-200 cursor-pointer flex flex-col gap-1 hover:shadow-md ${
+            statusFilter === "rejected" ? "border-primary bg-blue-50/20 ring-1 ring-primary" : "border-zinc-400 bg-white"
+          }`}
+        >
           <div className="bg-[#FFDAD6] p-3 rounded-md w-fit">
             <svg
               width="20"
@@ -77,9 +110,9 @@ const DashboardAidOrdersHero = () => {
             </svg>
           </div>
 
-          <p>طلبات مرفوضة</p>
+          <p className="font-medium text-zinc-700">طلبات مرفوضة</p>
 
-          <small className="font-semibold text-lg">112</small>
+          <small className="font-bold text-xl">{rejectedOrders}</small>
         </div>
       </article>
     </section>

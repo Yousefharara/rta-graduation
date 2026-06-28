@@ -54,7 +54,7 @@ const DonationForm = () => {
     watch,
     register,
   } = useForm<IDonationForm>({ resolver: yupResolver(schemaDonationFrom) });
-  const { campaigns, isFetching, errorMessage } = useAppSelector(
+  const { campaigns, isFetching, error } = useAppSelector(
     (state) => state.campaigns,
   );
   const dispatch = useAppDispatch();
@@ -90,9 +90,9 @@ const DonationForm = () => {
     );
   }
 
-  if (errorMessage) {
+  if (error) {
     return (
-      <Error message={errorMessage} onRetry={() => dispatch(getCampaigns())} />
+      <Error message={error} onRetry={() => dispatch(getCampaigns())} />
     );
   }
 
@@ -159,61 +159,13 @@ const DonationForm = () => {
               <p className="text-xl font-medium mb-4">{campaign.description}</p>
               <div className="slider-color slider-gaza w-full h-2 bg-neutral-300 rounded-full"></div>
               <div className="flex justify-between items-center">
-                <small>تم جمع 75%</small>
-                <small>المستهدف 1M$</small>
+                <small>تم جمع {Math.round((campaign.collected_amount + 10000 / campaign.target_amount) * 100)}%</small>
+                <small>المستهدف {campaign.target_amount}$</small>
               </div>
             </label>
             ))}
 
 
-            <label
-              htmlFor="r1"
-              className="lable-gaza flex flex-col w-full offer active border border-zinc-300 rounded-lg p-3"
-            >
-              <input
-                className="hidden"
-                defaultChecked
-                value={"relife"}
-                {...register("donationCampaign")}
-                type="radio"
-                id="r1"
-              />
-
-              <div className="lable-check-icon hidden rounded-full self-end text-end w-fit p-1 bg-[#004AC6] justify-center items-center">
-                <Check size={12} strokeWidth={3} className="text-white" />
-              </div>
-              <h4 className="text-[#004AC6] text-sm">الأكثر احتياجا</h4>
-              <p className="text-xl font-medium mb-4">إغاثة غزة العاجلة</p>
-              <div className="slider-color slider-gaza w-full h-2 bg-neutral-300 rounded-full"></div>
-              <div className="flex justify-between items-center">
-                <small>تم جمع 75%</small>
-                <small>المستهدف 1M$</small>
-              </div>
-            </label>
-            
-
-            <label
-              htmlFor="r2"
-              className="flex flex-col w-full offer active border border-zinc-300 rounded-lg p-3"
-            >
-              <input
-                className="hidden"
-                value={"learning"}
-                {...register("donationCampaign")}
-                type="radio"
-                id="r2"
-              />
-              <div className="lable-check-icon hidden rounded-full self-end text-end w-fit p-1 bg-[#004AC6] justify-center items-center">
-                <Check size={12} strokeWidth={3} className="text-white" />
-              </div>
-              <h4 className="text-[#004AC6] text-sm">التعليم</h4>
-              <p className="text-xl font-medium mb-4">كفالة طالب علم</p>
-              <div className="slider-color slider-learning w-full h-2 bg-neutral-300 rounded-full"></div>
-              <div className="flex justify-between items-center">
-                <small>تم جمع 40%</small>
-                <small>المستهدف 200K$</small>
-              </div>
-            </label>
           </div>
         </section>
 

@@ -10,7 +10,7 @@ export interface ILocalOrgState {
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
-  errorMessage: string;
+  error: string | null;
   localOrgs: ILocalOrg[];
   localOrg: ILocalOrg | null;
 }
@@ -20,7 +20,7 @@ const initialState: ILocalOrgState = {
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
-  errorMessage: "",
+  error: null,
   localOrgs: [],
   localOrg: null,
 };
@@ -44,8 +44,8 @@ const localOrgSlice = createSlice({
     setDeleting(state, action: PayloadAction<boolean>) {
       state.isDeleting = action.payload;
     },
-    setError: (state, action: PayloadAction<string>) => {
-      state.errorMessage = action.payload;
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
     },
     setLocalOrgs: (state, action: PayloadAction<ILocalOrg[]>) => {
       state.localOrgs = action.payload;
@@ -91,7 +91,7 @@ export default localOrgSlice.reducer;
 export const getLocalOrgs =
   (token: string) => async (dispatch: AppDispatch) => {
     dispatch(setFetching(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
     try {
       const { data } = await axios.get<ILocalOrg[]>(
         API_KEY + ORG_PATHS.GET_ORGS,
@@ -113,7 +113,8 @@ export const getLocalOrgs =
 export const addLocalOrgAction =
   (body: ICreateLocalOrg, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setCreating(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
+    
     try {
       const { data } = await axios.post<ILocalOrg>(
         API_KEY + ORG_PATHS.CREATE_ORG,
@@ -135,7 +136,8 @@ export const addLocalOrgAction =
 export const getLocalOrg =
   (id: number, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setFetching(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
+    
     try {
       const { data } = await axios.get<ILocalOrg>(
         API_KEY + ORG_PATHS.GET_ORG.replace(":id", String(id)),
@@ -157,7 +159,8 @@ export const getLocalOrg =
 export const editLocalOrgAction =
   (body: ILocalOrg) => async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
+    
     try {
       console.log("Inside editing >>>>>>");
       const { data } = await axios.patch<ILocalOrg>(
@@ -176,7 +179,8 @@ export const editLocalOrgAction =
 export const deleteLocalOrgAction =
   (id: number) => async (dispatch: AppDispatch) => {
     dispatch(setDeleting(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
+    
     try {
       await axios.delete(
         API_KEY + ORG_PATHS.DELETE_ORG.replace(":id", id.toString()),

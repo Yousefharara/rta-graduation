@@ -6,7 +6,7 @@ import Button from "../../atoms/button";
 import RowForm from "../../molecules/rowForm";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { setLogin } from "../../../redux/slices/authSlice";
+import { setError, setLogin } from "../../../redux/slices/authSlice";
 import type { ILoginForm } from "@/@types/forms";
 
 const schemaLoginFrom: Yup.ObjectSchema<ILoginForm> = Yup.object({
@@ -24,7 +24,7 @@ const LoginForm = () => {
     register,
   } = useForm<ILoginForm>({ resolver: yupResolver(schemaLoginFrom) });
   const dispatch = useAppDispatch();
-  const { user, isLoading, errorMessage } = useAppSelector(state => state.auth)
+  const { user, isLoading, error } = useAppSelector(state => state.auth)
   const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleOnSubmit = (data: ILoginForm) => {
@@ -42,16 +42,18 @@ const LoginForm = () => {
 
 
   useEffect(() => {
-    console.log("Errors");
-    if (errorMessage) {
+    // Clear auth error on component unmount to prevent stale errors on other pages
+    return () => {
+      dispatch(setError(null));
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (error) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsAuth(true)
+      setIsAuth(true);
     }
-    if (errorMessage) {
-      console.log('errorMessage ', errorMessage);
-    }
-    console.log(errors);
-  }, [errors, errorMessage, user]);
+  }, [error]);
 
 
 

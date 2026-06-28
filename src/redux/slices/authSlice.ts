@@ -15,7 +15,7 @@ interface IInitialState {
   role: RoleType | undefined;
   beneficiary: IBeneficiary | null;
   isLoading: boolean;
-  errorMessage: string;
+  error: string | null;
   tokenAcquiredAt: number | null;
 }
 
@@ -25,7 +25,7 @@ const initialState: IInitialState = {
   refreshToken: null,
   role: "guest",
   beneficiary: null,
-  errorMessage: "",
+  error: null,
   isLoading: false,
   tokenAcquiredAt: null,
 };
@@ -37,8 +37,8 @@ const authSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    setError: (state, action: PayloadAction<string>) => {
-      state.errorMessage = action.payload;
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
     },
     login: (state, action: PayloadAction<IAuth>) => {
       state.user = action.payload.user;
@@ -74,12 +74,15 @@ export default authSlice.reducer;
 
 export const setLogin = (body: ILoginAuth) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
+    dispatch(setError(null));
+
   try {
     const { data } = await axios.post<IAuth>(API_KEY + AUTH_PATHS.LOGIN, body);
     console.log('data test login : ', data);
     dispatch(login(data));
   } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
+    if (err instanceof Error) dispatch(setError("خطـأ في اسم المستخدم او كلمه المرور"));
+    else dispatch(setError("حدث خطأ غير معروف حاول مرة أخرى "));
   } finally {
     dispatch(setLoading(false));
   }
@@ -104,7 +107,8 @@ export const loginBeneficiaryAction =
   (body: ILoginBeneficiary, navigate: (path: string) => void) =>
     async (dispatch: AppDispatch) => {
       dispatch(setLoading(true));
-      dispatch(setError(""));
+    dispatch(setError(null));
+      
       console.log("data test login beneficiary : ", body);
       try {
         const { data } = await axios.post<IAuth>(

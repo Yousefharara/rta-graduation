@@ -7,8 +7,9 @@ import { ArrowLeft } from "lucide-react";
 import type { ITrackAidForm } from "@/@types/forms";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { loginBeneficiaryAction } from "@/redux/slices/authSlice";
+import { loginBeneficiaryAction, setError } from "@/redux/slices/authSlice";
 import { formatDate } from "@/utils/utils";
+import { useEffect } from "react";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
   IDNumber: Yup.string().required("رقم الهوية مطلوب !"),
@@ -24,7 +25,14 @@ const TrackAidForm = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { isLoading, errorMessage } = useAppSelector((state) => state.auth);
+  const { isLoading, error } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    // Clear auth error on unmount to prevent stale errors on other pages
+    return () => {
+      dispatch(setError(null));
+    };
+  }, [dispatch]);
 
   const handleOnSubmit = (data: ITrackAidForm) => {
 
@@ -70,8 +78,8 @@ const TrackAidForm = () => {
         className="w-full bg-[#E0E9FD]!"
       />
 
-      {errorMessage && (
-        <p className="text-rose-700 text-sm text-center">{errorMessage}</p>
+      {error && (
+        <p className="text-rose-700 text-sm text-center">{error} Error</p>
       )}
 
       <Button

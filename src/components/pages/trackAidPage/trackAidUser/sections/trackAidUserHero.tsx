@@ -15,46 +15,38 @@ import {
   SquareRoundCorner,
   Truck,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ISendOrderForm } from "@/@types/forms";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { aidCategoryArr } from "@/@types/aid";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { setCurrentStep } from "@/redux/slices/aidState";
+import { setCurrentStep } from "@/redux/slices/beneficiaryAidStepSlice";
 import { getBeneficiary } from "@/redux/slices/beneficiarySlice";
-import { createBeneficiaryOrderAction } from "@/redux/slices/beneficiaryOrderSlice";
+import {
+  createBeneficiaryOrderAction,
+  getBeneficiaryOrders,
+} from "@/redux/slices/beneficiaryOrderSlice";
+import { getAidTypes } from "@/redux/slices/aidTypes";
+import { getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
-  typeAid: "Food Assistance",
+  typeAid: "",
 };
 
-// خريطة نوع المساعدة إلى aid_type_id (عدّل حسب قاعدة بياناتك)
-const aidTypeIdMap: Record<string, number> = {
-  "Food Assistance": 1,
-  "Medical Support": 2,
-  "Cash": 3,
-};
-
-const stepMap = {
-  "قيد المراجعة": 0,
-  "تم الموافقه": 1,
-  "تم تجهيز المساعدة": 2,
-  "جاري التوزيع": 3,
-  "تم التوصيل": 4,
-};
 
 const TrackAidUserHero = () => {
   const [open, setOpen] = useState(false);
-  const { currentStep } = useAppSelector((state) => state.aidState);
+  const { currentStep } = useAppSelector((state) => state.beneficiaryAidStep);
 
   const { user, accessToken, beneficiary } = useAppSelector(
     (state) => state.auth,
   );
-  const { isCreating } = useAppSelector((state) => state.beneficiaryOrders);
+  const { isCreating, orders } = useAppSelector((state) => state.beneficiaryOrders);
+  const { aidTypes } = useAppSelector((state) => state.aidTypes);
+  const { aids } = useAppSelector((state) => state.beneficiaryAids);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -63,15 +55,76 @@ const TrackAidUserHero = () => {
     }
   }, [dispatch, beneficiary, accessToken]);
 
+  // Fetch dynamic aid types, beneficiary orders and aids
   useEffect(() => {
-    console.log("beneficiary : >>", beneficiary);
-  }, [beneficiary]);
+    if (accessToken) {
+      dispatch(getAidTypes(accessToken));
+      dispatch(getBeneficiaryOrders(accessToken));
+      dispatch(getBeneficiaryAids(accessToken));
+    }
+  }, [dispatch, accessToken]);
+
+  // Find latest order for the current beneficiary
+  const latestOrder = useMemo(() => {
+    if (!beneficiary || !orders.length) return null;
+    const userOrders = orders.filter((o) => o.beneficiary_id === beneficiary.id);
+    if (!userOrders.length) return null;
+    return [...userOrders].sort((a, b) => b.id - a.id)[0];
+  }, [orders, beneficiary]);
+
+  const latestOrderAid = useMemo(() => {
+    if (!latestOrder) return null;
+    return aids.find((a) => a.order_id === latestOrder.id);
+  }, [latestOrder, aids]);
+
+  // Helper to map order and aid status to Arabic label
+  const getStatusText = (orderStatus: string, aidStatus?: string) => {
+    if (orderStatus === "rejected" || aidStatus === "rejected") return "مرفوض";
+    if (orderStatus === "pending") return "قيد الانتظار";
+    if (orderStatus === "approved") {
+      if (!aidStatus || aidStatus === "approved") return "تمت الموافقة";
+      if (aidStatus === "preparing") return "جاري التجهيز";
+      if (aidStatus === "shipping") return "جاري التوزيع";
+      if (aidStatus === "delivered") return "تم التوصيل";
+    }
+    return orderStatus;
+  };
+
+  const showStepsSection = useMemo(() => {
+    if (!latestOrder) return false;
+    if (latestOrder.status === "rejected") return false;
+    if (latestOrderAid && latestOrderAid.status === "rejected") return false;
+    return true;
+  }, [latestOrder, latestOrderAid]);
+
+  // Update current step based on latest order and aid status
+  useEffect(() => {
+    if (latestOrder) {
+      if (latestOrder.status === "rejected" || (latestOrderAid && latestOrderAid.status === "rejected")) {
+        dispatch(setCurrentStep(4)); // Reset step so new order can be added
+      } else {
+        if (latestOrder.status === "pending") {
+          dispatch(setCurrentStep(0));
+        } else if (latestOrder.status === "approved") {
+          if (!latestOrderAid || latestOrderAid.status === "approved") {
+            dispatch(setCurrentStep(1));
+          } else if (latestOrderAid.status === "preparing") {
+            dispatch(setCurrentStep(2));
+          } else if (latestOrderAid.status === "shipping") {
+            dispatch(setCurrentStep(3));
+          } else if (latestOrderAid.status === "delivered") {
+            dispatch(setCurrentStep(4));
+          }
+        }
+      }
+    } else {
+      dispatch(setCurrentStep(4)); // default to step 4 so user can request
+    }
+  }, [dispatch, latestOrder, latestOrderAid]);
 
   const schemaSendOrderFrom: Yup.ObjectSchema<ISendOrderForm> = Yup.object({
     reason: Yup.string().required("السبب مطلوب"),
-    typeAid: Yup.string()
-      .oneOf(["Food Assistance", "Medical Support", "Cash"])
-      .required(),
+    typeAid: Yup.string().required("نوع المساعدة مطلوب"),
   });
 
   const {
@@ -90,11 +143,14 @@ const TrackAidUserHero = () => {
       return;
     }
 
+    const selectedAid = aidTypes.find((a) => a.name === data.typeAid);
+    const aidTypeId = selectedAid ? selectedAid.id : 1;
+
     const result = await dispatch(
       createBeneficiaryOrderAction(
         {
           beneficiary_id: beneficiary.id,
-          aid_type_id: aidTypeIdMap[data.typeAid] ?? 1,
+          aid_type_id: Number(aidTypeId),
           description: data.reason,
         },
         accessToken || "",
@@ -110,11 +166,7 @@ const TrackAidUserHero = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(setCurrentStep(stepMap["تم التوصيل"]));
-  }, [dispatch]);
-
-  if (!user) return;
+  if (!user) return null;
 
   return (
     <>
@@ -135,13 +187,32 @@ const TrackAidUserHero = () => {
             <Truck size={30} />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="flex gap-2 items-center">
-              <p>طلب رقم: #RT-99284</p>
-              <small className="text-center rounded-full bg-muted px-3 py-0.5">
-                جاري التجهيز
-              </small>
-            </div>
-            <p>تاريخ إنشاء الطلب: 12 أكتوبر 2025</p>
+            {latestOrder ? (
+              <>
+                <div className="flex gap-2 items-center">
+                  <p>طلب رقم: #RT-{latestOrder.id}</p>
+                  <small className="text-center rounded-full bg-muted px-3 py-0.5">
+                    {getStatusText(latestOrder.status, latestOrderAid?.status)}
+                  </small>
+                </div>
+                <p>
+                  تاريخ إنشاء الطلب:{" "}
+                  {(latestOrder as any).created_at
+                    ? new Date((latestOrder as any).created_at).toLocaleDateString(
+                      "ar-EG",
+                      { day: "numeric", month: "long", year: "numeric" },
+                    )
+                    : "غير متوفر"}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-semibold">لا يوجد طلبات مساعدة نشطة حالياً</p>
+                <p className="text-sm text-zinc-500">
+                  يمكنك إضافة طلب جديد بالضغط على زر "إضافة طلب جديد"
+                </p>
+              </>
+            )}
           </div>
         </div>
         <div className="flex gap-3 ">
@@ -162,13 +233,15 @@ const TrackAidUserHero = () => {
         </div>
       </section>
 
-      <section className="flex flex-col gap-8 bg-white rounded-lg border border-zinc-300 px-6 py-4">
-        <div className="flex items-center gap-3">
-          <LineChart className="text-primary" />
-          <p>الجدول الزمني للتقدم</p>
-        </div>
-        <StepsAid />
-      </section>
+      {showStepsSection && (
+        <section className="flex flex-col gap-8 bg-white rounded-lg border border-zinc-300 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <LineChart className="text-primary" />
+            <p>الجدول الزمني للتقدم</p>
+          </div>
+          <StepsAid />
+        </section>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="p-0 bg-[#EFF4FF]">
@@ -209,15 +282,15 @@ const TrackAidUserHero = () => {
 
               <select
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${messageTypeAidError ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                defaultValue={"select"}
+                defaultValue="select"
                 {...register("typeAid")}
               >
                 <option disabled value="select">
                   Select
                 </option>
-                {aidCategoryArr.map((aid) => (
-                  <option key={aid} value={aid}>
-                    {aid}
+                {aidTypes.map((aid) => (
+                  <option key={aid.id} value={aid.name}>
+                    {aid.name}
                   </option>
                 ))}
               </select>

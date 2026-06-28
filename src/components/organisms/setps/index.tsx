@@ -14,7 +14,7 @@ const steps = [
 
 const StepsAid = () => {
   const [isMobile, setIsMobiel] = useState<boolean>(false);
-  const {currentStep} = useAppSelector(state => state.aidState)
+  const {currentStep} = useAppSelector(state => state.beneficiaryAidStep)
 
   const handleResize = () => {
     setIsMobiel(window.innerWidth < 768);

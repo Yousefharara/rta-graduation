@@ -14,6 +14,5 @@ export interface IBeneficiaryOrder {
     aid_type_id: number,
     description: string,
     status: TBeneficiaryOrderStatus,
-
 }
   

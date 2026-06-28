@@ -10,7 +10,7 @@ export interface IBeneficiaryState {
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
-  errorMessage: string;
+  error: string | null;
   beneficiaries: IBeneficiary[];
   beneficiary: IBeneficiary | null;
 }
@@ -20,7 +20,7 @@ const initialState: IBeneficiaryState = {
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
-  errorMessage: "",
+  error: null,
   beneficiaries: [],
   beneficiary: null,
 };
@@ -44,8 +44,8 @@ const beneficiarySlice = createSlice({
     setDeleting(state, action: PayloadAction<boolean>) {
       state.isDeleting = action.payload;
     },
-    setError: (state, action: PayloadAction<string>) => {
-      state.errorMessage = action.payload;
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
     },
     setBeneficiaries: (state, action: PayloadAction<IBeneficiary[]>) => {
       state.beneficiaries = action.payload;
@@ -91,7 +91,7 @@ export default beneficiarySlice.reducer;
 export const getBeneficiaries =
   (token: string) => async (dispatch: AppDispatch) => {
     dispatch(setFetching(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
     try {
       const { data } = await axios.get<IBeneficiary[]>(
         API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARIES,
@@ -112,31 +112,33 @@ export const getBeneficiaries =
 
 export const addBeneficiaryAction =
   (body: ICreateBeneficiary, token: string) =>
-  async (dispatch: AppDispatch) => {
-    dispatch(setCreating(true));
-    dispatch(setError(""));
-    try {
-      const { data } = await axios.post<IBeneficiary>(
-        API_KEY + BENEFICIARY_PATHS.CREATE_BENEFICIARY,
-        body,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    async (dispatch: AppDispatch) => {
+      dispatch(setCreating(true));
+      dispatch(setError(null));
+
+      try {
+        const { data } = await axios.post<IBeneficiary>(
+          API_KEY + BENEFICIARY_PATHS.CREATE_BENEFICIARY,
+          body,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
-      dispatch(addBeneficiary(data));
-    } catch (err) {
-      if (err instanceof Error) dispatch(setError(err.message));
-    } finally {
-      dispatch(setCreating(false));
-    }
-  };
+        );
+        dispatch(addBeneficiary(data));
+      } catch (err) {
+        if (err instanceof Error) dispatch(setError(err.message));
+      } finally {
+        dispatch(setCreating(false));
+      }
+    };
 
 export const getBeneficiary =
   (id: number, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setFetching(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
+
     try {
       const { data } = await axios.get<IBeneficiary>(
         API_KEY + BENEFICIARY_PATHS.GET_BENEFICIARY.replace(":id", String(id)),
@@ -158,12 +160,13 @@ export const getBeneficiary =
 export const editBeneficiaryAction =
   (body: IBeneficiary) => async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
+
     try {
       console.log("Inside editing >>>>>>");
       const { data } = await axios.patch<IBeneficiary>(
         API_KEY +
-          BENEFICIARY_PATHS.EDIT_BENEFICIARY.replace(":id", String(body.id)),
+        BENEFICIARY_PATHS.EDIT_BENEFICIARY.replace(":id", String(body.id)),
         body,
       );
       console.log("Updating data : ", data);
@@ -178,11 +181,12 @@ export const editBeneficiaryAction =
 export const deleteBeneficiaryAction =
   (id: number) => async (dispatch: AppDispatch) => {
     dispatch(setDeleting(true));
-    dispatch(setError(""));
+    dispatch(setError(null));
+
     try {
       await axios.delete(
         API_KEY +
-          BENEFICIARY_PATHS.DELETE_BENEFICIARY.replace(":id", id.toString()),
+        BENEFICIARY_PATHS.DELETE_BENEFICIARY.replace(":id", id.toString()),
       );
       dispatch(deleteBeneficiary(id));
     } catch (err) {

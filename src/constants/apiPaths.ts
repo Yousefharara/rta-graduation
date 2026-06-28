@@ -32,7 +32,11 @@ export const AID_CATEGORY_PATHS = {
 }
 
 export const AID_TYPES_PATHS = {
+    CREATE_AID_TYPE: "/api/aid-types",
     GET_AID_TYPES: "/api/aid-types",
+    GET_AID_TYPE: "/api/aid-types/:id",
+    EDIT_AID_TYPE: "/api/aid-types/:id",
+    DELETE_AID_TYPE: "/api/aid-types/:id",
 }
 
 export const BENEFICIARY_PATHS = {
@@ -57,6 +61,13 @@ export const BENEFICIARY_ORDER_PATHS = {
     DELETE_BENEFICIARY_ORDER: "/api/beneficiary-orders/:id",
 }
 
+export const BENEFICIARY_AID_PATHS = {
+    GET_BENEFICIARY_AIDS: "/api/beneficiary-aids",
+    GET_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
+    EDIT_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
+    DELETE_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
+}
+
 
 export const ORG_PATHS = {
     CREATE_ORG: "/api/organizations",
@@ -72,3 +83,9 @@ export const DONATION_PATHS = {
     GET_DONATIONS: "/api/donations"
 }
 
+export const PICKUP_LOCATION_PATHS = {
+    GET_PICKUP_LOCATIONS: "/api/pickup-locations",
+    GET_PICKUP_LOCATION: "/api/pickup-locations/:id",
+    EDIT_PICKUP_LOCATION: "/api/pickup-locations/:id",
+    DELETE_PICKUP_LOCATION: "/api/pickup-locations/:id",
+}

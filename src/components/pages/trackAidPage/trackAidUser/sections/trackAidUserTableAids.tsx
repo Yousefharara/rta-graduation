@@ -1,15 +1,16 @@
-import type { AidCategoryType } from "@/@types/aid";
-import type { AidStatusType } from "@/@types/userAids";
 import ReactTable from "@/components/organisms/reactTable";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Archive } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
+import { getAidTypes } from "@/redux/slices/aidTypes";
 
 interface IDataTable {
-  name: AidCategoryType | "";
+  name: string;
   date: string;
   pickupLocation: string;
-  status: AidStatusType;
+  status: string;
 }
 
 const PAGE_SIZE = 5;
@@ -19,35 +20,40 @@ const TrackAidUserTableAids = () => {
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const [dataTable] = useState<IDataTable[]>([]);
 
-  // useEffect(() => {
-  //   dispatch(getAids());
-  //   dispatch(getUserAids());
-  // }, [dispatch]);
+  const dispatch = useAppDispatch();
+  const { aids } = useAppSelector((state) => state.beneficiaryAids);
+  const { aidTypes } = useAppSelector((state) => state.aidTypes);
+  const { beneficiary, accessToken } = useAppSelector((state) => state.auth);
 
-  // useEffect(() => {
-  //   if (!loadingAids && !loadingUserAids && user) {
-  //     const result: IDataTable[] = userAids
-  //       .filter((ua) => {
-  //         return ua.user_id == user;
-  //       })
-  //       .map((userAid) => {
-  //         const aid = aids.find((aid) => aid.id == userAid.aid_id);
+  useEffect(() => {
+    if (accessToken) {
+      dispatch(getBeneficiaryAids(accessToken));
+      dispatch(getAidTypes(accessToken));
+    }
+  }, [dispatch, accessToken]);
 
-  //         return {
-  //           name: aid?.category || "",
-  //           date: "10/10/2025",
-  //           pickupLocation: "غزة",
-  //           status: userAid.status,
-  //         };
-  //       });
+  const filteredAids = useMemo(() => {
+    if (!beneficiary) return [];
+    return aids.filter((aid) => aid.beneficiary_id === beneficiary.id);
+  }, [aids, beneficiary]);
 
-  //     // eslint-disable-next-line react-hooks/set-state-in-effect
-  //     setDataTable(result);
-  //   }
-  // }, [aids, loadingAids, loadingUserAids, user, userAids]);
+  const dataTable = useMemo<IDataTable[]>(() => {
+    return filteredAids.map((aid) => {
+      const aidTypeObj = aidTypes.find((t) => Number(t.id) === aid.aid_type_id);
+      const name = aidTypeObj ? aidTypeObj.name : `Aid Type #${aid.aid_type_id}`;
+      return {
+        name,
+        date: "",
+        pickupLocation: aid.pickup_location_id ? `Location #${aid.pickup_location_id}` : "غزة",
+        status: aid.status,
+      };
+    });
+  }, [filteredAids, aidTypes]);
 
+  const deliveredAidsCount = useMemo(() => {
+    return filteredAids.filter((aid) => aid.status === "delivered").length;
+  }, [filteredAids]);
 
   const pageCount = Math.ceil(dataTable.length / PAGE_SIZE);
 
@@ -98,12 +104,16 @@ const TrackAidUserTableAids = () => {
           return (
             <p className="px-4 text-sm font-semibold py-2 bg-muted text-secondary w-fit rounded-md">
               {status === "approved"
-                ? "تم الاستلام"
-                : status === "pending"
-                  ? "قيد المراجعه"
-                  : status === "rejected"
-                    ? "مرفوضه"
-                    : status}
+                ? "تمت الموافقة"
+                : status === "preparing"
+                  ? "جاري التجهيز"
+                  : status === "shipping"
+                    ? "جاري التوزيع"
+                    : status === "delivered"
+                      ? "تم التوصيل"
+                      : status === "rejected"
+                        ? "مرفوضة"
+                        : status}
             </p>
           );
         },
@@ -120,7 +130,7 @@ const TrackAidUserTableAids = () => {
         </div>
         <div className="flex items-center gap-3 bg-secondary/20 p-4 rounded-lg">
           <div className="text-secondary font-medium rounded-full border-2 border-secondary text-center flex justify-center items-center w-6 h-6 ">
-            2
+            {deliveredAidsCount}
           </div>
           <p>إجمالي الدورات المستلمة</p>
         </div>

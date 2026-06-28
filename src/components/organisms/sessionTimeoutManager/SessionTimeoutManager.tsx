@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { logout, refreshTokenAction } from "@/redux/slices/authSlice";
 import { toast } from "sonner";
@@ -27,6 +27,8 @@ export const SessionTimeoutManager = () => {
   const [countdown, setCountdown] = useState(60); // 60 seconds warning countdown
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => {
     if (!accessToken || !tokenAcquiredAt) {
       setIsOpen(false);
@@ -45,6 +47,11 @@ export const SessionTimeoutManager = () => {
         setIsOpen(true);
 
         if (remaining <= 0) {
+          // Clear the interval first to prevent repeated calls
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           // Log out automatically if expired and no action taken
           handleAutoLogout();
         }
@@ -55,25 +62,29 @@ export const SessionTimeoutManager = () => {
 
     // Run initial check and set interval
     checkSession();
-    const interval = setInterval(checkSession, 1000);
+    intervalRef.current = setInterval(checkSession, 1000);
 
     return () => {
-      clearInterval(interval);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, tokenAcquiredAt]);
 
   const handleAutoLogout = () => {
     dispatch(logout());
     setIsOpen(false);
     toast.error("انتهت جلستك لعدم النشاط، يرجى تسجيل الدخول مرة أخرى.");
-    navigate("/auth/login");
+    navigate("/login");
   };
 
   const handleManualLogout = () => {
     dispatch(logout());
     setIsOpen(false);
     toast.info("تم تسجيل الخروج بنجاح.");
-    navigate("/auth/login");
+    navigate("/login");
   };
 
   const handleRenewSession = async () => {
@@ -86,12 +97,12 @@ export const SessionTimeoutManager = () => {
         setIsOpen(false);
       } else {
         toast.error("فشل تجديد الجلسة، يرجى تسجيل الدخول مجدداً.");
-        navigate("/auth/login");
+        navigate("/login");
       }
     } catch (error) {
       toast.error("حدث خطأ أثناء تجديد الجلسة.");
       console.log(error);
-      navigate("/auth/login");
+      navigate("/login");
     } finally {
       setIsRefreshing(false);
     }

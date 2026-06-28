@@ -11,7 +11,7 @@ const initialState: AidState = {
 };
 
 const aidSlice = createSlice({
-  name: "aid",
+  name: "steps",
   initialState,
   reducers: {
     setCurrentStep: (state, action: PayloadAction<number>) => {

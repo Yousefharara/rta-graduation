@@ -10,7 +10,7 @@ export interface ICampaignState {
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
-  errorMessage: string | null;
+  error: string | null;
   campaigns: ICampaign[];
   campaign: ICampaign | null;
 }
@@ -20,7 +20,7 @@ const initialState: ICampaignState = {
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
-  errorMessage: null,
+  error: null,
   campaigns: [],
   campaign: null,
 };
@@ -45,7 +45,7 @@ const campaignSlice = createSlice({
         state.isDeleting = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
-      state.errorMessage = action.payload;
+      state.error = action.payload;
     },
     setCampaigns: (state, action: PayloadAction<ICampaign[]>) => {
       state.campaigns = action.payload;

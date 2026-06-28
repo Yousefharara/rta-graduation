@@ -1,18 +1,20 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import authSlice from "./slices/authSlice";
 import UserReducer from "./slices/userSlice";
-import AidReducer from "./slices/aids";
-import userAidsReducer from "./slices/userAids";
-import aidStateReducer from "./slices/aidState";
+import AidReducer from "./slices/aidSlice";
+import beneficiaryAidStepReducer from "./slices/beneficiaryAidStepSlice";
+import beneficiaryAidReducer from "./slices/beneficiaryAidSlice";
 import beneficiaryReducer from "./slices/beneficiarySlice";
 import localOrgReducer from "./slices/localOrgSlice";
 import campaignsReducer from "./slices/campaignSlice";
 import verificationReducer from "./slices/verificationSlice";
 import beneficiaryOrderReducer from "./slices/beneficiaryOrderSlice";
+import aidTypesReducer from "./slices/aidTypes";
+import pickupLocationReducer from "./slices/pickupLocationSlice";
 
 import storage from "redux-persist/lib/storage"; // localStorage'
 import { persistReducer } from "redux-persist";
-import { postsApi } from "./services/postsAPI";
+// import { postsApi } from "./services/postsAPI";
 
 const persistedAuthReducer = persistReducer(
   {
@@ -31,10 +33,12 @@ export const RootReducer = combineReducers({
   campaigns: campaignsReducer,
   verifications: verificationReducer,
   beneficiaryOrders: beneficiaryOrderReducer,
+   aidTypes: aidTypesReducer,
+   beneficiaryAids: beneficiaryAidReducer,
   // ! Edit here >>>>>>>>
   aids: AidReducer,
-  userAids: userAidsReducer,
-  aidState: aidStateReducer,
+  beneficiaryAidStep: beneficiaryAidStepReducer,
+  pickupLocations: pickupLocationReducer,
   // ! <<<<<<<<<< Edit here
-  [postsApi.reducerPath]: postsApi.reducer,
+  // [postsApi.reducerPath]: postsApi.reducer,
 });

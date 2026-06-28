@@ -1,4 +1,3 @@
-import type { AidCategoryType } from "./aid";
 import type { ICreateBeneficiary } from "./beneficiary";
 import type { ICreateLocalOrg } from "./localOrg";
 
@@ -32,7 +31,7 @@ export interface IDonationForm {
 
 
 export interface ISendOrderForm {
-  typeAid: AidCategoryType;
+  typeAid: string;
   reason: string;
 }
 

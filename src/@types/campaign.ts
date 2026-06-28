@@ -2,7 +2,7 @@ export interface ICampaign {
   id: 3;
   title: string;
   description: string;
-  target_amount: string;
+  target_amount: number;
   collected_amount: number;
   start_date: Date;
   end_date: Date;

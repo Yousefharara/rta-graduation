@@ -1,4 +1,4 @@
-import { Check, CircleCheck, CircleX, Eye, Search, X } from "lucide-react";
+import { Check, CircleCheck, CircleX, Eye, Search, X, Truck, Package } from "lucide-react";
 import "./style.css";
 import ReactTable from "@/components/organisms/reactTable";
 import { useEffect, useMemo, useState } from "react";
@@ -9,17 +9,22 @@ import {
   getBeneficiaryOrders,
   updateBeneficiaryOrderStatusAction,
 } from "@/redux/slices/beneficiaryOrderSlice";
+import { editBeneficiaryAidStatus, getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
+import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
+import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
 import type { IBeneficiaryOrder } from "@/@types/beneficiaryOrder";
 
 type orderAidStatus = "pending" | "approved" | "rejected";
 
+interface TableProps {
+  statusFilter: "all" | orderAidStatus;
+  setStatusFilter: (s: "all" | orderAidStatus) => void;
+}
+
 const PAGE_SIZE = 5;
 
-const DashboardAidOrdersTable = () => {
+const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) => {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | orderAidStatus>(
-    "all",
-  );
 
   const { translate } = useTranslate();
 
@@ -28,10 +33,18 @@ const DashboardAidOrdersTable = () => {
   const { orders, isFetching, isUpdating } = useAppSelector(
     (state) => state.beneficiaryOrders,
   );
+  const { aids } = useAppSelector((state) => state.beneficiaryAids);
+  const { beneficiaries } = useAppSelector((state) => state.beneficiaries);
+  const { pickupLocations } = useAppSelector((state) => state.pickupLocations);
 
   useEffect(() => {
-    dispatch(getBeneficiaryOrders(accessToken || ""));
-  }, [dispatch, accessToken]);
+    if (accessToken) {
+      if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
+      if (aids.length === 0) dispatch(getBeneficiaryAids(accessToken));
+      if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
+      if (pickupLocations.length === 0) dispatch(getPickupLocations(accessToken));
+    }
+  }, [dispatch, accessToken]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -59,45 +72,53 @@ const DashboardAidOrdersTable = () => {
     return filteredData.slice(start, end);
   }, [pagination, filteredData]);
 
-  const handleUpdateStatus = (id: number, status: IBeneficiaryOrder["status"]) => {
-    dispatch(updateBeneficiaryOrderStatusAction(id, status, accessToken || ""));
+  /** Find pickup location whose area_id matches the beneficiary's area_id */
+  const resolvePickupLocationId = (beneficiaryId: number): number | undefined => {
+    const beneficiary = beneficiaries.find((b) => b.id === beneficiaryId);
+    if (!beneficiary) return undefined;
+    const location = pickupLocations.find((loc) => loc.area_id === beneficiary.area_id);
+    return location?.id;
+  };
+
+  const handleUpdateStatus = (
+    id: number,
+    status: IBeneficiaryOrder["status"],
+    beneficiaryId?: number,
+  ) => {
+    let pickupLocationId: number | undefined;
+    if (status === "approved" && beneficiaryId) {
+      pickupLocationId = resolvePickupLocationId(beneficiaryId);
+    }
+    dispatch(updateBeneficiaryOrderStatusAction(id, status, accessToken || "", pickupLocationId));
   };
 
   const columns = useMemo<ColumnDef<IBeneficiaryOrder>[]>(() => {
     return [
       {
         header: "رقم الطلب",
-        cell: ({ row }) => {
-          return (
-            <p className="text-primary font-medium">#{row.original.id}</p>
-          );
-        },
+        cell: ({ row }) => (
+          <p className="text-primary font-medium">#{row.original.id}</p>
+        ),
       },
       {
         header: "رقم المستفيد",
-        cell: ({ row }) => {
-          return <p>{row.original.beneficiary_id}</p>;
-        },
+        cell: ({ row }) => <p>{row.original.beneficiary_id}</p>,
       },
       {
         header: "نوع المساعده",
-        cell: ({ row }) => {
-          return (
-            <p className="px-4 text-sm font-semibold border border-zinc-400 py-2 w-fit rounded-md">
-              {translate(String(row.original.aid_type_id))}
-            </p>
-          );
-        },
+        cell: ({ row }) => (
+          <p className="px-4 text-sm font-semibold border border-zinc-400 py-2 w-fit rounded-md">
+            {translate(String(row.original.aid_type_id))}
+          </p>
+        ),
       },
       {
         header: "الوصف",
-        cell: ({ row }) => {
-          return (
-            <p className="max-w-[200px] truncate text-sm text-zinc-600">
-              {row.original.description}
-            </p>
-          );
-        },
+        cell: ({ row }) => (
+          <p className="max-w-[200px] truncate text-sm text-zinc-600">
+            {row.original.description}
+          </p>
+        ),
       },
       {
         header: "الحالة",
@@ -131,9 +152,73 @@ const DashboardAidOrdersTable = () => {
         },
       },
       {
+        header: "حالة المساعدة",
+        cell: ({ row }) => {
+          const aid = aids.find((a) => a.order_id === row.original.id);
+          if (!aid) return <span className="text-zinc-400">-</span>;
+
+          const { status, id } = aid;
+
+          const statusLabels: Record<string, string> = {
+            approved: "تمت الموافقة",
+            preparing: "جاري التجهيز",
+            shipping: "جاري التوزيع",
+            delivered: "تم التوصيل",
+            rejected: "مرفوض",
+          };
+
+          const handleStatusClick = (newStatus: string) => {
+            if (isUpdating) return;
+            dispatch(editBeneficiaryAidStatus(id, newStatus as any, accessToken || ""));
+          };
+
+          return (
+            <div className="flex flex-col gap-1 items-start">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700">
+                {statusLabels[status] || status}
+              </span>
+              <div className="flex items-center gap-2 mt-1">
+                {status === "approved" && (
+                  <button
+                    title="تحضير المساعدة"
+                    disabled={isUpdating}
+                    onClick={() => handleStatusClick("preparing")}
+                    className="p-1 hover:bg-yellow-50 rounded transition-colors text-yellow-600 hover:text-yellow-700 disabled:opacity-40 cursor-pointer"
+                  >
+                    <Package size={18} />
+                  </button>
+                )}
+
+                {(status === "approved" || status === "preparing") && (
+                  <button
+                    title="شحن المساعدة"
+                    disabled={isUpdating}
+                    onClick={() => handleStatusClick("shipping")}
+                    className="p-1 hover:bg-blue-50 rounded transition-colors text-blue-600 hover:text-blue-700 disabled:opacity-40 cursor-pointer"
+                  >
+                    <Truck size={18} />
+                  </button>
+                )}
+
+                {(status === "approved" || status === "preparing" || status === "shipping") && (
+                  <button
+                    title="توصيل المساعدة"
+                    disabled={isUpdating}
+                    onClick={() => handleStatusClick("delivered")}
+                    className="p-1 hover:bg-green-50 rounded transition-colors text-green-600 hover:text-green-700 disabled:opacity-40 cursor-pointer"
+                  >
+                    <CircleCheck size={18} />
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        },
+      },
+      {
         header: "الاجراءات",
         cell: ({ row }) => {
-          const { status, id } = row.original;
+          const { status, id, beneficiary_id } = row.original;
 
           return (
             <div className="flex items-center gap-3">
@@ -149,14 +234,10 @@ const DashboardAidOrdersTable = () => {
                   <button
                     title="قبول الطلب"
                     disabled={isUpdating}
-                    onClick={() => handleUpdateStatus(id, "approved")}
+                    onClick={() => handleUpdateStatus(id, "approved", beneficiary_id)}
                     className="cursor-pointer disabled:opacity-40"
                   >
-                    <CircleCheck
-                      size={22}
-                      strokeWidth={1.3}
-                      className="text-green-700"
-                    />
+                    <CircleCheck size={22} strokeWidth={1.3} className="text-green-700" />
                   </button>
 
                   <button
@@ -165,11 +246,7 @@ const DashboardAidOrdersTable = () => {
                     onClick={() => handleUpdateStatus(id, "rejected")}
                     className="cursor-pointer disabled:opacity-40"
                   >
-                    <CircleX
-                      size={22}
-                      strokeWidth={1.3}
-                      className="text-red-700"
-                    />
+                    <CircleX size={22} strokeWidth={1.3} className="text-red-700" />
                   </button>
                 </>
               )}
@@ -179,7 +256,7 @@ const DashboardAidOrdersTable = () => {
       },
     ];
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUpdating, translate]);
+  }, [isUpdating, translate, aids, accessToken, dispatch, beneficiaries, pickupLocations]);
 
   if (isFetching) {
     return (
@@ -214,9 +291,7 @@ const DashboardAidOrdersTable = () => {
           <p
             onClick={() => setStatusFilter("approved")}
             className={`px-3 py-2 rounded-md cursor-pointer ${
-              statusFilter === "approved"
-                ? "bg-primary text-white"
-                : "bg-white"
+              statusFilter === "approved" ? "bg-primary text-white" : "bg-white"
             }`}
           >
             تمت الموافقة
