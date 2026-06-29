@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RowForm from "@/components/molecules/rowForm";
 // import { AREAS } from "@/constants/areas";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 // import { GOVERNORATES } from "@/constants/governorates";
 import Button from "@/components/atoms/button";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
@@ -15,21 +15,21 @@ import { toast } from "sonner";
 import { INPUTS_TYPE_ERROR } from "@/constants/forms";
 import Spinner from "@/components/feedback/Spinner";
 
-const defaultValues: IRegisterBeneficiaryForm = {
-  name: "",
-  disabled_count: 0,
-  area_id: 1,
-  family_size: 0,
-  national_id: "",
-  password: "",
-  patients_count: 0,
-  phone: "",
-  is_displaced: false,
-  income: 0,
-  status: "single",
-  email: "",
-  release_date: new Date().toISOString()
-};
+// const defaultValues: IRegisterBeneficiaryForm = {
+//   name: "",
+//   disabled_count: 0,
+//   area_id: 1,
+//   family_size: 0,
+//   national_id: "",
+//   password: "",
+//   patients_count: 0,
+//   phone: "",
+//   is_displaced: false,
+//   income: 0,
+//   status: "single",
+//   email: "",
+//   release_date: new Date().toISOString()
+// };
 
 const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> =
   Yup.object({
@@ -57,7 +57,7 @@ const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> 
   });
 
 const DashboardBeneficiaryRegister = () => {
-  const [region, setRegion] = useState<number>();
+  // const [region, setRegion] = useState<number>();
   const { accessToken } = useAppSelector((state) => state.auth);
   const { isCreating, error } = useAppSelector((state) => state.beneficiaries);
   const dispatch = useAppDispatch();
@@ -66,7 +66,7 @@ const DashboardBeneficiaryRegister = () => {
   const {
     formState: { errors },
     handleSubmit,
-    reset,
+    // reset,
     register,
   } = useForm<IRegisterBeneficiaryForm>({
     resolver: yupResolver(schemaRegisterBeneficiaryFrom),

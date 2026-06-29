@@ -1,7 +1,6 @@
 import type { IRegisterLocalOrgForm } from "@/@types/forms";
 import Button from "@/components/atoms/button";
 import RowForm from "@/components/molecules/rowForm";
-import { AREAS } from "@/constants/areas";
 import { addLocalOrgAction } from "@/redux/slices/localOrgSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { generateRandomEmail } from "@/utils/utils";
@@ -134,7 +133,7 @@ const DashboardOrgRegister = () => {
                 الموقع الجغرافي الرئيسي
               </label>
 
-              <select
+              {/* <select
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
                 defaultValue={"select"}
                 {...register("area_id")}
@@ -149,7 +148,7 @@ const DashboardOrgRegister = () => {
                     </option>
                   );
                 })}
-              </select>
+              </select> */}
               {errors["area_id"] && (
                 <span className="span__error">
                   {errors["area_id"]?.message}
