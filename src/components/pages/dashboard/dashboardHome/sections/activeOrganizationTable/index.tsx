@@ -1,4 +1,6 @@
 import type { ILocalOrg } from "@/@types/localOrg";
+import Error from "@/components/feedback/Error";
+import Spinner from "@/components/feedback/Spinner";
 import ReactTable from "@/components/organisms/reactTable";
 import { getLocalOrgs } from "@/redux/slices/localOrgSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
@@ -50,7 +52,7 @@ const ActiveOrganization = () => {
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const {localOrgs} = useAppSelector(state => state.localOrg)
+  const {localOrgs, isFetching, error} = useAppSelector(state => state.localOrg)
   const {accessToken} = useAppSelector(state => state.auth)
   const dispatch = useAppDispatch();
   // const [dataTable, setDataTable] = useState<IDataTable[]>([]);
@@ -122,6 +124,18 @@ const ActiveOrganization = () => {
       },
     ];
   }, []);
+
+  
+  if (isFetching) {
+    return (
+      <div className="flex justify-center gap-4 items-center h-40 text-zinc-500">
+        جاري تحميل المنظمات...
+        <Spinner />
+      </div>
+    );
+  }
+
+  if(error) return <Error onRetry={() => dispatch(getLocalOrgs(accessToken || ""))}/>
 
   return (
     <section className="flex flex-col rounded-lg border border-zinc-300">

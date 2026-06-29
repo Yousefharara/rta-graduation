@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { loginBeneficiaryAction, setError } from "@/redux/slices/authSlice";
 import { formatDate } from "@/utils/utils";
 import { useEffect } from "react";
+import Spinner from "@/components/feedback/Spinner";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
   IDNumber: Yup.string().required("رقم الهوية مطلوب !"),
@@ -35,10 +36,14 @@ const TrackAidForm = () => {
   }, [dispatch]);
 
   const handleOnSubmit = (data: ITrackAidForm) => {
-
-    console.log('data submit is : ', data, ' | release is ', data.versionNumber instanceof Date
+    console.log(
+      "data submit is : ",
+      data,
+      " | release is ",
+      data.versionNumber instanceof Date
         ? formatDate(data.versionNumber)
-        : String(data.versionNumber));
+        : String(data.versionNumber),
+    );
     // تحويل التاريخ إلى string بصيغة YYYY-MM-DD
     const release_date =
       data.versionNumber instanceof Date
@@ -57,7 +62,10 @@ const TrackAidForm = () => {
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit(handleOnSubmit)}>
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={handleSubmit(handleOnSubmit)}
+    >
       <RowForm<ITrackAidForm>
         title="رقم الهويه الوطنيه"
         errors={errors}
@@ -78,23 +86,23 @@ const TrackAidForm = () => {
         className="w-full bg-[#E0E9FD]!"
       />
 
-      {error && (
-        <p className="text-rose-700 text-sm text-center">{error} Error</p>
-      )}
+      {error && <p className="text-rose-700 text-sm text-center">{error}</p>}
 
-      <Button
-        variant="default"
-        className="text-white w-full flex justify-center items-center py-3"
-      >
-        <div className="flex items-center gap-3 w-fit">
-          {isLoading ? (
-            <p className="text-lg">تحميل ...</p>
-          ) : (
+      {!isLoading ? (
+        <Button
+          variant="default"
+          className="text-white w-full flex justify-center items-center py-3"
+        >
+          <div className="flex items-center gap-3 w-fit">
             <p className="text-lg">تتبع</p>
-          )}
-          <ArrowLeft size={18} />
+            <ArrowLeft size={18} />
+          </div>
+        </Button>
+      ) : (
+        <div className="flex justify-center items-center">
+          <Spinner />
         </div>
-      </Button>
+      )}
     </form>
   );
 };

@@ -23,12 +23,14 @@ const NavbarDashboard = ({ handleOpenAside }: INavbarDashboard) => {
           <li>
             <Link to={PATHS.HOME}>الرئيسية</Link>
           </li>
-          <li>
+          <span className="sm:flex gap-6 hidden">
+            <li>
             <Link to={PATHS.ABOUT}>حول المنصة</Link>
           </li>
           <li>
             <Bell />
           </li>
+          </span>
         </div>
         <div>
           <div className="w-28 h-full overflow-hidden">

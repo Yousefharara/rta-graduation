@@ -1,5 +1,7 @@
 import type { IBeneficiary } from "@/@types/beneficiary";
 import type { IBeneficiaryVerification } from "@/@types/verfityBeneficiary";
+import Error from "@/components/feedback/Error";
+import Spinner from "@/components/feedback/Spinner";
 import ReactTable from "@/components/organisms/reactTable";
 import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
 import { verifyBeneficiaryAction } from "@/redux/slices/verificationSlice";
@@ -82,11 +84,10 @@ const ConfirmModal = ({
           <button
             onClick={() => onConfirm(notes)}
             disabled={isLoading}
-            className={`px-4 py-2 rounded-lg text-sm text-white font-medium transition-colors cursor-pointer ${
-              isApprove
+            className={`px-4 py-2 rounded-lg text-sm text-white font-medium transition-colors cursor-pointer ${isApprove
                 ? "bg-green-600 hover:bg-green-700"
                 : "bg-red-600 hover:bg-red-700"
-            } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+              } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {isLoading ? "جاري التنفيذ..." : isApprove ? "قبول" : "رفض"}
           </button>
@@ -105,8 +106,8 @@ const DashbaordBMTable = () => {
   } | null>(null);
 
   const dispatch = useAppDispatch();
-  const { accessToken, user } = useAppSelector((state) => state.auth);
-  const { beneficiaries } = useAppSelector((state) => state.beneficiaries);
+  const { accessToken, user, role } = useAppSelector((state) => state.auth);
+  const { beneficiaries, isFetching, error } = useAppSelector((state) => state.beneficiaries);
   const { isCreating } = useAppSelector(
     (state) => state.verifications,
   );
@@ -143,7 +144,7 @@ const DashbaordBMTable = () => {
 
     const body: IBeneficiaryVerification = {
       beneficiary_id: confirmModal.beneficiary.id,
-      org_id: user.id,
+      org_id: role === "admin" ? 1 : user.id,
       result: confirmModal.action === "approve" ? "approved" : "rejected",
       notes,
     };
@@ -280,6 +281,17 @@ const DashbaordBMTable = () => {
     ];
   }, []);
 
+  if (isFetching) {
+    return (
+      <div className="flex justify-center gap-4 items-center h-40 text-zinc-500">
+        جاري تحميل المستفيدين...
+        <Spinner />
+      </div>
+    );
+  }
+
+  if(error) return <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))}/>
+
   return (
     <>
       {confirmModal && (
@@ -304,7 +316,7 @@ const DashbaordBMTable = () => {
           />
         </div>
 
-        <article className="w-full">
+        <article className="w-full overflow-x-auto">
           <ReactTable
             columns={columns}
             data={paginationData}

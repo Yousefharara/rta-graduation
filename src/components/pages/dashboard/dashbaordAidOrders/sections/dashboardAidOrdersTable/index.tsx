@@ -14,6 +14,8 @@ import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
 import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
 import type { IBeneficiaryOrder } from "@/@types/beneficiaryOrder";
 import type { IBeneficiaryAid } from "@/@types/beneficiaryAid";
+import Spinner from "@/components/feedback/Spinner";
+import Error from "@/components/feedback/Error";
 
 type orderAidStatus = "pending" | "approved" | "rejected";
 
@@ -31,7 +33,7 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
 
   const dispatch = useAppDispatch();
   const { accessToken } = useAppSelector((state) => state.auth);
-  const { orders, isFetching, isUpdating } = useAppSelector(
+  const { orders, isFetching, isUpdating, error } = useAppSelector(
     (state) => state.beneficiaryOrders,
   );
   const { aids } = useAppSelector((state) => state.beneficiaryAids);
@@ -261,16 +263,21 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
 
   if (isFetching) {
     return (
-      <div className="flex justify-center items-center h-40 text-zinc-500">
+      <div className="flex justify-center gap-4 items-center h-40 text-zinc-500">
         جاري تحميل الطلبات...
+          <Spinner />
+
       </div>
     );
   }
 
+  
+    if(error) return <Error onRetry={() => dispatch(getBeneficiaryOrders(accessToken || ""))}/>
+
   return (
     <section className="flex flex-col gap-4 p-3 border border-zinc-400 bg-white rounded-md">
-      <article className="flex items-center gap-4">
-        <div className="search-filter bg-[#EFF4FF] rounded-md px-4 py-2 flex items-center gap-2">
+      <article className="flex items-center gap-4 flex-wrap">
+        <div className="search-filter bg-[#EFF4FF] rounded-md px-4 py-2 flex flex-wrap items-center gap-2">
           <p
             onClick={() => setStatusFilter("all")}
             className={`px-3 py-2 rounded-md cursor-pointer ${
@@ -308,19 +315,19 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
           </p>
         </div>
 
-        <div className="flex gap-2 items-center border border-zinc-400 rounded-md px-3 py-2">
+        <div className="flex gap-2 basis-[48%] items-center border border-zinc-400 rounded-md px-3 py-2">
           <Search size={18} />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="min-w-64 outline-0"
+            className="w-full outline-0"
             placeholder="بحث عن رقم الطلب أو رقم المستفيد..."
           />
         </div>
       </article>
 
-      <article className="w-full">
+      <article className="w-full overflow-x-auto">
         <ReactTable
           columns={columns}
           data={paginationData}

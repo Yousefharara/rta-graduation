@@ -9,7 +9,7 @@ const DashboardBMHero = () => {
 
     return (
         <section className="flex flex-col gap-12"> 
-            <article className="flex items-center gap-4 justify-between">
+            <article className="flex items-center gap-4 justify-between flex-wrap-reverse">
                 <div>
                 <h2 className="font-semibold" style={{fontSize: "clamp(22px, 5vw, 38px"}}>إدارة المستفيدين</h2>
                 <p style={{fontSize: "clamp(14px, 5vw, 22px)"}}>إدارة وتتبع بيانات العائلات والأفراد المسجلين في النظام.</p>

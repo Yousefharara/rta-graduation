@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/redux/store";
-import ActiveOrganization from "./sections/activeOrganization";
+import ActiveOrganization from "./sections/activeOrganizationTable";
 import HeroDashboardHome from "./sections/heroDashboardHome";
 import RsourceAllocation from "./sections/resourceAllocation";
 

@@ -68,6 +68,16 @@ export const BENEFICIARY_AID_PATHS = {
     DELETE_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
 }
 
+export const GOVERNORATE_PATHS = {
+    GET_GOVERNORATE: "/:id",
+    GET_GOVERNORATES: "",
+}
+
+export const AREA_PATHS = {
+    GET_AREA: "/:id",
+    GET_AREAS: ""
+}
+
 
 export const ORG_PATHS = {
     CREATE_ORG: "/api/organizations",

@@ -1,12 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import Button from "../../atoms/button";
 import RowForm from "../../molecules/rowForm";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { setError, setLogin } from "../../../redux/slices/authSlice";
+import { setLogin } from "../../../redux/slices/authSlice";
 import type { ILoginForm } from "@/@types/forms";
 import Spinner from "@/components/feedback/Spinner";
 
@@ -25,40 +24,45 @@ const LoginForm = () => {
     register,
   } = useForm<ILoginForm>({ resolver: yupResolver(schemaLoginFrom) });
   const dispatch = useAppDispatch();
-  const { user, isLoading, error } = useAppSelector(state => state.auth)
-  const [isAuth, setIsAuth] = useState<boolean>(false);
-  
+  const { user, isLoading, error } = useAppSelector((state) => state.auth);
+  // const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleOnSubmit = (data: ILoginForm) => {
-
     dispatch(setLogin(data));
-    setIsAuth(false)
+    // setIsAuth(false)
     if (!isLoading) {
       if (user) {
-        console.log('user is ', user);
+        console.log("user is ", user);
       } else {
-        console.log('no user found');
+        console.log("no user found");
       }
     }
   };
 
+  const defaultAdmin = () => {
+    dispatch(
+      setLogin({
+        email: "admin@admin.com",
+        password: "password123",
+      }),
+    );
+  };
+  const defaultOrg = () => {
+    dispatch(
+      setLogin({
+        email: "org@org.com",
+        password: "password123",
+      }),
+    );
+  };
 
-  useEffect(() => {
-    // Clear auth error on component unmount to prevent stale errors on other pages
-    return () => {
-      dispatch(setError(null));
-    };
-  }, [dispatch]);
+  // useEffect(() => {
+  //   // Clear auth error on component unmount to prevent stale errors on other pages
+  //   return () => {
+  //     dispatch(setError(null));
+  //   };
+  // }, [dispatch]);
 
-  useEffect(() => {
-    if (error) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsAuth(true);
-    }
-  }, [error]);
-
-
-  
 
   return (
     <form onSubmit={handleSubmit(handleOnSubmit)}>
@@ -157,29 +161,45 @@ const LoginForm = () => {
           {errors["remeberMe"]?.message}
         </span>
       )}
-      {isLoading ? <div className="w-full flex justify-center items-center"><Spinner /></div> : <Button
-        variant="default"
-        type="submit"
-        className="
+      {isLoading ? (
+        <div className="w-full flex justify-center items-center">
+          <Spinner />
+        </div>
+      ) : (
+        <Button
+          variant="default"
+          type="submit"
+          className="
           w-full
           mt-4
         "
-      >
-        تسجيل الدخول
-      </Button>}
-      {isAuth && (
+        >
+          تسجيل الدخول
+        </Button>
+      )}
+      {error && (
         <p
           className="
-            mt-4 text-center text-lg font-semibold text-red-500
+            mt-4 text-center text-red-500
           "
         >
-          Password or Email Error
+          {error}
         </p>
       )}
-
-      {/* {errorMessage && (
-        <p className="text-rose-600 font-medium mt-10">{errorMessage}</p>
-      )} */}
+      <section className="flex justify-between gap-4 mt-8">
+        <article
+          onClick={defaultAdmin}
+          className="cursor-pointer border-2 border-zinc-300 hover:border-rose-600 transition duration-300 rounded-lg p-4 "
+        >
+          Entire with default admin
+        </article>
+        <article
+          onClick={defaultOrg}
+          className="cursor-pointer border-2 border-zinc-300 hover:border-emerald-600 transition duration-300 rounded-lg p-4 "
+        >
+          Entire with default org
+        </article>
+      </section>
     </form>
   );
 };

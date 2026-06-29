@@ -47,6 +47,7 @@ export const verifyBeneficiaryAction =
   async (dispatch: AppDispatch) => {
     dispatch(setCreating(true));
     dispatch(setError(""));
+    console.log('verify data is : ', body);
     try {
       const { data } = await axios.post<IBeneficiaryVerification>(
         API_KEY + VERIFY_BENEFICIARY_PATHS.VERIFY_BENEFICIARY,

@@ -11,16 +11,25 @@ import verificationReducer from "./slices/verificationSlice";
 import beneficiaryOrderReducer from "./slices/beneficiaryOrderSlice";
 import aidTypesReducer from "./slices/aidTypes";
 import pickupLocationReducer from "./slices/pickupLocationSlice";
+import governoratesReducer from "./slices/governorateSlice";
+import areasReducer from "./slices/areaSlice";
 
 import storage from "redux-persist/lib/storage"; // localStorage'
 import { persistReducer } from "redux-persist";
-// import { postsApi } from "./services/postsAPI";
 
 const persistedAuthReducer = persistReducer(
   {
     key: "auth",
     storage,
-    whitelist: ["user", "accessToken", "role", "beneficiary", "refreshToken", "tokenAcquiredAt"],
+    whitelist: [
+      "user",
+      "accessToken",
+      "role",
+      "beneficiary",
+      "organization",
+      "refreshToken",
+      "tokenAcquiredAt",
+    ],
   },
   authSlice,
 );
@@ -33,12 +42,12 @@ export const RootReducer = combineReducers({
   campaigns: campaignsReducer,
   verifications: verificationReducer,
   beneficiaryOrders: beneficiaryOrderReducer,
-   aidTypes: aidTypesReducer,
-   beneficiaryAids: beneficiaryAidReducer,
+  aidTypes: aidTypesReducer,
+  beneficiaryAids: beneficiaryAidReducer,
+  governorates: governoratesReducer,
+  areas: areasReducer,
   // ! Edit here >>>>>>>>
-  // aids: AidReducer,
   beneficiaryAidStep: beneficiaryAidStepReducer,
   pickupLocations: pickupLocationReducer,
   // ! <<<<<<<<<< Edit here
-  // [postsApi.reducerPath]: postsApi.reducer,
 });

@@ -1,4 +1,5 @@
 import type { IBeneficiary } from "./beneficiary";
+import type { ILocalOrg } from "./localOrg";
 import type { IUser } from "./user";
 
 export interface ILoginAuth {
@@ -15,5 +16,6 @@ export interface IAuth {
   accessToken: string;
   refreshToken: string;
   beneficiary: IBeneficiary;
+  organization: ILocalOrg;
   user: IUser;
 }

@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ShieldAlert } from "lucide-react";
 
 // Session configuration
-const SESSION_DURATION = 10 * 60 * 1000; // 30 minutes in ms
+const SESSION_DURATION = 15 * 60 * 1000; // 30 minutes in ms
 const WARNING_THRESHOLD = 60 * 1000; // Warn 1 minute before expiration
 
 export const SessionTimeoutManager = () => {
