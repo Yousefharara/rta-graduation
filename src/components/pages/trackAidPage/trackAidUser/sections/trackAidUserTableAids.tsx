@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
 import { getAidTypes } from "@/redux/slices/aidTypes";
+import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
 
 interface IDataTable {
   name: string;
@@ -24,12 +25,14 @@ const TrackAidUserTableAids = () => {
   const dispatch = useAppDispatch();
   const { aids } = useAppSelector((state) => state.beneficiaryAids);
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
+  const {pickupLocations} = useAppSelector(state => state.pickupLocations)
   const { beneficiary, accessToken } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     if (accessToken) {
       dispatch(getBeneficiaryAids(accessToken));
       dispatch(getAidTypes(accessToken));
+      dispatch(getPickupLocations(accessToken));
     }
   }, [dispatch, accessToken]);
 
@@ -38,6 +41,10 @@ const TrackAidUserTableAids = () => {
     return aids.filter((aid) => aid.beneficiary_id === beneficiary.id);
   }, [aids, beneficiary]);
 
+  const getPickupLocationById = (id: number) => (
+    pickupLocations.find(loc => loc.id === id)?.name
+  ) 
+
   const dataTable = useMemo<IDataTable[]>(() => {
     return filteredAids.map((aid) => {
       const aidTypeObj = aidTypes.find((t) => Number(t.id) === aid.aid_type_id);
@@ -45,10 +52,11 @@ const TrackAidUserTableAids = () => {
       return {
         name,
         date: "",
-        pickupLocation: aid.pickup_location_id ? `Location #${aid.pickup_location_id}` : "غزة",
+        pickupLocation: aid.pickup_location_id ? getPickupLocationById(aid.pickup_location_id) || "غزة" : "غزة",
         status: aid.status,
       };
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredAids, aidTypes]);
 
   const deliveredAidsCount = useMemo(() => {

@@ -3,9 +3,9 @@ import type { IRegisterBeneficiaryForm } from "@/@types/forms";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RowForm from "@/components/molecules/rowForm";
-import { AREAS } from "@/constants/areas";
+// import { AREAS } from "@/constants/areas";
 import { useEffect, useState } from "react";
-import { GOVERNORATES } from "@/constants/governorates";
+// import { GOVERNORATES } from "@/constants/governorates";
 import Button from "@/components/atoms/button";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { addBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
@@ -13,6 +13,7 @@ import { generateRandomEmail } from "@/utils/utils";
 import { useBeneficiaryValidation } from "@/hooks/useBeneficiaryValidation";
 import { toast } from "sonner";
 import { INPUTS_TYPE_ERROR } from "@/constants/forms";
+import Spinner from "@/components/feedback/Spinner";
 
 const defaultValues: IRegisterBeneficiaryForm = {
   name: "",
@@ -58,6 +59,7 @@ const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> 
 const DashboardBeneficiaryRegister = () => {
   const [region, setRegion] = useState<number>();
   const { accessToken } = useAppSelector((state) => state.auth);
+  const { isCreating, error } = useAppSelector((state) => state.beneficiaries);
   const dispatch = useAppDispatch();
   const { isNationalIdExists } = useBeneficiaryValidation();
 
@@ -73,6 +75,7 @@ const DashboardBeneficiaryRegister = () => {
   useEffect(() => {
     console.log("Error , ", errors);
   }, [errors]);
+
 
   const handleOnSubmit = (data: IRegisterBeneficiaryForm) => {
     if (isNationalIdExists(data.national_id)) {
@@ -99,9 +102,12 @@ const DashboardBeneficiaryRegister = () => {
         accessToken || "",
       ),
     );
-    reset(defaultValues);
-    toast.success("تم تسجيل المستفيد");
+    if(!error && isCreating) {
+      toast.success("تم تسجيل المستفيد");
+      // reset(defaultValues);
+    }
   };
+
 
   return (
     <section>
@@ -223,7 +229,7 @@ const DashboardBeneficiaryRegister = () => {
                 المنطقه / المحافظه
               </label>
 
-              <select
+              {/* <select
                 defaultValue={"select"}
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
                 onChange={(e) => {
@@ -240,7 +246,7 @@ const DashboardBeneficiaryRegister = () => {
                     {gov.name}
                   </option>
                 ))}
-              </select>
+              </select> */}
 
               {errors["area_id"] && (
                 <span className="span__error">المحافظه مطلوبه</span>
@@ -250,7 +256,7 @@ const DashboardBeneficiaryRegister = () => {
             <div className="flex flex-col gap-4 my-4 w-full">
               <label className="text-sm font-semibold">الحي</label>
 
-              <select
+              {/* <select
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
                 defaultValue={"select"}
                 {...register("area_id")}
@@ -268,7 +274,7 @@ const DashboardBeneficiaryRegister = () => {
                     );
                   },
                 )}
-              </select>
+              </select> */}
 
               {errors["area_id"] && errors["area_id"]?.type === "typeError" ? (
                 <span className="text-sm text-rose-600">
@@ -287,18 +293,12 @@ const DashboardBeneficiaryRegister = () => {
               )}
             </div>
           </div>
-
-          {/* <RowForm<IRegisterBeneficiaryForm>
-            errors={errors}
-            label="income"
-            title="أقرب معلم بارز (مسجد، مدرسة، مستشفى) *"
-            register={register}
-          /> */}
+          
         </article>
 
-        <Button className="self-start" type="submit">
+        {isCreating ? <Spinner /> : <Button className="self-start" type="submit">
           تسجيل المستفيد
-        </Button>
+        </Button>}
       </form>
     </section>
   );

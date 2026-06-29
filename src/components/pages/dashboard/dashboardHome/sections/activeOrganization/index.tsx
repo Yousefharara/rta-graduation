@@ -2,7 +2,6 @@ import type { ILocalOrg } from "@/@types/localOrg";
 import ReactTable from "@/components/organisms/reactTable";
 import { getLocalOrgs } from "@/redux/slices/localOrgSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { getAreaById } from "@/utils/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 
@@ -45,9 +44,6 @@ const PAGE_SIZE = 5;
 
 
 const ActiveOrganization = () => {
-
-
-  
 
   const [filteredName] = useState<string>("");
   const [pagination, setPagination] = useState({
@@ -93,7 +89,8 @@ const ActiveOrganization = () => {
       },
       {
         header: "المنطقة",
-        accessorFn: (row) => `${getAreaById(row.area_id)?.name}`,
+        accessorFn: () => `${'غزه'}`,
+        // accessorFn: (row) => `${getAreaById(row.area_id)?.name}`,
       },
       {
         header: "مجال التركيز",

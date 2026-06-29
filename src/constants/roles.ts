@@ -6,7 +6,6 @@ export const ROLES : Record<string, RoleType> = {
   DONOR: "donor"
 };
 
-
 export type RoleType =  'guest' | 'beneficiary' | 'admin' | 'local_org' | 'donor';
 
 

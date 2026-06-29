@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { setError, setLogin } from "../../../redux/slices/authSlice";
 import type { ILoginForm } from "@/@types/forms";
+import Spinner from "@/components/feedback/Spinner";
 
 const schemaLoginFrom: Yup.ObjectSchema<ILoginForm> = Yup.object({
   email: Yup.string().email().required(),
@@ -26,6 +27,7 @@ const LoginForm = () => {
   const dispatch = useAppDispatch();
   const { user, isLoading, error } = useAppSelector(state => state.auth)
   const [isAuth, setIsAuth] = useState<boolean>(false);
+  
 
   const handleOnSubmit = (data: ILoginForm) => {
 
@@ -56,6 +58,7 @@ const LoginForm = () => {
   }, [error]);
 
 
+  
 
   return (
     <form onSubmit={handleSubmit(handleOnSubmit)}>
@@ -154,7 +157,7 @@ const LoginForm = () => {
           {errors["remeberMe"]?.message}
         </span>
       )}
-      {isLoading ? <p className="text-center mt-5 text-lg underline">Loading ....</p> : <Button
+      {isLoading ? <div className="w-full flex justify-center items-center"><Spinner /></div> : <Button
         variant="default"
         type="submit"
         className="

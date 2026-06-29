@@ -1,7 +1,7 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import authSlice from "./slices/authSlice";
 import UserReducer from "./slices/userSlice";
-import AidReducer from "./slices/aidSlice";
+// import AidReducer from "./slices/aidSlice";
 import beneficiaryAidStepReducer from "./slices/beneficiaryAidStepSlice";
 import beneficiaryAidReducer from "./slices/beneficiaryAidSlice";
 import beneficiaryReducer from "./slices/beneficiarySlice";
@@ -36,7 +36,7 @@ export const RootReducer = combineReducers({
    aidTypes: aidTypesReducer,
    beneficiaryAids: beneficiaryAidReducer,
   // ! Edit here >>>>>>>>
-  aids: AidReducer,
+  // aids: AidReducer,
   beneficiaryAidStep: beneficiaryAidStepReducer,
   pickupLocations: pickupLocationReducer,
   // ! <<<<<<<<<< Edit here

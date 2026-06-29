@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "server": "json-server -w src/config/db.json --host 0.0.0.0 --port 8080",
     "preview": "vite preview"
   },
   "dependencies": {

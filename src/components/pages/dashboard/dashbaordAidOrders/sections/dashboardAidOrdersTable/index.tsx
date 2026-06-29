@@ -13,6 +13,7 @@ import { editBeneficiaryAidStatus, getBeneficiaryAids } from "@/redux/slices/ben
 import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
 import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
 import type { IBeneficiaryOrder } from "@/@types/beneficiaryOrder";
+import type { IBeneficiaryAid } from "@/@types/beneficiaryAid";
 
 type orderAidStatus = "pending" | "approved" | "rejected";
 
@@ -167,9 +168,9 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
             rejected: "مرفوض",
           };
 
-          const handleStatusClick = (newStatus: string) => {
+          const handleStatusClick = (newStatus: IBeneficiaryAid['status']) => {
             if (isUpdating) return;
-            dispatch(editBeneficiaryAidStatus(id, newStatus as any, accessToken || ""));
+            dispatch(editBeneficiaryAidStatus(id, newStatus, accessToken || ""));
           };
 
           return (

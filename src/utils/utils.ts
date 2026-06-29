@@ -1,5 +1,4 @@
-import { AREAS } from "@/constants/areas";
-
+  
 export const generateRandomEmail = () => {
   const random = Math.random().toString(36).slice(2, 8);
 
@@ -13,10 +12,6 @@ export const positiveNumberOnly = (value: string): number => {
 export const generateRandomAlgorithm = () => {
   return Math.floor(Math.random() * 99) + 1;
 }
-
-export const getAreaById = (id: number) => {
-  return AREAS.find((area) => area.id === id);
-};
 
 export const formatDate = (date: Date) => {
   return [

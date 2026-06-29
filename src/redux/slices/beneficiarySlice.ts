@@ -116,6 +116,7 @@ export const addBeneficiaryAction =
       dispatch(setCreating(true));
       dispatch(setError(null));
 
+      console.log("body is < ", body)
       try {
         const { data } = await axios.post<IBeneficiary>(
           API_KEY + BENEFICIARY_PATHS.CREATE_BENEFICIARY,
@@ -126,6 +127,7 @@ export const addBeneficiaryAction =
             },
           },
         );
+        console.log("data is < ", data)
         dispatch(addBeneficiary(data));
       } catch (err) {
         if (err instanceof Error) dispatch(setError(err.message));
