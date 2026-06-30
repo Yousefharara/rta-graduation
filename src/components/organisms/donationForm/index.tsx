@@ -23,6 +23,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { getCampaigns } from "@/redux/slices/campaignSlice";
 import Error from "@/components/feedback/Error";
 import Spinner from "@/components/feedback/Spinner";
+import { addDonationAction } from "@/redux/slices/donationSlice";
 
 const defaultValues: IDonationForm = {
   donationCampaign: "",
@@ -114,6 +115,13 @@ const DonationForm = () => {
       email,
     });
 
+    dispatch(addDonationAction({
+      ...pendingData,
+      amount: finalBudget,
+      currency: "USD",
+      guest_email: email
+    }))
+
     toast.success("تمت عملية التبرع بنجاح ❤️");
 
     reset(defaultValues);
@@ -140,6 +148,7 @@ const DonationForm = () => {
 
             {campaigns.map(campaign => (
               <label
+              key={campaign.id}
               htmlFor={campaign.title + campaign.id}
               className="lable-gaza flex flex-col w-full offer active border border-zinc-300 rounded-lg p-3"
             >

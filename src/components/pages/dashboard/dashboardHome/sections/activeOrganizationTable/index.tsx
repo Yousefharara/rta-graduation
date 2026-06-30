@@ -2,6 +2,7 @@ import type { ILocalOrg } from "@/@types/localOrg";
 import Error from "@/components/feedback/Error";
 import Spinner from "@/components/feedback/Spinner";
 import ReactTable from "@/components/organisms/reactTable";
+import { getAreas } from "@/redux/slices/areaSlice";
 import { getLocalOrgs } from "@/redux/slices/localOrgSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -54,6 +55,7 @@ const ActiveOrganization = () => {
   });
   const {localOrgs, isFetching, error} = useAppSelector(state => state.localOrg)
   const {accessToken} = useAppSelector(state => state.auth)
+  const {areas} = useAppSelector(state => state.areas)
   const dispatch = useAppDispatch();
   // const [dataTable, setDataTable] = useState<IDataTable[]>([]);
 
@@ -64,6 +66,7 @@ const ActiveOrganization = () => {
 
   useEffect(() => {
     dispatch(getLocalOrgs(accessToken || ""))
+    dispatch(getAreas(accessToken || ""))
   }, [dispatch, accessToken])
 
   const filteredData = useMemo(() => {
@@ -91,8 +94,11 @@ const ActiveOrganization = () => {
       },
       {
         header: "المنطقة",
-        accessorFn: () => `${'غزه'}`,
-        // accessorFn: (row) => `${getAreaById(row.area_id)?.name}`,
+        accessorKey: "area_id",
+        cell: ({row}) => {
+          const {area_id} = row.original;
+          return <p>{areas.find((a) => a.id === area_id)?.name}</p>
+        }
       },
       {
         header: "مجال التركيز",
@@ -123,7 +129,7 @@ const ActiveOrganization = () => {
         accessorFn: (row) => row.org_name,
       },
     ];
-  }, []);
+  }, [areas]);
 
   
   if (isFetching) {

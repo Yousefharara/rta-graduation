@@ -13,6 +13,7 @@ import aidTypesReducer from "./slices/aidTypes";
 import pickupLocationReducer from "./slices/pickupLocationSlice";
 import governoratesReducer from "./slices/governorateSlice";
 import areasReducer from "./slices/areaSlice";
+import aidReducer from "./slices/aidSlice";
 
 import storage from "redux-persist/lib/storage"; // localStorage'
 import { persistReducer } from "redux-persist";
@@ -37,6 +38,7 @@ const persistedAuthReducer = persistReducer(
 export const RootReducer = combineReducers({
   auth: persistedAuthReducer,
   users: UserReducer,
+  aids: aidReducer,
   localOrg: localOrgReducer,
   beneficiaries: beneficiaryReducer,
   campaigns: campaignsReducer,

@@ -28,14 +28,11 @@ import {
   createBeneficiaryOrderAction,
   getBeneficiaryOrders,
 } from "@/redux/slices/beneficiaryOrderSlice";
-import { getAidTypes } from "@/redux/slices/aidTypes";
-import { getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
   typeAid: "",
 };
-
 
 const TrackAidUserHero = () => {
   const [open, setOpen] = useState(false);
@@ -44,7 +41,9 @@ const TrackAidUserHero = () => {
   const { user, accessToken, beneficiary } = useAppSelector(
     (state) => state.auth,
   );
-  const { isCreating, orders } = useAppSelector((state) => state.beneficiaryOrders);
+  const { isCreating, orders } = useAppSelector(
+    (state) => state.beneficiaryOrders,
+  );
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
   const { aids } = useAppSelector((state) => state.beneficiaryAids);
   const dispatch = useAppDispatch();
@@ -58,16 +57,16 @@ const TrackAidUserHero = () => {
   // Fetch dynamic aid types, beneficiary orders and aids
   useEffect(() => {
     if (accessToken) {
-      dispatch(getAidTypes(accessToken));
       dispatch(getBeneficiaryOrders(accessToken));
-      dispatch(getBeneficiaryAids(accessToken));
     }
   }, [dispatch, accessToken]);
 
   // Find latest order for the current beneficiary
   const latestOrder = useMemo(() => {
     if (!beneficiary || !orders.length) return null;
-    const userOrders = orders.filter((o) => o.beneficiary_id === beneficiary.id);
+    const userOrders = orders.filter(
+      (o) => o.beneficiary_id === beneficiary.id,
+    );
     if (!userOrders.length) return null;
     return [...userOrders].sort((a, b) => b.id - a.id)[0];
   }, [orders, beneficiary]);
@@ -100,7 +99,10 @@ const TrackAidUserHero = () => {
   // Update current step based on latest order and aid status
   useEffect(() => {
     if (latestOrder) {
-      if (latestOrder.status === "rejected" || (latestOrderAid && latestOrderAid.status === "rejected")) {
+      if (
+        latestOrder.status === "rejected" ||
+        (latestOrderAid && latestOrderAid.status === "rejected")
+      ) {
         dispatch(setCurrentStep(4)); // Reset step so new order can be added
       } else {
         if (latestOrder.status === "pending") {
@@ -197,17 +199,15 @@ const TrackAidUserHero = () => {
                 </div>
                 <p>
                   تاريخ إنشاء الطلب:{" "}
-                  {(latestOrder as any).created_at
-                    ? new Date((latestOrder as any).created_at).toLocaleDateString(
-                      "ar-EG",
-                      { day: "numeric", month: "long", year: "numeric" },
-                    )
-                    : "غير متوفر"}
+                  {latestOrder.created_at.toString().split("T")[0]}
+                  
                 </p>
               </>
             ) : (
               <>
-                <p className="font-semibold">لا يوجد طلبات مساعدة نشطة حالياً</p>
+                <p className="font-semibold">
+                  لا يوجد طلبات مساعدة نشطة حالياً
+                </p>
                 <p className="text-sm text-zinc-500">
                   يمكنك إضافة طلب جديد بالضغط على زر "إضافة طلب جديد"
                 </p>
@@ -282,7 +282,7 @@ const TrackAidUserHero = () => {
 
               <select
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${messageTypeAidError ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                defaultValue="select"
+                defaultValue=""
                 {...register("typeAid")}
               >
                 <option disabled value="select">

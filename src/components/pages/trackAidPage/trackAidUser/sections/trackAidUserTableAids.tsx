@@ -3,8 +3,6 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Archive } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
-import { getAidTypes } from "@/redux/slices/aidTypes";
 import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
 
 interface IDataTable {
@@ -25,13 +23,11 @@ const TrackAidUserTableAids = () => {
   const dispatch = useAppDispatch();
   const { aids } = useAppSelector((state) => state.beneficiaryAids);
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
-  const {pickupLocations} = useAppSelector(state => state.pickupLocations)
+  const { pickupLocations } = useAppSelector((state) => state.pickupLocations);
   const { beneficiary, accessToken } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     if (accessToken) {
-      dispatch(getBeneficiaryAids(accessToken));
-      dispatch(getAidTypes(accessToken));
       dispatch(getPickupLocations(accessToken));
     }
   }, [dispatch, accessToken]);
@@ -41,22 +37,25 @@ const TrackAidUserTableAids = () => {
     return aids.filter((aid) => aid.beneficiary_id === beneficiary.id);
   }, [aids, beneficiary]);
 
-  const getPickupLocationById = (id: number) => (
-    pickupLocations.find(loc => loc.id === id)?.name
-  ) 
+  const getPickupLocationById = (id: number) =>
+    pickupLocations.find((loc) => loc.id === id)?.name;
 
   const dataTable = useMemo<IDataTable[]>(() => {
     return filteredAids.map((aid) => {
       const aidTypeObj = aidTypes.find((t) => Number(t.id) === aid.aid_type_id);
-      const name = aidTypeObj ? aidTypeObj.name : `Aid Type #${aid.aid_type_id}`;
+      const name = aidTypeObj
+        ? aidTypeObj.name
+        : `Aid Type #${aid.aid_type_id}`;
       return {
         name,
         date: "",
-        pickupLocation: aid.pickup_location_id ? getPickupLocationById(aid.pickup_location_id) || "غزة" : "غزة",
+        pickupLocation: aid.pickup_location_id
+          ? getPickupLocationById(aid.pickup_location_id) || "غزة"
+          : "غزة",
         status: aid.status,
       };
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredAids, aidTypes]);
 
   const deliveredAidsCount = useMemo(() => {
@@ -94,7 +93,7 @@ const TrackAidUserTableAids = () => {
       },
       {
         header: "التاريخ",
-        accessorFn: (row) => `${row.date}`
+        accessorFn: (row) => `${row.date}`,
       },
       {
         header: "مكان الاستلام",

@@ -108,7 +108,7 @@ const DashboardBeneficiaryRegister = () => {
         accessToken || "",
       ),
     );
-    if (!error && isCreating) {
+    if (!error && !isCreating) {
       toast.success("تم تسجيل المستفيد");
       // reset(defaultValues);
     }

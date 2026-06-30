@@ -14,6 +14,11 @@ export const USER_PAHTS = {
   DELETE_USER: "/api/users/:id",
 };
 
+export const AID_PATHS = {
+  CREATE_AID: "/api/aids",
+  GET_AIDS: "/api/aids",
+}
+
 export const CAMPAIGN_PATHS = {
   CREATE_CAMPAIGN: "/api/campaigns",
   GET_CAMPAIGNS: "/api/campaigns",

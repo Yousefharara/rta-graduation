@@ -11,7 +11,17 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as Yup from "yup";
+
+const defaultDate: IRegisterLocalOrgForm = {
+  area_id: 0,
+  email: "",
+  name: "",
+  org_name: "",
+  orgType: "",
+  phone: "",
+};
 
 const schemaRegisterLocalOrgFrom: Yup.ObjectSchema<IRegisterLocalOrgForm> =
   Yup.object({
@@ -27,11 +37,15 @@ const schemaRegisterLocalOrgFrom: Yup.ObjectSchema<IRegisterLocalOrgForm> =
 const DashboardOrgRegister = () => {
   const { accessToken } = useAppSelector((state) => state.auth);
   const { areas, isFetching, error } = useAppSelector((state) => state.areas);
+  const { isCreating, error: createError } = useAppSelector(
+    (state) => state.localOrg,
+  );
   const dispatch = useAppDispatch();
 
   const {
     formState: { errors },
     handleSubmit,
+    reset,
     register,
   } = useForm<IRegisterLocalOrgForm>({
     resolver: yupResolver(schemaRegisterLocalOrgFrom),
@@ -55,6 +69,13 @@ const DashboardOrgRegister = () => {
       ),
     );
     // reset(defaultValues);
+    if (createError) {
+      toast.error("هناك خطأ في ");
+    }
+    if (!createError && !isCreating) {
+      toast.success("تمت اضافة المنظمة بنجاح");
+      reset(defaultDate);
+    }
   };
 
   if (error)
@@ -163,9 +184,13 @@ const DashboardOrgRegister = () => {
           </div>
         </article>
 
-        <Button type="submit" className="flex items-center gap-2 self-start">
-          حفظ <ArrowLeft size={18} />{" "}
-        </Button>
+        {isCreating ? (
+          <Spinner />
+        ) : (
+          <Button type="submit" className="flex items-center gap-2 self-start">
+            حفظ <ArrowLeft size={18} />{" "}
+          </Button>
+        )}
       </form>
     </section>
   );
