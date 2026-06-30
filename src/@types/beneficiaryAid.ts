@@ -16,7 +16,7 @@ export interface IBeneficiaryAid {
   beneficiary_id: number;
   aid_type_id: number;
   pickup_location_id: number | null;
-  org_id: number;
+  verify_by_user_id	: number;
   order_id: number | null;
   status: BeneficiaryAidStatus;
 }

@@ -106,7 +106,7 @@ const DashbaordBMTable = () => {
   } | null>(null);
 
   const dispatch = useAppDispatch();
-  const { accessToken, user, role } = useAppSelector((state) => state.auth);
+  const { accessToken, user } = useAppSelector((state) => state.auth);
   const { beneficiaries, isFetching, error } = useAppSelector((state) => state.beneficiaries);
   const { isCreating } = useAppSelector(
     (state) => state.verifications,
@@ -144,7 +144,7 @@ const DashbaordBMTable = () => {
 
     const body: IBeneficiaryVerification = {
       beneficiary_id: confirmModal.beneficiary.id,
-      org_id: role === "admin" ? 1 : user.id,
+      verified_by: user.id,
       result: confirmModal.action === "approve" ? "approved" : "rejected",
       notes,
     };

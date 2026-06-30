@@ -1,6 +1,9 @@
 import type { IRegisterLocalOrgForm } from "@/@types/forms";
 import Button from "@/components/atoms/button";
+import Error from "@/components/feedback/Error";
+import Spinner from "@/components/feedback/Spinner";
 import RowForm from "@/components/molecules/rowForm";
+import { getAreas } from "@/redux/slices/areaSlice";
 import { addLocalOrgAction } from "@/redux/slices/localOrgSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { generateRandomEmail } from "@/utils/utils";
@@ -23,6 +26,7 @@ const schemaRegisterLocalOrgFrom: Yup.ObjectSchema<IRegisterLocalOrgForm> =
 
 const DashboardOrgRegister = () => {
   const { accessToken } = useAppSelector((state) => state.auth);
+  const { areas, isFetching, error } = useAppSelector((state) => state.areas);
   const dispatch = useAppDispatch();
 
   const {
@@ -34,8 +38,8 @@ const DashboardOrgRegister = () => {
   });
 
   useEffect(() => {
-    console.log("Error , ", errors);
-  }, [errors]);
+    dispatch(getAreas(accessToken || ""));
+  }, [dispatch, accessToken]);
 
   const handleOnSubmit = (data: IRegisterLocalOrgForm) => {
     console.log("data , ", data);
@@ -52,6 +56,9 @@ const DashboardOrgRegister = () => {
     );
     // reset(defaultValues);
   };
+
+  if (error)
+    return <Error onRetry={() => dispatch(getAreas(accessToken || ""))} />;
 
   return (
     <section>
@@ -83,11 +90,8 @@ const DashboardOrgRegister = () => {
           </div>
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-
-<div className="flex flex-col gap-4 my-4 w-full">
-              <label className="text-sm font-semibold">
-                نوع المنظمه
-              </label>
+            <div className="flex flex-col gap-4 my-4 w-full">
+              <label className="text-sm font-semibold">نوع المنظمه</label>
 
               <select
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
@@ -97,10 +101,7 @@ const DashboardOrgRegister = () => {
                 <option disabled value="select">
                   Select
                 </option>
-                <option value="NGO's">
-                  NGO's
-                </option>
-                
+                <option value="NGO's">NGO's</option>
               </select>
               {errors["orgType"] && (
                 <span className="span__error">
@@ -128,33 +129,37 @@ const DashboardOrgRegister = () => {
               onlyPositiveNumbers
             />
 
-            <div className="flex flex-col gap-4 my-4 w-full">
-              <label className="text-sm font-semibold">
-                الموقع الجغرافي الرئيسي
-              </label>
+            {isFetching ? (
+              <Spinner />
+            ) : (
+              <div className="flex flex-col gap-4 my-4 w-full">
+                <label className="text-sm font-semibold">
+                  الموقع الجغرافي الرئيسي
+                </label>
 
-              {/* <select
-                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                defaultValue={"select"}
-                {...register("area_id")}
-              >
-                <option disabled value="select">
-                  Select
-                </option>
-                {AREAS.map((area) => {
-                  return (
-                    <option key={area.id} value={area.id}>
-                      {area.name}
-                    </option>
-                  );
-                })}
-              </select> */}
-              {errors["area_id"] && (
-                <span className="span__error">
-                  {errors["area_id"]?.message}
-                </span>
-              )}
-            </div>
+                <select
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                  defaultValue={"select"}
+                  {...register("area_id")}
+                >
+                  <option disabled value="select">
+                    Select
+                  </option>
+                  {areas.map((area) => {
+                    return (
+                      <option key={area.id} value={area.id}>
+                        {area.name}
+                      </option>
+                    );
+                  })}
+                </select>
+                {errors["area_id"] && (
+                  <span className="span__error">
+                    {errors["area_id"]?.message}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </article>
 

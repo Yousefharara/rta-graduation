@@ -124,6 +124,8 @@ export const updateBeneficiaryOrderStatusAction =
       dispatch(setUpdating(true));
       dispatch(setError(null));
 
+      console.log('update updateBeneficiaryOrderStatusAction , ', status);
+
       try {
         await axios.put(
           API_KEY +

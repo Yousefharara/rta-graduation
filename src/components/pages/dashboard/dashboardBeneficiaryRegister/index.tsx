@@ -3,9 +3,7 @@ import type { IRegisterBeneficiaryForm } from "@/@types/forms";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RowForm from "@/components/molecules/rowForm";
-// import { AREAS } from "@/constants/areas";
-import { useEffect } from "react";
-// import { GOVERNORATES } from "@/constants/governorates";
+import { useEffect, useState } from "react";
 import Button from "@/components/atoms/button";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { addBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
@@ -14,6 +12,8 @@ import { useBeneficiaryValidation } from "@/hooks/useBeneficiaryValidation";
 import { toast } from "sonner";
 import { INPUTS_TYPE_ERROR } from "@/constants/forms";
 import Spinner from "@/components/feedback/Spinner";
+import { getAreas } from "@/redux/slices/areaSlice";
+import { getGovernorates } from "@/redux/slices/governorateSlice";
 
 // const defaultValues: IRegisterBeneficiaryForm = {
 //   name: "",
@@ -57,9 +57,15 @@ const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> 
   });
 
 const DashboardBeneficiaryRegister = () => {
-  // const [region, setRegion] = useState<number>();
+  const [region, setRegion] = useState<number>();
   const { accessToken } = useAppSelector((state) => state.auth);
   const { isCreating, error } = useAppSelector((state) => state.beneficiaries);
+  const { isFetching, governorates } = useAppSelector(
+    (state) => state.governorates,
+  );
+  const { isFetching: isAreaFetching, areas } = useAppSelector(
+    (state) => state.areas,
+  );
   const dispatch = useAppDispatch();
   const { isNationalIdExists } = useBeneficiaryValidation();
 
@@ -73,9 +79,9 @@ const DashboardBeneficiaryRegister = () => {
   });
 
   useEffect(() => {
-    console.log("Error , ", errors);
-  }, [errors]);
-
+    dispatch(getAreas(accessToken || ""));
+    dispatch(getGovernorates(accessToken || ""));
+  }, [accessToken, dispatch]);
 
   const handleOnSubmit = (data: IRegisterBeneficiaryForm) => {
     if (isNationalIdExists(data.national_id)) {
@@ -97,17 +103,16 @@ const DashboardBeneficiaryRegister = () => {
           patients_count: data.patients_count,
           phone: data.phone,
           is_displaced: false,
-          release_date: data.release_date
+          release_date: data.release_date,
         },
         accessToken || "",
       ),
     );
-    if(!error && isCreating) {
+    if (!error && isCreating) {
       toast.success("تم تسجيل المستفيد");
       // reset(defaultValues);
     }
   };
-
 
   return (
     <section>
@@ -224,81 +229,93 @@ const DashboardBeneficiaryRegister = () => {
           <span className="h-px w-full bg-zinc-200 block" />
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-            <div className="flex flex-col gap-4 my-4 w-full">
-              <label className="text-sm font-semibold">
-                المنطقه / المحافظه
-              </label>
+            {isFetching ? (
+              <Spinner />
+            ) : (
+              <div className="flex flex-col gap-4 my-4 w-full">
+                <label className="text-sm font-semibold">
+                  المنطقه / المحافظه
+                </label>
 
-              {/* <select
-                defaultValue={"select"}
-                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                onChange={(e) => {
-                  setRegion(Number(e.target.value));
-                  console.log("region ", region);
-                }}
-              >
-                <option disabled value="select">
-                  Select
-                </option>
-
-                {GOVERNORATES.map((gov) => (
-                  <option key={gov.id} value={gov.id}>
-                    {gov.name}
+                <select
+                  defaultValue={"select"}
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                  onChange={(e) => {
+                    setRegion(Number(e.target.value));
+                    console.log("region ", region);
+                  }}
+                >
+                  <option disabled value="select">
+                    Select
                   </option>
-                ))}
-              </select> */}
 
-              {errors["area_id"] && (
-                <span className="span__error">المحافظه مطلوبه</span>
-              )}
-            </div>
+                  {governorates.map((gov) => (
+                    <option key={gov.id} value={gov.id}>
+                      {gov.name}
+                    </option>
+                  ))}
+                </select>
 
-            <div className="flex flex-col gap-4 my-4 w-full">
-              <label className="text-sm font-semibold">الحي</label>
-
-              {/* <select
-                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                defaultValue={"select"}
-                {...register("area_id")}
-              >
-                <option disabled value="select">
-                  Select
-                </option>
-                {AREAS.filter((a) => a.governorate_id === region).map(
-                  (area) => {
-                    console.log("region , ", region);
-                    return (
-                      <option key={area.id} value={area.id}>
-                        {area.name}
-                      </option>
-                    );
-                  },
+                {errors["area_id"] && (
+                  <span className="span__error">المحافظه مطلوبه</span>
                 )}
-              </select> */}
+              </div>
+            )}
 
-              {errors["area_id"] && errors["area_id"]?.type === "typeError" ? (
-                <span className="text-sm text-rose-600">
-                  {
-                    INPUTS_TYPE_ERROR[
-                      "area_id" as keyof typeof INPUTS_TYPE_ERROR
-                    ]
-                  }
-                </span>
-              ) : (
-                errors["area_id"] && (
+            {isAreaFetching ? (
+              <Spinner />
+            ) : (
+              <div className="flex flex-col gap-4 my-4 w-full">
+                <label className="text-sm font-semibold">الحي</label>
+
+                <select
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                  defaultValue={"select"}
+                  {...register("area_id")}
+                >
+                  <option disabled value="select">
+                    Select
+                  </option>
+                  {areas
+                    .filter((a) => a.governorate_id === region)
+                    .map((area) => {
+                      console.log("region , ", region);
+                      return (
+                        <option key={area.id} value={area.id}>
+                          {area.name}
+                        </option>
+                      );
+                    })}
+                </select>
+
+                {errors["area_id"] &&
+                errors["area_id"]?.type === "typeError" ? (
                   <span className="text-sm text-rose-600">
-                    {String(errors["area_id"])}
+                    {
+                      INPUTS_TYPE_ERROR[
+                        "area_id" as keyof typeof INPUTS_TYPE_ERROR
+                      ]
+                    }
                   </span>
-                )
-              )}
-            </div>
+                ) : (
+                  errors["area_id"] && (
+                    <span className="text-sm text-rose-600">
+                      {String(errors["area_id"])}
+                    </span>
+                  )
+                )}
+              </div>
+            )}
           </div>
-          
         </article>
 
-        {isCreating ? <Spinner /> : <Button className="self-start" type="submit">
-          تسجيل المستفيد
-        </Button>}
+        {isCreating ? (
+          <Spinner />
+        ) : (
+          <Button className="self-start" type="submit">
+            تسجيل المستفيد
+          </Button>
+        )}
       </form>
     </section>
   );

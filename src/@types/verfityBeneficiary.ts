@@ -5,7 +5,7 @@ type verfiyStatus = "approved" | "rejected";
 
 export interface IBeneficiaryVerification {
     beneficiary_id: number,
-    org_id: number,
+    verified_by: number,
     result: verfiyStatus,
     notes: string
 }

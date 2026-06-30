@@ -70,6 +70,9 @@ export default beneficiaryAidSlice.reducer;
 export const getBeneficiaryAids = (token: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   dispatch(setError(null));
+
+  
+
   try {
     const { data } = await axios.get<IBeneficiaryAid[]>(
       API_KEY + BENEFICIARY_AID_PATHS.GET_BENEFICIARY_AIDS,

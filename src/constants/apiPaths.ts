@@ -6,7 +6,6 @@ export const AUTH_PATHS = {
   CHANGE_PASS: "/api/auth/change-password",
 };
 
-
 export const USER_PAHTS = {
   CREATE_USER: "/api/users",
   GET_USERS: "/api/users",
@@ -15,87 +14,86 @@ export const USER_PAHTS = {
   DELETE_USER: "/api/users/:id",
 };
 
-
 export const CAMPAIGN_PATHS = {
-    CREATE_CAMPAIGN: '/api/campaigns',
-    GET_CAMPAIGNS: '/api/campaigns',
-    GET_CAMPAIGN: '/api/campaigns/:id',
-    EDIT_CAMPAIGN: '/api/campaigns/:id',
-    DELETE_CAMPAIGN: '/api/campaigns/:id',
-}
+  CREATE_CAMPAIGN: "/api/campaigns",
+  GET_CAMPAIGNS: "/api/campaigns",
+  GET_CAMPAIGN: "/api/campaigns/:id",
+  EDIT_CAMPAIGN: "/api/campaigns/:id",
+  DELETE_CAMPAIGN: "/api/campaigns/:id",
+};
 
 export const AID_CATEGORY_PATHS = {
-    CREATE_CATEGORY: "/api/aid-categories",
-    GET_CATEGORIES: "/api/aid-categories",
-    EDIT_CATEGORY: "/api/aid-categories/:id",
-    DELETE_CATEGORY: "/api/aid-categories/:id",
-}
+  CREATE_CATEGORY: "/api/aid-categories",
+  GET_CATEGORIES: "/api/aid-categories",
+  EDIT_CATEGORY: "/api/aid-categories/:id",
+  DELETE_CATEGORY: "/api/aid-categories/:id",
+};
 
 export const AID_TYPES_PATHS = {
-    CREATE_AID_TYPE: "/api/aid-types",
-    GET_AID_TYPES: "/api/aid-types",
-    GET_AID_TYPE: "/api/aid-types/:id",
-    EDIT_AID_TYPE: "/api/aid-types/:id",
-    DELETE_AID_TYPE: "/api/aid-types/:id",
-}
+  CREATE_AID_TYPE: "/api/aid-types",
+  GET_AID_TYPES: "/api/aid-types",
+  GET_AID_TYPE: "/api/aid-types/:id",
+  EDIT_AID_TYPE: "/api/aid-types/:id",
+  DELETE_AID_TYPE: "/api/aid-types/:id",
+};
 
 export const BENEFICIARY_PATHS = {
-    CREATE_BENEFICIARY: "/api/beneficiaries",
-    GET_BENEFICIARIES: "/api/beneficiaries",
-    // api/beneficiaries
-    GET_BENEFICIARY: "/api/beneficiaries/:id",
-    EDIT_BENEFICIARY: "/api/beneficiaries/:id",
-    DELETE_BENEFICIARY: "/api/beneficiaries/:id",
-    GET_BENEFICIARY_HISTORY: "/api/beneficiaries/:id/history",
-}
+  CREATE_BENEFICIARY: "/api/beneficiaries",
+  GET_BENEFICIARIES: "/api/beneficiaries",
+  // api/beneficiaries
+  GET_BENEFICIARY: "/api/beneficiaries/:id",
+  EDIT_BENEFICIARY: "/api/beneficiaries/:id",
+  DELETE_BENEFICIARY: "/api/beneficiaries/:id",
+  GET_BENEFICIARY_HISTORY: "/api/beneficiaries/:id/history",
+};
 
 export const VERIFY_BENEFICIARY_PATHS = {
-    VERIFY_BENEFICIARY: "/api/beneficiary-verifications",
-}
+  VERIFY_BENEFICIARY: "/api/beneficiary-verifications",
+};
 
 export const BENEFICIARY_ORDER_PATHS = {
-    CREATE_BENEFICIARY_ORDER: "/api/beneficiary-orders",
-    GET_BENEFICIARY_ORDERS: "/api/beneficiary-orders",
-    GET_BENEFICIARY_ORDER: "/api/beneficiary-orders/:id",
-    EDIT_BENEFICIARY_ORDER: "/api/beneficiary-orders/:id",
-    DELETE_BENEFICIARY_ORDER: "/api/beneficiary-orders/:id",
-}
+  CREATE_BENEFICIARY_ORDER: "/api/beneficiary-orders",
+  GET_BENEFICIARY_ORDERS: "/api/beneficiary-orders",
+  GET_BENEFICIARY_ORDER: "/api/beneficiary-orders/:id",
+  EDIT_BENEFICIARY_ORDER: "/api/beneficiary-orders/:id",
+  DELETE_BENEFICIARY_ORDER: "/api/beneficiary-orders/:id",
+};
 
 export const BENEFICIARY_AID_PATHS = {
-    GET_BENEFICIARY_AIDS: "/api/beneficiary-aids",
-    GET_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
-    EDIT_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
-    DELETE_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
-}
+  GET_BENEFICIARY_AIDS: "/api/beneficiary-aids",
+  GET_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
+  EDIT_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
+  DELETE_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
+};
 
 export const GOVERNORATE_PATHS = {
-    GET_GOVERNORATE: "/:id",
-    GET_GOVERNORATES: "",
-}
+  GET_GOVERNORATE: "/api/governorates/:id",
+  GET_GOVERNORATES: "/api/governorates",
+};
 
 export const AREA_PATHS = {
-    GET_AREA: "/:id",
-    GET_AREAS: ""
-}
-
-
-export const ORG_PATHS = {
-    CREATE_ORG: "/api/organizations",
-    GET_ORGS: "/api/organizations",
-    GET_ORG: "/api/organizations/:id",
-    EDIT_ORG: "/api/organizations/:id",
-    DELETE_ORG: "/api/organizations/:id",
-    VERFIY_ORG: "/api/organizations/:id/verify",
-}
+  GET_AREA: "/api/areas/:id",
+  GET_AREAS: "/api/areas",
+};
 
 export const DONATION_PATHS = {
-    CREATE_DONATION: "/api/donations",
-    GET_DONATIONS: "/api/donations"
-}
+  CREATE_DONATINO: "/api/donations",
+  GET_DONATINOS: "/api/donations",
+  GET_DONATION: "/api/donations/:id",
+};
+
+export const ORG_PATHS = {
+  CREATE_ORG: "/api/organizations",
+  GET_ORGS: "/api/organizations",
+  GET_ORG: "/api/organizations/:id",
+  EDIT_ORG: "/api/organizations/:id",
+  DELETE_ORG: "/api/organizations/:id",
+  VERFIY_ORG: "/api/organizations/:id/verify",
+};
 
 export const PICKUP_LOCATION_PATHS = {
-    GET_PICKUP_LOCATIONS: "/api/pickup-locations",
-    GET_PICKUP_LOCATION: "/api/pickup-locations/:id",
-    EDIT_PICKUP_LOCATION: "/api/pickup-locations/:id",
-    DELETE_PICKUP_LOCATION: "/api/pickup-locations/:id",
-}
+  GET_PICKUP_LOCATIONS: "/api/pickup-locations",
+  GET_PICKUP_LOCATION: "/api/pickup-locations/:id",
+  EDIT_PICKUP_LOCATION: "/api/pickup-locations/:id",
+  DELETE_PICKUP_LOCATION: "/api/pickup-locations/:id",
+};
