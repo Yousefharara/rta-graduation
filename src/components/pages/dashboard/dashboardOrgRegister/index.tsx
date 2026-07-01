@@ -52,8 +52,9 @@ const DashboardOrgRegister = () => {
   });
 
   useEffect(() => {
-    dispatch(getAreas(accessToken || ""));
-  }, [dispatch, accessToken]);
+    if (accessToken)
+      if (areas.length === 0) dispatch(getAreas(accessToken || ""));
+  }, [dispatch, accessToken, areas]);
 
   const handleOnSubmit = (data: IRegisterLocalOrgForm) => {
     console.log("data , ", data);

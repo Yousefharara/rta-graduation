@@ -113,8 +113,10 @@ const DashbaordBMTable = () => {
   );
 
   useEffect(() => {
-    dispatch(getBeneficiaries(accessToken || ""));
-  }, [dispatch, accessToken]);
+    if(accessToken) {
+      if(beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
+    }
+  }, [dispatch, accessToken, beneficiaries]);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -150,7 +152,8 @@ const DashbaordBMTable = () => {
     };
 
     dispatch(verifyBeneficiaryAction(body, accessToken || "")).then(() => {
-      dispatch(getBeneficiaries(accessToken || ""));
+      // ! here is there error ???
+      // dispatch(getBeneficiaries(accessToken || ""));
       setConfirmModal(null);
     });
   };

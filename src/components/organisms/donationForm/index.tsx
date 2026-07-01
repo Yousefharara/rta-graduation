@@ -76,8 +76,8 @@ const DonationForm = () => {
   }, [watch]);
 
   useEffect(() => {
-    dispatch(getCampaigns());
-  }, [dispatch]);
+    if(campaigns.length === 0)dispatch(getCampaigns());
+  }, [dispatch, campaigns]);
 
   useEffect(() => {
     if (campaigns) console.log("list is : ", campaigns);

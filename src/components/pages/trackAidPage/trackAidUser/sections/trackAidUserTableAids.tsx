@@ -28,9 +28,10 @@ const TrackAidUserTableAids = () => {
 
   useEffect(() => {
     if (accessToken) {
-      dispatch(getPickupLocations(accessToken));
+      if (pickupLocations.length === 0)
+        dispatch(getPickupLocations(accessToken));
     }
-  }, [dispatch, accessToken]);
+  }, [dispatch, accessToken, pickupLocations]);
 
   const filteredAids = useMemo(() => {
     if (!beneficiary) return [];

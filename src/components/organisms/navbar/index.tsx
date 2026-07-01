@@ -129,6 +129,9 @@ const Navbar = () => {
           <li>
             <NavLink onClick={handleClose} to={PATHS.HOME}>الرئيسية</NavLink>
           </li>
+          {role === 'admin' && <li>
+            <NavLink onClick={handleClose} to={PATHS.DASHBOARD.ROOT}>لوحة التحكم</NavLink>
+          </li>}
         </ul>
 
 

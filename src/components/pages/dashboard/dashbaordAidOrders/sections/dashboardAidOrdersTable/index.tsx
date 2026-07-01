@@ -16,6 +16,7 @@ import type { IBeneficiaryOrder } from "@/@types/beneficiaryOrder";
 import type { IBeneficiaryAid } from "@/@types/beneficiaryAid";
 import Spinner from "@/components/feedback/Spinner";
 import Error from "@/components/feedback/Error";
+import { getAidTypes } from "@/redux/slices/aidTypes";
 
 type orderAidStatus = "pending" | "approved" | "rejected";
 
@@ -36,16 +37,19 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
   const { orders, isFetching, isUpdating, error } = useAppSelector(
     (state) => state.beneficiaryOrders,
   );
-  const { aids } = useAppSelector((state) => state.beneficiaryAids);
+  const { beneficiaryAids } = useAppSelector((state) => state.beneficiaryAids);
   const { beneficiaries } = useAppSelector((state) => state.beneficiaries);
   const { pickupLocations } = useAppSelector((state) => state.pickupLocations);
+  const { aidTypes } = useAppSelector((state) => state.aidTypes);
 
   useEffect(() => {
     if (accessToken) {
       if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
-      if (aids.length === 0) dispatch(getBeneficiaryAids(accessToken));
+      if (beneficiaryAids.length === 0) dispatch(getBeneficiaryAids(accessToken));
       if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
       if (pickupLocations.length === 0) dispatch(getPickupLocations(accessToken));
+      if (aidTypes.length === 0) dispatch(getAidTypes(accessToken));
+    
     }
   }, [dispatch, accessToken]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -111,7 +115,7 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
         header: "نوع المساعده",
         cell: ({ row }) => (
           <p className="px-4 text-sm font-semibold border border-zinc-400 py-2 w-fit rounded-md">
-            {translate(String(row.original.aid_type_id))}
+            {aidTypes.find(a => Number(a.id) === Number(row.original.aid_type_id))?.name}
           </p>
         ),
       },
@@ -157,7 +161,7 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
       {
         header: "حالة المساعدة",
         cell: ({ row }) => {
-          const aid = aids.find((a) => a.order_id === row.original.id);
+          const aid = beneficiaryAids.find((a) => a.order_id === row.original.id);
           if (!aid) return <span className="text-zinc-400">-</span>;
 
           const { status, id } = aid;
@@ -259,7 +263,7 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
       },
     ];
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUpdating, translate, aids, accessToken, dispatch, beneficiaries, pickupLocations]);
+  }, [isUpdating, translate, beneficiaryAids, accessToken, dispatch, beneficiaries, pickupLocations]);
 
   if (isFetching) {
     return (

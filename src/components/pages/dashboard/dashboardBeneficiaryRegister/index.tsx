@@ -79,9 +79,11 @@ const DashboardBeneficiaryRegister = () => {
   });
 
   useEffect(() => {
-    dispatch(getAreas(accessToken || ""));
-    dispatch(getGovernorates(accessToken || ""));
-  }, [accessToken, dispatch]);
+    if (accessToken) {
+      if (areas.length === 0) dispatch(getAreas(accessToken));
+      if (governorates.length === 0) dispatch(getGovernorates(accessToken));
+    }
+  }, [accessToken, dispatch, areas, governorates]);
 
   const handleOnSubmit = (data: IRegisterBeneficiaryForm) => {
     if (isNationalIdExists(data.national_id)) {

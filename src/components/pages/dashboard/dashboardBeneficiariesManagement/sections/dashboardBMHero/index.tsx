@@ -7,6 +7,8 @@ const DashboardBMHero = () => {
 
     const navigate = useNavigate();
 
+    
+
     return (
         <section className="flex flex-col gap-12"> 
             <article className="flex items-center gap-4 justify-between flex-wrap-reverse">

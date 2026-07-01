@@ -6,11 +6,11 @@ const Footer = () => {
       <section className="flex flex-col gap-12 text-[#B5C6FF] p-8 mt-12 mx-auto" style={{width: "min(1450px, 100%)"}}>
       <article
         className="grid gap-4 place-items-center"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))" }}
+        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
       >
         <div className="flex flex-col gap-4">
           <h3 className="text-3xl font-semibold">Relife Track Aid</h3>
-          <p className="text-sm">
+          <p className="text-sm text-wrap">
             منصة تقنية إنسانية تهدف لإعادة تعريف الكفاءة في توزيع المساعدات
             الدولية والمحلية، مع التركيز على الكرامة الإنسانية والعدالة الرقمية.
           </p>

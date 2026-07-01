@@ -25,7 +25,6 @@ const LoginForm = () => {
   } = useForm<ILoginForm>({ resolver: yupResolver(schemaLoginFrom) });
   const dispatch = useAppDispatch();
   const { user, isLoading, error } = useAppSelector((state) => state.auth);
-  // const [isAuth, setIsAuth] = useState<boolean>(false);
 
   const handleOnSubmit = (data: ILoginForm) => {
     dispatch(setLogin(data));
