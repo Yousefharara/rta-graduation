@@ -55,11 +55,11 @@ export default aidSlice.reducer;
 // ! ///////////////// Action ////////////////////////
 // ? /////////////////////////////////////////////////
 
-export const getAids = () => async (dispatch: AppDispatch) => {
+export const getAids = (token: string) =>  async (dispatch: AppDispatch) => {
   dispatch(setFetching(true));
   dispatch(setError(null));
   try {
-    const { data } = await axios.get(API_KEY + AID_PATHS.GET_AIDS);
+    const { data } = await axios.get(API_KEY + AID_PATHS.GET_AIDS, {headers: {Authorization: `Bearer ${token}`}});
 
     dispatch(setAids(data));
   } catch (err) {

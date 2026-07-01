@@ -29,10 +29,14 @@ const HeroDashboardHome = () => {
   } = useAppSelector((state) => state.localOrg);
 
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken && role === 'admin') {
       if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
       if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
       if (localOrgs.length === 0) dispatch(getLocalOrgs(accessToken));
+    }
+    if (accessToken && role === 'local_org') {
+      if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
+      if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
     }
   }, [
     accessToken,
@@ -40,6 +44,7 @@ const HeroDashboardHome = () => {
     dispatch,
     localOrgs.length,
     orders.length,
+    role,
   ]);
 
   if (isLoading || isFetching || ordersFetching || orgsFetching) {
@@ -50,10 +55,18 @@ const HeroDashboardHome = () => {
     );
   }
 
-  if (error || beneficiaryError || orderError || orgError) {
+  if(role === 'admin') {
+    if (error || beneficiaryError || orderError || orgError) {
     return (
       <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))} />
     );
+  }
+  }else {
+    if (error || beneficiaryError || orderError) {
+    return (
+      <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))} />
+    );
+  }
   }
 
   return (
