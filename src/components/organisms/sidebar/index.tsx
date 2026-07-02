@@ -100,7 +100,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
           {
             user_id: 1,
             title: "شحنة جديدة",
-            message: `تم إضافة شحنة جديدة من ${organization?.name || user?.name || "منظمة"}: ${data.aidType} بكمية ${data.quantity}`,
+            message: `تم إضافة شحنة جديدة من ${organization?.users.name || user?.name || "منظمة"}: ${data.aidType} بكمية ${data.quantity}`,
           },
           accessToken || "",
         ),
