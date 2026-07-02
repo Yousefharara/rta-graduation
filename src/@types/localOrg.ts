@@ -14,6 +14,8 @@ export interface ICreateLocalOrg {
   phone: string;
   org_name: string;
   area_id: number;
+  focus_area: string ; 
+  staff_count: number | null;
 }
 
 export interface ILocalOrg {
@@ -22,5 +24,7 @@ export interface ILocalOrg {
   org_name: string;
   area_id: number;
   is_verified: boolean;
+  focus_area: string;
+  staff_count: number;
   users: IUser;
 }

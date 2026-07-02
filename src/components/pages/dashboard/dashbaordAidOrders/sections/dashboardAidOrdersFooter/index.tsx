@@ -1,7 +1,7 @@
 
 const DashboardAidOrdersFooter = () => {
     return (
-        <section className="gap-6 min-h-40 grid" style={{gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))"}}>
+        <section className="gap-6 min-h-40 grid" style={{gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))"}}>
 
             <article className="flex flex-col shrink gap-2 py-4 px-2 bg-white rounded-md border border-zinc-400">
                 <h2 className="text-2xl font-semibold text-primary">خوارزمية الأولوية العادلة</h2>

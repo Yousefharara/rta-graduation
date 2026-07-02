@@ -6,7 +6,6 @@ import ReactTable from "@/components/organisms/reactTable";
 import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
 import { verifyBeneficiaryAction } from "@/redux/slices/verificationSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { generateRandomAlgorithm } from "@/utils/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Check, Eye, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -111,6 +110,7 @@ const DashbaordBMTable = () => {
   const { isCreating } = useAppSelector(
     (state) => state.verifications,
   );
+  
 
   useEffect(() => {
     if(accessToken) {
@@ -152,10 +152,11 @@ const DashbaordBMTable = () => {
     };
 
     dispatch(verifyBeneficiaryAction(body, accessToken || "")).then(() => {
-      // ! here is there error ???
-      // dispatch(getBeneficiaries(accessToken || ""));
+      // ? reload page
+      dispatch(getBeneficiaries(accessToken || ""));
       setConfirmModal(null);
     });
+    
   };
 
   const columns = useMemo<ColumnDef<IDataTable>[]>(() => {
@@ -178,9 +179,10 @@ const DashbaordBMTable = () => {
       },
       {
         header: "الأولويه (الخوارزميه)",
-        accessorKey: "algorithm",
-        cell: () => {
-          const algorithm = generateRandomAlgorithm();
+        accessorKey: "priority_score",
+        cell: ({row}) => {
+          let {priority_score} = row.original;
+          priority_score = Math.round(Number(priority_score))
           return (
             <p className="flex items-center gap-2">
               <div className="relative h-2 w-15">
@@ -189,16 +191,16 @@ const DashbaordBMTable = () => {
                   style={{
                     background: `linear-gradient(
                                 to left,
-                                ${algorithm > 90 ? "red" : algorithm > 70 ? "orange" : algorithm > 50 ? "blue" : "green"} 0%,
-                                ${algorithm > 90 ? "red" : algorithm > 70 ? "orange" : algorithm > 50 ? "blue" : "green"} ${algorithm}%,
-                                transparent ${algorithm}%,
+                                ${priority_score > 90 ? "red" : priority_score > 70 ? "orange" : priority_score > 50 ? "blue" : "green"} 0%,
+                                ${priority_score > 90 ? "red" : priority_score > 70 ? "orange" : priority_score > 50 ? "blue" : "green"} ${priority_score}%,
+                                transparent ${priority_score}%,
                                 transparent 100%
                             )`,
                   }}
                   className="absolute inset-0 rounded-md z-10"
                 />
               </div>
-              {algorithm}
+              {priority_score}
             </p>
           );
         },

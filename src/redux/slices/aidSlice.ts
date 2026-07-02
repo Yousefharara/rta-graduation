@@ -9,6 +9,7 @@ interface IAidState {
   error: string | null;
   isCreating: boolean;
   isFetching: boolean;
+  isUpdating: boolean;
   aids: IAid[];
   aid: IAid | null;
 }
@@ -17,6 +18,7 @@ const initialState: IAidState = {
   error: null,
   isCreating: false,
   isFetching: false,
+  isUpdating: false,
   aids: [],
   aid: null,
 };
@@ -31,6 +33,9 @@ const aidSlice = createSlice({
     setFetching: (state, action: PayloadAction<boolean>) => {
       state.isFetching = action.payload;
     },
+    setUpdating: (state, action: PayloadAction<boolean>) => {
+      state.isUpdating = action.payload;
+    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
@@ -40,14 +45,35 @@ const aidSlice = createSlice({
     setAid: (state, action: PayloadAction<IAid>) => {
       state.aid = action.payload;
     },
+    editAidDeduct: (
+      state,
+      action: PayloadAction<{
+        id: number;
+        quantity: number;
+      }>,
+    ) => {
+      state.aids = state.aids.map((a) =>
+        a.id === action.payload.id
+          ? { ...a, quantity: action.payload.quantity }
+          : a,
+      );
+    },
     addAid: (state, action: PayloadAction<IAid>) => {
       state.aids = [...state.aids, action.payload];
     },
   },
 });
 
-export const { setCreating, addAid, setFetching, setError, setAids, setAid } =
-  aidSlice.actions;
+export const {
+  setCreating,
+  addAid,
+  editAidDeduct,
+  setFetching,
+  setUpdating,
+  setError,
+  setAids,
+  setAid,
+} = aidSlice.actions;
 
 export default aidSlice.reducer;
 
@@ -55,11 +81,13 @@ export default aidSlice.reducer;
 // ! ///////////////// Action ////////////////////////
 // ? /////////////////////////////////////////////////
 
-export const getAids = (token: string) =>  async (dispatch: AppDispatch) => {
+export const getAids = (token: string) => async (dispatch: AppDispatch) => {
   dispatch(setFetching(true));
   dispatch(setError(null));
   try {
-    const { data } = await axios.get(API_KEY + AID_PATHS.GET_AIDS, {headers: {Authorization: `Bearer ${token}`}});
+    const { data } = await axios.get(API_KEY + AID_PATHS.GET_AIDS, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     dispatch(setAids(data));
   } catch (err) {
@@ -93,5 +121,31 @@ export const addAidAction =
       return { success: false, error: err };
     } finally {
       dispatch(setCreating(false));
+    }
+  };
+
+export const editAidDeductAction =
+  (id: number, quantity: number, token: string) =>
+  async (dispatch: AppDispatch) => {
+    dispatch(setUpdating(true));
+    dispatch(setError(null));
+
+    try {
+      console.log("Inside editAidDeductAction  >>>>>>");
+      const { data } = await axios.patch<IAid>(
+        API_KEY + AID_PATHS.DECREMENT_PATCH_AIDS.replace(":id", String(id)),
+        { quantity: quantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      console.log("Updating data editAidDeductAction : ", data);
+      dispatch(editAidDeduct({ id: id, quantity: quantity }));
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setUpdating(false));
     }
   };

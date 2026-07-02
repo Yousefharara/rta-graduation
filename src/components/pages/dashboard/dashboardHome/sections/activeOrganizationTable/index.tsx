@@ -49,7 +49,7 @@ const ActiveOrganization = () => {
     return [
       {
         header: "اسم المنظمة",
-        accessorFn: (row) => `${row.org_name}`,
+        accessorFn: (row) => `${row.users.name}`,
       },
       {
         header: "المنطقة",
@@ -63,29 +63,18 @@ const ActiveOrganization = () => {
         header: "مجال التركيز",
         accessorKey: "AreaOfFocus",
         cell: ({ row }) => {
-          const { org_name } = row.original;
+          const { focus_area } = row.original;
           return (
             <p
-            // className={`px-4 text-sm font-semibold border py-2 w-fit rounded-md ${
-            //   areaOfFocus === "الصحة"
-            //     ? "bg-[#BBF7D0] border-[#15803D] text-[#15803D]"
-            //     : areaOfFocus === "المياه والصرف"
-            //       ? "bg-[#EFF6FF] border-[#1D4ED8] text-[#1D4ED8]"
-            //       : areaOfFocus === "الغذاء"
-            //         ? "bg-[#FFF7ED]] border-[#C2410C] text-[#C2410C]"
-            //         : areaOfFocus === "عاجل"
-            //           ? "bg-red-500 text-wh ite"
-            //           : "bg-zinc-300 border-zinc-500"
-            // }`}
             >
-              {org_name}
+              {focus_area}
             </p>
           );
         },
       },
       {
         header: "طاقم العمل",
-        accessorFn: (row) => row.org_name,
+        accessorFn: (row) => row.staff_count,
       },
     ];
   }, [areas]);

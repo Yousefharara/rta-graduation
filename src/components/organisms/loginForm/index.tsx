@@ -160,22 +160,20 @@ const LoginForm = () => {
           {errors["remeberMe"]?.message}
         </span>
       )}
-      {isLoading ? (
-        <div className="w-full flex justify-center items-center">
-          <Spinner />
-        </div>
-      ) : (
+      
         <Button
           variant="default"
+          disabled={isLoading}
           type="submit"
           className="
           w-full
           mt-4
+          disabled:bg-primary/50 disabled:cursor-not-allowed
         "
         >
-          تسجيل الدخول
+          {isLoading ? <p className="flex items-center gap-4 justify-center">جاري تسجيل الدخول <Spinner /></p> : "تسجيل الدخول"}
         </Button>
-      )}
+      
       {error && (
         <p
           className="

@@ -78,7 +78,7 @@ const DashboardBMHero = () => {
           </div>
           <div className="rounded-md px-4 py-2 flex flex-col gap-2 bg-[#6CF8BB]">
             <p className="">أولوية قصوى</p>
-            <small className="text-3xl font-semibold">112</small>
+            <small className="text-3xl font-semibold">{beneficiaries.filter(b => b.priority_score > 70).length}</small>
           </div>
         </article>
       )}

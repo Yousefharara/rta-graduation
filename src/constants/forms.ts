@@ -9,5 +9,6 @@ export const INPUTS_TYPE_ERROR: Record<string, string> = {
   family_size: "عدد العائلة مطلوب",
   patients_count: "عدد المرضى مطلوب",
   income: "دخل الاسرة مطلوب",
-  area_id: "المنظقه مطلوبه"
+  area_id: "المنظقه مطلوبه",
+  staff_count: "طاقم العمل مطلوب"
 };

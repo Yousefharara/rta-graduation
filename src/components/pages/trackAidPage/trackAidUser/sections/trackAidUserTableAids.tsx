@@ -21,7 +21,7 @@ const TrackAidUserTableAids = () => {
   });
 
   const dispatch = useAppDispatch();
-  const { aids } = useAppSelector((state) => state.beneficiaryAids);
+  const { beneficiaryAids } = useAppSelector((state) => state.beneficiaryAids);
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
   const { pickupLocations } = useAppSelector((state) => state.pickupLocations);
   const { beneficiary, accessToken } = useAppSelector((state) => state.auth);
@@ -35,8 +35,8 @@ const TrackAidUserTableAids = () => {
 
   const filteredAids = useMemo(() => {
     if (!beneficiary) return [];
-    return aids.filter((aid) => aid.beneficiary_id === beneficiary.id);
-  }, [aids, beneficiary]);
+    return beneficiaryAids.filter((b) => b.beneficiary_id === beneficiary.id);
+  }, [beneficiaryAids, beneficiary]);
 
   const getPickupLocationById = (id: number) =>
     pickupLocations.find((loc) => loc.id === id)?.name;

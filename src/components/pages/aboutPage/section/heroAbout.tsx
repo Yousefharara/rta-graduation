@@ -1,7 +1,10 @@
 import Button from "@/components/atoms/button";
 import Container from "@/components/atoms/container";
+import { PATHS } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
 
 const HeroAbout = () => {
+  const navigate = useNavigate();
   return (
     <section className=" bg-[#EFF4FF] py-20">
       <Container className="flex flex-col gap-4 justify-center max-h-72 ">
@@ -21,7 +24,7 @@ const HeroAbout = () => {
           الإنسانية بكل شفافية.
         </p>
         <div className="flex items-center gap-4">
-          <Button>بدء التتبع</Button>
+          <Button onClick={() => navigate(PATHS.TRACK_AID.ROOT, {replace: true})}>بدء التتبع</Button>
           <Button variant="outline">تعرف على أثرنا</Button>
         </div>
       </Container>

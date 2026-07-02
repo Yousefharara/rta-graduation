@@ -13,3 +13,7 @@ export interface ICreateAid {
   org_id: number | null;
   quantity: number;
 }
+
+export interface IDeductAid {
+  quantity: number;
+}

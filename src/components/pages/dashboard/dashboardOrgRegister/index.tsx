@@ -3,6 +3,7 @@ import Button from "@/components/atoms/button";
 import Error from "@/components/feedback/Error";
 import Spinner from "@/components/feedback/Spinner";
 import RowForm from "@/components/molecules/rowForm";
+import { INPUTS_TYPE_ERROR } from "@/constants/forms";
 import { getAreas } from "@/redux/slices/areaSlice";
 import { addLocalOrgAction } from "@/redux/slices/localOrgSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
@@ -19,19 +20,21 @@ const defaultDate: IRegisterLocalOrgForm = {
   email: "",
   name: "",
   org_name: "",
-  orgType: "",
   phone: "",
+  focus_area: "",
+  staff_count: null,
 };
 
 const schemaRegisterLocalOrgFrom: Yup.ObjectSchema<IRegisterLocalOrgForm> =
   Yup.object({
     name: Yup.string().required("الاسم مطلوب"),
-    email: Yup.string().email().required(""),
+    email: Yup.string().email().required("البريد اللكتروني مطلوب"),
     password: Yup.string(),
-    phone: Yup.string().required(),
-    org_name: Yup.string().required(),
-    orgType: Yup.string().required(),
+    phone: Yup.string().required("رقم الجوال مطلوب"),
+    org_name: Yup.string().required("الاسم بالانجليزي مطلوب"),
     area_id: Yup.number().required(),
+    focus_area: Yup.string().required("مجال التركيز مطلوب"),
+    staff_count: Yup.number().required("طاقم العمل مطلوب"),
   });
 
 const DashboardOrgRegister = () => {
@@ -50,6 +53,16 @@ const DashboardOrgRegister = () => {
   } = useForm<IRegisterLocalOrgForm>({
     resolver: yupResolver(schemaRegisterLocalOrgFrom),
   });
+
+  
+  useEffect(() => {
+
+    if(errors) {
+      console.log('errors, ', errors);
+    }
+
+  }, [errors])
+
 
   useEffect(() => {
     if (accessToken)
@@ -112,26 +125,26 @@ const DashboardOrgRegister = () => {
           </div>
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-            <div className="flex flex-col gap-4 my-4 w-full">
-              <label className="text-sm font-semibold">نوع المنظمه</label>
+            <RowForm<IRegisterLocalOrgForm>
+              errors={errors}
+              label="staff_count"
+              title="كم عدد طاقم العمل"
+              type="number"
+              onlyPositiveNumbers
+              register={register}
+              placeholder=""
+            />
 
-              <select
-                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                defaultValue={"select"}
-                {...register("orgType")}
-              >
-                <option disabled value="select">
-                  Select
-                </option>
-                <option value="NGO's">NGO's</option>
-              </select>
-              {errors["orgType"] && (
-                <span className="span__error">
-                  {errors["orgType"]?.message}
-                </span>
-              )}
-            </div>
+            <RowForm<IRegisterLocalOrgForm>
+              errors={errors}
+              label="focus_area"
+              title="مجال التركيز"
+              register={register}
+              placeholder=""
+            />
+          </div>
 
+          <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
             <RowForm<IRegisterLocalOrgForm>
               errors={errors}
               label="email"
@@ -139,9 +152,7 @@ const DashboardOrgRegister = () => {
               register={register}
               placeholder="example@gmail.com"
             />
-          </div>
 
-          <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
             <RowForm<IRegisterLocalOrgForm>
               errors={errors}
               label="phone"
@@ -175,9 +186,9 @@ const DashboardOrgRegister = () => {
                     );
                   })}
                 </select>
-                {errors["area_id"] && (
+                {errors['area_id']?.message && (
                   <span className="span__error">
-                    {errors["area_id"]?.message}
+                    {INPUTS_TYPE_ERROR["area_id"]}
                   </span>
                 )}
               </div>

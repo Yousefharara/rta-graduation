@@ -45,7 +45,7 @@ const TrackAidUserHero = () => {
     (state) => state.beneficiaryOrders,
   );
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
-  const { aids } = useAppSelector((state) => state.beneficiaryAids);
+  const { beneficiaryAids } = useAppSelector((state) => state.beneficiaryAids);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -73,8 +73,8 @@ const TrackAidUserHero = () => {
 
   const latestOrderAid = useMemo(() => {
     if (!latestOrder) return null;
-    return aids.find((a) => a.order_id === latestOrder.id);
-  }, [latestOrder, aids]);
+    return beneficiaryAids.find((a) => a.order_id === latestOrder.id);
+  }, [latestOrder, beneficiaryAids]);
 
   // Helper to map order and aid status to Arabic label
   const getStatusText = (orderStatus: string, aidStatus?: string) => {

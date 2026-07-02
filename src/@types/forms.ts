@@ -45,6 +45,5 @@ export interface IRegisterBeneficiaryForm
 
 
 export interface IRegisterLocalOrgForm extends Omit<ICreateLocalOrg, "password"> {
-  orgType: string;
   password?: string;
 }

@@ -49,6 +49,8 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
   if (isAuthPath(location.pathname)) {
     return (
       <article className="flex flex-col gap-20 bg-[#F8F9FF]">
+        <ScrollToTop />
+
         <Navbar />
         <div className="mt-20">{children}</div>
         <Footer />
@@ -56,7 +58,10 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  if ((role === "admin" || role === 'local_org') && isDashboardPath(location.pathname)) {
+  if (
+    (role === "admin" || role === "local_org") &&
+    isDashboardPath(location.pathname)
+  ) {
     return (
       <DashbaordTemplate
         handleCloseAside={handleCloseAside}
@@ -64,6 +69,8 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
         isMobile={isMobile}
         isOpenAside={isOpenAside}
       >
+        <ScrollToTop />
+
         {children}
       </DashbaordTemplate>
     );

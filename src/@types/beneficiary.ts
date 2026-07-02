@@ -10,7 +10,7 @@ export interface IBeneficiary {
   family_size: number;
 
   income: string;
-  priority_score: string;
+  priority_score: number;
 
   patients_count: number;
   disabled_count: number;

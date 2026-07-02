@@ -46,12 +46,12 @@
   --color-sidebar-ring: var(--sidebar-ring);
   /* !------------ */
   --color-blue-primary: var(--blue-primary);
-  --color-dashboar-primary: var(--dashboar-primary);
+  --color-dashboard-primary: var(--dashboard-primary);
 }
 
 :root {
   --blue-primary: #004AC6;
-  --dashboar-primary: #002046;
+  --dashboard-primary: #002046;
   /* !------------ */
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -100,4 +100,14 @@ body {
 
 .span__error {
   color: red;
+}
+
+::-webkit-scrollbar {
+  background-color: var(--dashboard-primary);
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary);
+  border-radius: 20px;
 }

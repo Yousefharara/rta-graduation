@@ -134,6 +134,8 @@ export const loginBeneficiaryAction =
       if (err instanceof Error) {
         if (err.message === "Request failed with status code 401")
           dispatch(setError("رقم الهوية أو رقم الإصدار غير صحيح"));
+        else if (err.message === "Request failed with status code 403")
+          dispatch(setError("انت غير مصرح بالدخول"));
         else dispatch(setError(err.message));
       }
     } finally {

@@ -194,6 +194,7 @@ const DonationForm = () => {
                 value={10}
                 className="hidden"
                 id="budget10"
+                defaultChecked
               />
               <p className="text-center text-xl font-semibold">10$</p>
             </label>

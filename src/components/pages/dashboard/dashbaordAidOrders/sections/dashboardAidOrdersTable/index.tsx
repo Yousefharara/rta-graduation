@@ -1,15 +1,26 @@
-import { Check, CircleCheck, CircleX, Eye, Search, X, Truck, Package } from "lucide-react";
+import {
+  Check,
+  CircleCheck,
+  CircleX,
+  Eye,
+  Search,
+  X,
+  Truck,
+  Package,
+} from "lucide-react";
 import "./style.css";
 import ReactTable from "@/components/organisms/reactTable";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useTranslate } from "@/hooks/useTranslate";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getBeneficiaryOrders,
   updateBeneficiaryOrderStatusAction,
 } from "@/redux/slices/beneficiaryOrderSlice";
-import { editBeneficiaryAidStatus, getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
+import {
+  editBeneficiaryAidStatus,
+  getBeneficiaryAids,
+} from "@/redux/slices/beneficiaryAidSlice";
 import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
 import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
 import type { IBeneficiaryOrder } from "@/@types/beneficiaryOrder";
@@ -17,6 +28,8 @@ import type { IBeneficiaryAid } from "@/@types/beneficiaryAid";
 import Spinner from "@/components/feedback/Spinner";
 import Error from "@/components/feedback/Error";
 import { getAidTypes } from "@/redux/slices/aidTypes";
+import { editAidDeductAction, getAids } from "@/redux/slices/aidSlice";
+import { toast } from "sonner";
 
 type orderAidStatus = "pending" | "approved" | "rejected";
 
@@ -27,13 +40,14 @@ interface TableProps {
 
 const PAGE_SIZE = 5;
 
-const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) => {
+const DashboardAidOrdersTable = ({
+  statusFilter,
+  setStatusFilter,
+}: TableProps) => {
   const [search, setSearch] = useState("");
 
-  const { translate } = useTranslate();
-
   const dispatch = useAppDispatch();
-  const { accessToken } = useAppSelector((state) => state.auth);
+  const { accessToken, organization, role } = useAppSelector((state) => state.auth);
   const { orders, isFetching, isUpdating, error } = useAppSelector(
     (state) => state.beneficiaryOrders,
   );
@@ -41,17 +55,33 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
   const { beneficiaries } = useAppSelector((state) => state.beneficiaries);
   const { pickupLocations } = useAppSelector((state) => state.pickupLocations);
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
+  const { aids } = useAppSelector((state) => state.aids);
 
   useEffect(() => {
     if (accessToken) {
-      if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
-      if (beneficiaryAids.length === 0) dispatch(getBeneficiaryAids(accessToken));
-      if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
-      if (pickupLocations.length === 0) dispatch(getPickupLocations(accessToken));
-      if (aidTypes.length === 0) dispatch(getAidTypes(accessToken));
-    
+      // if (orders.length === 0) 
+      //   if (beneficiaryAids.length === 0)
+      //     if (beneficiaries.length === 0) 
+      //       if (pickupLocations.length === 0)
+      //       if (aidTypes.length === 0) 
+      //       if (aids.length === 0) 
+        dispatch(getBeneficiaryOrders(accessToken));
+        dispatch(getBeneficiaries(accessToken));
+        dispatch(getBeneficiaryAids(accessToken));
+        dispatch(getPickupLocations(accessToken));
+        dispatch(getAidTypes(accessToken));
+        dispatch(getAids(accessToken));
     }
-  }, [dispatch, accessToken]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    dispatch,
+    accessToken,
+    // orders,
+    // beneficiaryAids,
+    // beneficiaries,
+    // pickupLocations,
+    // aids,
+    // aidTypes,
+  ]);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -80,24 +110,83 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
   }, [pagination, filteredData]);
 
   /** Find pickup location whose area_id matches the beneficiary's area_id */
-  const resolvePickupLocationId = (beneficiaryId: number): number | undefined => {
-    const beneficiary = beneficiaries.find((b) => b.id === beneficiaryId);
-    if (!beneficiary) return undefined;
-    const location = pickupLocations.find((loc) => loc.area_id === beneficiary.area_id);
-    return location?.id;
-  };
+  const resolvePickupLocationId = useCallback(
+    (beneficiaryId: number): number | undefined => {
+      const beneficiary = beneficiaries.find((b) => b.id === beneficiaryId);
+      if (!beneficiary) return undefined;
+      const location = pickupLocations.find(
+        (loc) => loc.area_id === beneficiary.area_id,
+      );
+      return location?.id;
+    },
+    [beneficiaries, pickupLocations],
+  );
 
-  const handleUpdateStatus = (
-    id: number,
-    status: IBeneficiaryOrder["status"],
-    beneficiaryId?: number,
-  ) => {
-    let pickupLocationId: number | undefined;
-    if (status === "approved" && beneficiaryId) {
-      pickupLocationId = resolvePickupLocationId(beneficiaryId);
-    }
-    dispatch(updateBeneficiaryOrderStatusAction(id, status, accessToken || "", pickupLocationId));
-  };
+  const handleUpdateStatus = useCallback(
+    (
+      id: number,
+      status: IBeneficiaryOrder["status"],
+      aid_type_id?: number,
+      beneficiaryId?: number,
+    ) => {
+      let pickupLocationId: number | undefined;
+      let editAid = aids.find(
+        (a) => a.aid_type_id === aid_type_id && a.org_id === organization?.id,
+      );
+
+      if (status === "rejected") {
+        dispatch(
+          updateBeneficiaryOrderStatusAction(
+            id,
+            status,
+            accessToken || "",
+            pickupLocationId,
+          ),
+        );
+        return;
+      }
+
+      if(role === 'admin') {
+        editAid = aids.find(
+        (a) => a.aid_type_id === aid_type_id
+      );
+      console.log('heloo admin ', editAid);
+      }
+
+      if (editAid) {
+        if (editAid.remaining_quantity > 0) {
+          if (status === "approved" && beneficiaryId) {
+            pickupLocationId = resolvePickupLocationId(beneficiaryId);
+            dispatch(editAidDeductAction(editAid.id, 1, accessToken || ""));
+            dispatch(
+              updateBeneficiaryOrderStatusAction(
+                id,
+                status,
+                accessToken || "",
+                pickupLocationId,
+              ),
+            );
+          }
+          toast.success("تم قبول الطلب بنجاح")
+        } else {
+          toast.error("لا يوجد ما يكفى من المساعدات لقبول هذا الطلب");
+          return;
+        }
+      } else {
+        toast.error("ليس لديك مساعدات من هذا النوع");
+        return;
+      }
+    },
+    [dispatch, role, accessToken, organization, resolvePickupLocationId, aids],
+  );
+
+  const handleStatusClick = useCallback(
+    (newStatus: IBeneficiaryAid["status"], id: number) => {
+      if (isUpdating) return;
+      dispatch(editBeneficiaryAidStatus(id, newStatus, accessToken || ""));
+    },
+    [accessToken, dispatch, isUpdating],
+  );
 
   const columns = useMemo<ColumnDef<IBeneficiaryOrder>[]>(() => {
     return [
@@ -115,14 +204,18 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
         header: "نوع المساعده",
         cell: ({ row }) => (
           <p className="px-4 text-sm font-semibold border border-zinc-400 py-2 w-fit rounded-md">
-            {aidTypes.find(a => Number(a.id) === Number(row.original.aid_type_id))?.name}
+            {
+              aidTypes.find(
+                (a) => Number(a.id) === Number(row.original.aid_type_id),
+              )?.name
+            }
           </p>
         ),
       },
       {
         header: "الوصف",
         cell: ({ row }) => (
-          <p className="max-w-[200px] truncate text-sm text-zinc-600">
+          <p className="max-w-50 truncate text-sm text-zinc-600">
             {row.original.description}
           </p>
         ),
@@ -161,7 +254,9 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
       {
         header: "حالة المساعدة",
         cell: ({ row }) => {
-          const aid = beneficiaryAids.find((a) => a.order_id === row.original.id);
+          const aid = beneficiaryAids.find(
+            (a) => a.order_id === row.original.id,
+          );
           if (!aid) return <span className="text-zinc-400">-</span>;
 
           const { status, id } = aid;
@@ -174,11 +269,6 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
             rejected: "مرفوض",
           };
 
-          const handleStatusClick = (newStatus: IBeneficiaryAid['status']) => {
-            if (isUpdating) return;
-            dispatch(editBeneficiaryAidStatus(id, newStatus, accessToken || ""));
-          };
-
           return (
             <div className="flex flex-col gap-1 items-start">
               <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700">
@@ -189,7 +279,7 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
                   <button
                     title="تحضير المساعدة"
                     disabled={isUpdating}
-                    onClick={() => handleStatusClick("preparing")}
+                    onClick={() => handleStatusClick("preparing", id)}
                     className="p-1 hover:bg-yellow-50 rounded transition-colors text-yellow-600 hover:text-yellow-700 disabled:opacity-40 cursor-pointer"
                   >
                     <Package size={18} />
@@ -200,18 +290,20 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
                   <button
                     title="شحن المساعدة"
                     disabled={isUpdating}
-                    onClick={() => handleStatusClick("shipping")}
+                    onClick={() => handleStatusClick("shipping", id)}
                     className="p-1 hover:bg-blue-50 rounded transition-colors text-blue-600 hover:text-blue-700 disabled:opacity-40 cursor-pointer"
                   >
                     <Truck size={18} />
                   </button>
                 )}
 
-                {(status === "approved" || status === "preparing" || status === "shipping") && (
+                {(status === "approved" ||
+                  status === "preparing" ||
+                  status === "shipping") && (
                   <button
                     title="توصيل المساعدة"
                     disabled={isUpdating}
-                    onClick={() => handleStatusClick("delivered")}
+                    onClick={() => handleStatusClick("delivered", id)}
                     className="p-1 hover:bg-green-50 rounded transition-colors text-green-600 hover:text-green-700 disabled:opacity-40 cursor-pointer"
                   >
                     <CircleCheck size={18} />
@@ -225,7 +317,7 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
       {
         header: "الاجراءات",
         cell: ({ row }) => {
-          const { status, id, beneficiary_id } = row.original;
+          const { status, id, beneficiary_id, aid_type_id } = row.original;
 
           return (
             <div className="flex items-center gap-3">
@@ -241,10 +333,22 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
                   <button
                     title="قبول الطلب"
                     disabled={isUpdating}
-                    onClick={() => handleUpdateStatus(id, "approved", beneficiary_id)}
+                    onClick={() =>
+                      handleUpdateStatus(
+                        id,
+                        "approved",
+                        aid_type_id,
+                        beneficiary_id,
+                      )
+                    }
                     className="cursor-pointer disabled:opacity-40"
                   >
-                    <CircleCheck size={22} strokeWidth={1.3} className="text-green-700" />
+                    {aid_type_id}
+                    <CircleCheck
+                      size={22}
+                      strokeWidth={1.3}
+                      className="text-green-700"
+                    />
                   </button>
 
                   <button
@@ -253,7 +357,11 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
                     onClick={() => handleUpdateStatus(id, "rejected")}
                     className="cursor-pointer disabled:opacity-40"
                   >
-                    <CircleX size={22} strokeWidth={1.3} className="text-red-700" />
+                    <CircleX
+                      size={22}
+                      strokeWidth={1.3}
+                      className="text-red-700"
+                    />
                   </button>
                 </>
               )}
@@ -262,21 +370,29 @@ const DashboardAidOrdersTable = ({ statusFilter, setStatusFilter }: TableProps) 
         },
       },
     ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUpdating, translate, beneficiaryAids, accessToken, dispatch, beneficiaries, pickupLocations]);
+  }, [
+    aidTypes,
+    beneficiaryAids,
+    isUpdating,
+    handleStatusClick,
+    handleUpdateStatus,
+  ]);
 
   if (isFetching) {
     return (
       <div className="flex justify-center gap-4 items-center h-40 text-zinc-500">
         جاري تحميل الطلبات...
-          <Spinner />
-
+        <Spinner />
       </div>
     );
   }
 
-  
-    if(error) return <Error onRetry={() => dispatch(getBeneficiaryOrders(accessToken || ""))}/>
+  if (error)
+    return (
+      <Error
+        onRetry={() => dispatch(getBeneficiaryOrders(accessToken || ""))}
+      />
+    );
 
   return (
     <section className="flex flex-col gap-4 p-3 border border-zinc-400 bg-white rounded-md">

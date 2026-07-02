@@ -1,4 +1,6 @@
+import { PATHS } from "@/routes/paths";
 import { Mail, PhoneCall } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -20,10 +22,10 @@ const Footer = () => {
           <h3 className="text-white text-2xl font-medium">روابط سريعة</h3>
 
           <ul className="flex flex-col gap-3">
-            <li>كيفيه التبرع</li>
-            <li>تقارير الشفافيه</li>
-            <li>الأسئله الشائعه</li>
-            <li>سياسه الخصوصيه</li>
+            <Link className="hover:underline" to={PATHS.HOME}>الصفحة الرئيسية</Link>
+            <Link className="hover:underline" to={PATHS.ABOUT}>حولة المنصة</Link>
+            <Link className="hover:underline" to={PATHS.TRACK_AID.ROOT}>بدء التتبع</Link>
+            <Link className="hover:underline" to={PATHS.DONATION}>تبرع الان</Link>
           </ul>
         </div>
 

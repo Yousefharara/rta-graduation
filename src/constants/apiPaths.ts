@@ -17,6 +17,7 @@ export const USER_PAHTS = {
 export const AID_PATHS = {
   CREATE_AID: "/api/aids",
   GET_AIDS: "/api/aids",
+  DECREMENT_PATCH_AIDS: "/api/aids/:id/deduct",
 }
 
 export const CAMPAIGN_PATHS = {
