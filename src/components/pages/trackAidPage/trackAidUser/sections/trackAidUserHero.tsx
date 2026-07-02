@@ -28,6 +28,7 @@ import {
   createBeneficiaryOrderAction,
   getBeneficiaryOrders,
 } from "@/redux/slices/beneficiaryOrderSlice";
+import { createNotificationAction } from "@/redux/slices/notificationSlice";
 import ComplaintDialog from "./complaintDialog";
 import EditBeneficiaryDialog from "./editBeneficiaryDialog";
 
@@ -167,6 +168,16 @@ const TrackAidUserHero = () => {
       setOpen(false);
       toast.success("تمت عملية الطلب بنجاح ❤️");
       reset(defaultValues);
+      dispatch(
+        createNotificationAction(
+          {
+            user_id: 1,
+            title: "طلب مساعدة جديد",
+            message: `تم تقديم طلب مساعدة جديدة من ${beneficiary?.users?.name || "مستفيد"}: ${data.typeAid}`,
+          },
+          accessToken || "",
+        ),
+      );
     } else {
       toast.error("حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مجدداً");
     }

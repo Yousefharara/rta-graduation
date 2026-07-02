@@ -16,11 +16,13 @@ import {
   Plus,
   MessageSquareText,
   PackageOpen,
+  Bell,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "./style.css";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
+import { createNotificationAction } from "@/redux/slices/notificationSlice";
 import Button from "@/components/atoms/button";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -93,6 +95,16 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
       setOpen(false);
       toast.success("تمت عملية الشحن بنجاح ❤️");
       reset(defaultValues);
+      dispatch(
+        createNotificationAction(
+          {
+            user_id: 1,
+            title: "شحنة جديدة",
+            message: `تم إضافة شحنة جديدة من ${organization?.name || user?.name || "منظمة"}: ${data.aidType} بكمية ${data.quantity}`,
+          },
+          accessToken || "",
+        ),
+      );
     } else {
       toast.error("حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مجدداً");
     }
@@ -183,6 +195,16 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
               >
                 <PackageOpen />
                 <p className="font-semibold">المساعدات</p>
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                to={PATHS.DASHBOARD.NOTIFICATIONS}
+              >
+                <Bell />
+                <p className="font-semibold">الإشعارات</p>
               </NavLink>
             </li>
           </ul>

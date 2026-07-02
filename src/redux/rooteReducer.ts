@@ -15,6 +15,7 @@ import governoratesReducer from "./slices/governorateSlice";
 import areasReducer from "./slices/areaSlice";
 import aidReducer from "./slices/aidSlice";
 import complaintsReducer from "./slices/complaintSlice";
+import notificationsReducer from "./slices/notificationSlice";
 
 import storage from "redux-persist/lib/storage"; // localStorage'
 import { persistReducer } from "redux-persist";
@@ -53,5 +54,6 @@ export const RootReducer = combineReducers({
   // ! Edit here >>>>>>>>
   beneficiaryAidStep: beneficiaryAidStepReducer,
   pickupLocations: pickupLocationReducer,
+  notifications: notificationsReducer,
   // ! <<<<<<<<<< Edit here
 });

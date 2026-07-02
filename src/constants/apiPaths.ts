@@ -66,6 +66,15 @@ export const VERIFY_BENEFICIARY_PATHS = {
   VERIFY_BENEFICIARY: "/api/beneficiary-verifications",
 };
 
+export const NOTIFICATION_PATHS = {
+  CREATE_NOTIFICATION: "/api/notifications",
+  GET_NOTIFICATIONS: "/api/notifications",
+  GET_NOTIFICATION: "/api/notifications/:id",
+  EDIT_NOTIFICATION: "/api/notifications/:id",
+  READ_NOTIFICATION: "/api/notifications/:id/read",
+  DELETE_NOTIFICATION: "/api/notifications/:id",
+};
+
 export const BENEFICIARY_ORDER_PATHS = {
   CREATE_BENEFICIARY_ORDER: "/api/beneficiary-orders",
   GET_BENEFICIARY_ORDERS: "/api/beneficiary-orders",

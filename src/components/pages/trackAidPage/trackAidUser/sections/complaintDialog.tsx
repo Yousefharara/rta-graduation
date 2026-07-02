@@ -11,6 +11,7 @@ import {
 import {
   addComplaintAction,
 } from "@/redux/slices/complaintSlice";
+import { createNotificationAction } from "@/redux/slices/notificationSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -73,6 +74,16 @@ const ComplaintDialog = ({open = false, setOpen} : IPorps) => {
       setOpen(false);
       toast.success("تمت عملية الطلب بنجاح ❤️");
       reset(defaultValues);
+      dispatch(
+        createNotificationAction(
+          {
+            user_id: 1,
+            title: "شكوى جديدة",
+            message: `تم تقديم شكوى جديدة: ${data.subject}`,
+          },
+          accessToken || "",
+        ),
+      );
     } else {
       toast.error("حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مجدداً");
     }

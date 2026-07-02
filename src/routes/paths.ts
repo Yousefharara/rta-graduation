@@ -8,6 +8,7 @@ export const PATHS = {
     ORG_REGISTER: "/dashboard/org-register",
     COMPLAINTS: "/dashboard/complaints",
     AIDS: "/dashboard/aids",
+    NOTIFICATIONS: "/dashboard/notifications",
   },
   ABOUT: "/about",
   CONTACT_US: "/contactus",
