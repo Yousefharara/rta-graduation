@@ -29,6 +29,7 @@ import {
   getBeneficiaryOrders,
 } from "@/redux/slices/beneficiaryOrderSlice";
 import ComplaintDialog from "./complaintDialog";
+import EditBeneficiaryDialog from "./editBeneficiaryDialog";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
@@ -38,6 +39,7 @@ const defaultValues: ISendOrderForm = {
 const TrackAidUserHero = () => {
   const [open, setOpen] = useState(false);
   const [openComplaint, setOpenComplaint] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const { currentStep } = useAppSelector((state) => state.beneficiaryAidStep);
 
   const { user, accessToken, beneficiary } = useAppSelector(
@@ -227,6 +229,7 @@ const TrackAidUserHero = () => {
             تقديم شكوى
           </Button>
           <Button
+            onClick={() => setOpenEdit(true)}
             className="flex gap-3 items-center font-semibold"
             variant="outline"
           style={{minWidth: "fit-content"}}
@@ -347,6 +350,7 @@ const TrackAidUserHero = () => {
       </Dialog>
 
       <ComplaintDialog  open={openComplaint} setOpen={setOpenComplaint}/>
+      <EditBeneficiaryDialog open={openEdit} setOpen={setOpenEdit} />
     </>
   );
 };
