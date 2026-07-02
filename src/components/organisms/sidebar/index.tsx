@@ -14,6 +14,8 @@ import {
   X,
   LogOut,
   Plus,
+  MessageSquareText,
+  PackageOpen,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "./style.css";
@@ -161,6 +163,26 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
               >
                 <Users />
                 <p className="font-semibold">إدارة المستفيدين</p>
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                to={PATHS.DASHBOARD.COMPLAINTS}
+              >
+                <MessageSquareText />
+                <p className="font-semibold">الشكاوى</p>
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                to={PATHS.DASHBOARD.AIDS}
+              >
+                <PackageOpen />
+                <p className="font-semibold">المساعدات</p>
               </NavLink>
             </li>
           </ul>

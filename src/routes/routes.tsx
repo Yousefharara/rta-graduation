@@ -17,6 +17,8 @@ const DashboardAidOrders = lazy(() => import("@/components/pages/dashboard/dashb
 const DashboardBeneficiariesManagement = lazy(() => import("@/components/pages/dashboard/dashboardBeneficiariesManagement"));
 const DashboardOrgRegister = lazy(() => import("@/components/pages/dashboard/dashboardOrgRegister"));
 const DashboardBeneficiaryRegister = lazy(() => import("@/components/pages/dashboard/dashboardBeneficiaryRegister"));
+const DashboardComplaints = lazy(() => import("@/components/pages/dashboard/dashboardComplaints"));
+const DashboardAids = lazy(() => import("@/components/pages/dashboard/dashboardAids"));
 
 
 // ! -----------------------------------------------------------------
@@ -94,6 +96,26 @@ const adminRoutes: RouteObject[] = [
       {
         index: true,
         element: <DashboardOrgRegister />,
+      },
+    ],
+  },
+  {
+    path: PATHS.DASHBOARD.COMPLAINTS,
+    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    children: [
+      {
+        index: true,
+        element: <DashboardComplaints />,
+      },
+    ],
+  },
+  {
+    path: PATHS.DASHBOARD.AIDS,
+    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    children: [
+      {
+        index: true,
+        element: <DashboardAids />,
       },
     ],
   },

@@ -28,6 +28,15 @@ export const CAMPAIGN_PATHS = {
   DELETE_CAMPAIGN: "/api/campaigns/:id",
 };
 
+export const COMPLAINT_PATHS = {
+  CREATE_COMPLAINT: "/api/complaints",
+  GET_COMPLAINTS: "/api/complaints",
+  GET_COMPLAINT: "/api/complaints/:id",
+  RESOLVE_COMPLAINT: "/api/complaints/:id/resolve",
+  EDIT_COMPLAINT: "/api/complaints/:id",
+  DELETE_COMPLAINT: "/api/complaints/:id",
+};
+
 export const AID_CATEGORY_PATHS = {
   CREATE_CATEGORY: "/api/aid-categories",
   GET_CATEGORIES: "/api/aid-categories",

@@ -28,6 +28,7 @@ import {
   createBeneficiaryOrderAction,
   getBeneficiaryOrders,
 } from "@/redux/slices/beneficiaryOrderSlice";
+import ComplaintDialog from "./complaintDialog";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
@@ -36,6 +37,7 @@ const defaultValues: ISendOrderForm = {
 
 const TrackAidUserHero = () => {
   const [open, setOpen] = useState(false);
+  const [openComplaint, setOpenComplaint] = useState(false);
   const { currentStep } = useAppSelector((state) => state.beneficiaryAidStep);
 
   const { user, accessToken, beneficiary } = useAppSelector(
@@ -172,7 +174,7 @@ const TrackAidUserHero = () => {
 
   return (
     <>
-      <section className="flex justify-between items-center gap-4">
+      <section className="flex flex-wrap justify-between items-center gap-4">
         <div className="flex flex-col">
           <h3 className="text-2xl font-medium">نتائج البحث عن الطلب</h3>
           <p>عرض تفاصيل الطلب المرتبط برقم الهويه المدخل</p>
@@ -215,10 +217,19 @@ const TrackAidUserHero = () => {
             )}
           </div>
         </div>
-        <div className="flex gap-3 ">
+        <div className="flex flex-wrap gap-3">
+          <Button
+            onClick={() => setOpenComplaint(true)}
+
+            className="flex gap-3 items-center font-semibold"
+            variant="outline"
+          >
+            تقديم شكوى
+          </Button>
           <Button
             className="flex gap-3 items-center font-semibold"
             variant="outline"
+          style={{minWidth: "fit-content"}}
           >
             تعديل البيانات
             <Pencil />
@@ -226,6 +237,7 @@ const TrackAidUserHero = () => {
           <Button
             onClick={() => setOpen(true)}
             className="flex gap-3 items-center font-semibold"
+            style={{minWidth: "fit-content"}}
           >
             أضافة طلب جديد
             <SquareRoundCorner />
@@ -333,6 +345,8 @@ const TrackAidUserHero = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ComplaintDialog  open={openComplaint} setOpen={setOpenComplaint}/>
     </>
   );
 };

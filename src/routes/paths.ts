@@ -6,6 +6,8 @@ export const PATHS = {
     BENEFICIARIES_MANAGEMENT: "/dashboard/benefciaries-management",
     BENEFICIARY_REGISTER: "/dashboard/benefciary-register",
     ORG_REGISTER: "/dashboard/org-register",
+    COMPLAINTS: "/dashboard/complaints",
+    AIDS: "/dashboard/aids",
   },
   ABOUT: "/about",
   CONTACT_US: "/contactus",
