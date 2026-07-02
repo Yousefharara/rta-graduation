@@ -75,6 +75,7 @@ export const BENEFICIARY_ORDER_PATHS = {
 };
 
 export const BENEFICIARY_AID_PATHS = {
+  CREATE_BENEFICIARY_AID: "/api/beneficiary-aids",
   GET_BENEFICIARY_AIDS: "/api/beneficiary-aids",
   GET_BENEFICIARY_AID: "/api/beneficiary-aids/:id",
   EDIT_BENEFICIARY_AID: "/api/beneficiary-aids/:id",

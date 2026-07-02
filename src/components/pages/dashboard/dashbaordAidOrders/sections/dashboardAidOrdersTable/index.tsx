@@ -18,6 +18,7 @@ import {
   updateBeneficiaryOrderStatusAction,
 } from "@/redux/slices/beneficiaryOrderSlice";
 import {
+  createBeneficiaryAidAction,
   editBeneficiaryAidStatus,
   getBeneficiaryAids,
 } from "@/redux/slices/beneficiaryAidSlice";
@@ -125,7 +126,7 @@ const DashboardAidOrdersTable = ({
   );
 
   const handleUpdateStatus = useCallback(
-    (
+    async (
       id: number,
       status: IBeneficiaryOrder["status"],
       aid_type_id?: number,
@@ -137,7 +138,7 @@ const DashboardAidOrdersTable = ({
       );
 
       if (status === "rejected") {
-        dispatch(
+        await dispatch(
           updateBeneficiaryOrderStatusAction(
             id,
             status,
@@ -145,6 +146,7 @@ const DashboardAidOrdersTable = ({
             pickupLocationId,
           ),
         );
+        await dispatch(getBeneficiaryAids(accessToken || ""));
         return;
       }
 
@@ -159,8 +161,8 @@ const DashboardAidOrdersTable = ({
         if (editAid.remaining_quantity > 0) {
           if (status === "approved" && beneficiaryId) {
             pickupLocationId = resolvePickupLocationId(beneficiaryId);
-            dispatch(editAidDeductAction(editAid.id, 1, accessToken || ""));
-            dispatch(
+            await dispatch(editAidDeductAction(editAid.id, 1, accessToken || ""));
+            await dispatch(
               updateBeneficiaryOrderStatusAction(
                 id,
                 status,
@@ -168,6 +170,19 @@ const DashboardAidOrdersTable = ({
                 pickupLocationId,
               ),
             );
+            await dispatch(
+              createBeneficiaryAidAction(
+                {
+                  beneficiary_id: beneficiaryId,
+                  aid_type_id: aid_type_id!,
+                  status: "approved",
+                  order_id: id,
+                  pickup_location_id: pickupLocationId,
+                },
+                accessToken || "",
+              ),
+            );
+            await dispatch(getBeneficiaryAids(accessToken || ""));
           }
           toast.success("تم قبول الطلب بنجاح")
         } else {

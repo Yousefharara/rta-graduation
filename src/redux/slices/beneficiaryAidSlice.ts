@@ -5,6 +5,14 @@ import axios from "axios";
 import { API_KEY } from "@/config/api";
 import { BENEFICIARY_AID_PATHS } from "@/constants/apiPaths";
 
+export interface ICreateBeneficiaryAid {
+  beneficiary_id: number;
+  aid_type_id: number;
+  status: IBeneficiaryAid["status"];
+  order_id: number | null;
+  pickup_location_id?: number;
+}
+
 interface BeneficiaryAidState {
   loading: boolean;
   error: string | null;
@@ -35,6 +43,9 @@ const beneficiaryAidSlice = createSlice({
     setSingleAid: (state, action: PayloadAction<IBeneficiaryAid | null>) => {
       state.beneficiaryAid = action.payload;
     },
+    addAid: (state, action: PayloadAction<IBeneficiaryAid>) => {
+      state.beneficiaryAids = [...state.beneficiaryAids, action.payload];
+    },
     updateAidStatus: (
       state,
       action: PayloadAction<{ id: number; status: IBeneficiaryAid["status"] }>,
@@ -63,6 +74,7 @@ export const {
   setError,
   setAids,
   setSingleAid,
+  addAid,
   updateAidStatus,
   removeAid,
 } = beneficiaryAidSlice.actions;
@@ -82,6 +94,27 @@ export const getBeneficiaryAids =
       dispatch(setAids(data));
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+export const createBeneficiaryAidAction =
+  (body: ICreateBeneficiaryAid, token: string) =>
+  async (dispatch: AppDispatch) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
+    try {
+      const { data } = await axios.post<IBeneficiaryAid>(
+        API_KEY + BENEFICIARY_AID_PATHS.CREATE_BENEFICIARY_AID,
+        body,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(addAid(data));
+      return { success: true, data };
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setLoading(false));
     }
