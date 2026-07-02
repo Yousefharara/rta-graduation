@@ -1,17 +1,20 @@
 import type { IRegisterLocalOrgForm } from "@/@types/forms";
+import type { ILocalOrg } from "@/@types/localOrg";
 import Button from "@/components/atoms/button";
 import Error from "@/components/feedback/Error";
 import Spinner from "@/components/feedback/Spinner";
 import RowForm from "@/components/molecules/rowForm";
 import { INPUTS_TYPE_ERROR } from "@/constants/forms";
 import { getAreas } from "@/redux/slices/areaSlice";
-import { addLocalOrgAction } from "@/redux/slices/localOrgSlice";
+import { addLocalOrgAction, editLocalOrgAction } from "@/redux/slices/localOrgSlice";
+import { editUserAction } from "@/redux/slices/userSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { PATHS } from "@/routes/paths";
 import { generateRandomEmail } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import * as Yup from "yup";
 
@@ -40,10 +43,14 @@ const schemaRegisterLocalOrgFrom: Yup.ObjectSchema<IRegisterLocalOrgForm> =
 const DashboardOrgRegister = () => {
   const { accessToken } = useAppSelector((state) => state.auth);
   const { areas, isFetching, error } = useAppSelector((state) => state.areas);
-  const { isCreating, error: createError } = useAppSelector(
+  const { isCreating, isUpdating } = useAppSelector(
     (state) => state.localOrg,
   );
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const editOrg = (location.state as { org: ILocalOrg } | null)?.org;
+  const isEditMode = !!editOrg;
 
   const {
     formState: { errors },
@@ -54,25 +61,73 @@ const DashboardOrgRegister = () => {
     resolver: yupResolver(schemaRegisterLocalOrgFrom),
   });
 
-  
   useEffect(() => {
-
-    if(errors) {
-      console.log('errors, ', errors);
+    if (errors) {
+      console.log("errors, ", errors);
     }
-
-  }, [errors])
-
+  }, [errors]);
 
   useEffect(() => {
     if (accessToken)
       if (areas.length === 0) dispatch(getAreas(accessToken || ""));
   }, [dispatch, accessToken, areas]);
 
-  const handleOnSubmit = (data: IRegisterLocalOrgForm) => {
-    console.log("data , ", data);
-    console.log("password , ", data.email || generateRandomEmail());
-    dispatch(
+  useEffect(() => {
+    if (editOrg) {
+      reset({
+        name: editOrg.users.name,
+        org_name: editOrg.org_name,
+        email: editOrg.users.email,
+        phone: editOrg.users.phone,
+        area_id: editOrg.area_id,
+        focus_area: editOrg.focus_area,
+        staff_count: editOrg.staff_count,
+      });
+    }
+  }, [editOrg, reset]);
+
+  const handleOnSubmit = async (data: IRegisterLocalOrgForm) => {
+    if (isEditMode && editOrg) {
+      const userResult = await dispatch(
+        editUserAction(
+          editOrg.user_id,
+          { name: data.name, email: data.email || editOrg.users.email, phone: data.phone },
+          accessToken || "",
+        ),
+      );
+      if (!userResult?.success) {
+        toast.error("حدث خطأ أثناء تعديل بيانات المستخدم");
+        return;
+      }
+
+      const result = await dispatch(
+        editLocalOrgAction(
+          {
+            ...editOrg,
+            org_name: data.org_name,
+            area_id: data.area_id,
+            focus_area: data.focus_area,
+            staff_count: data.staff_count || 0,
+            users: {
+              ...editOrg.users,
+              name: data.name,
+              email: data.email || editOrg.users.email,
+              phone: data.phone,
+            },
+          },
+          accessToken || "",
+        ),
+      );
+      if (result?.success) {
+        toast.success("تم تعديل المنظمة بنجاح");
+        navigate(PATHS.DASHBOARD.ROOT);
+      } else {
+        toast.error("حدث خطأ أثناء تعديل المنظمة");
+      }
+      return;
+    }
+
+    const result = await dispatch(
       addLocalOrgAction(
         {
           ...data,
@@ -82,13 +137,11 @@ const DashboardOrgRegister = () => {
         accessToken || "",
       ),
     );
-    // reset(defaultValues);
-    if (createError) {
-      toast.error("هناك خطأ في ");
-    }
-    if (!createError && !isCreating) {
+    if (result?.success) {
       toast.success("تمت اضافة المنظمة بنجاح");
       reset(defaultDate);
+    } else {
+      toast.error("هناك خطأ في الإضافة");
     }
   };
 
@@ -97,6 +150,9 @@ const DashboardOrgRegister = () => {
 
   return (
     <section>
+      <h1 className="text-2xl font-semibold mb-6">
+        {isEditMode ? "تعديل المنظمة" : "تسجيل منظمة جديدة"}
+      </h1>
       <form
         className="flex flex-col gap-12"
         onSubmit={handleSubmit(handleOnSubmit)}
@@ -196,11 +252,11 @@ const DashboardOrgRegister = () => {
           </div>
         </article>
 
-        {isCreating ? (
+        {isCreating || isUpdating ? (
           <Spinner />
         ) : (
           <Button type="submit" className="flex items-center gap-2 self-start">
-            حفظ <ArrowLeft size={18} />{" "}
+            {isEditMode ? "تعديل المنظمة" : "حفظ"}
           </Button>
         )}
       </form>

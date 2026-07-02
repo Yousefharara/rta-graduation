@@ -57,7 +57,7 @@ const DashboardAidOrdersTable = ({
   const { pickupLocations } = useAppSelector((state) => state.pickupLocations);
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
   const { aids } = useAppSelector((state) => state.aids);
-  const { localOrgs } = useAppSelector((state) => state.localOrg);
+  // const { localOrgs } = useAppSelector((state) => state.localOrg);
 
   useEffect(() => {
     if (accessToken) {
@@ -383,16 +383,17 @@ const DashboardAidOrdersTable = ({
         },
       },
     ];
-  }, [
-    aidTypes,
-    beneficiaryAids,
-    isUpdating,
-    handleStatusClick,
-    handleUpdateStatus,
-    setViewModal,
-    beneficiaries,
-    localOrgs,
-  ]);
+  }, [aidTypes, beneficiaryAids, isUpdating, handleStatusClick, handleUpdateStatus, setViewModal]);
+  // }, [
+  //   aidTypes,
+  //   beneficiaryAids,
+  //   isUpdating,
+  //   handleStatusClick,
+  //   handleUpdateStatus,
+  //   setViewModal,
+  //   beneficiaries,
+  //   localOrgs,
+  // ]);
 
   if (isFetching) {
     return (

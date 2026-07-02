@@ -126,8 +126,10 @@ export const addLocalOrgAction =
         },
       );
       dispatch(addLocalOrg(data));
+      return { success: true, data };
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setCreating(false));
     }
@@ -157,38 +159,63 @@ export const getLocalOrg =
   };
 
 export const editLocalOrgAction =
-  (body: ILocalOrg) => async (dispatch: AppDispatch) => {
+  (body: ILocalOrg, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
     dispatch(setError(null));
-    
+
     try {
-      console.log("Inside editing >>>>>>");
-      const { data } = await axios.patch<ILocalOrg>(
+      const { data } = await axios.put<ILocalOrg>(
         API_KEY + ORG_PATHS.EDIT_ORG.replace(":id", String(body.id)),
         body,
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      console.log("Updating data : ", data);
       dispatch(editLocalOrg(data));
+      return { success: true, data };
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setUpdating(false));
     }
   };
 
 export const deleteLocalOrgAction =
-  (id: number) => async (dispatch: AppDispatch) => {
+  (id: number, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setDeleting(true));
     dispatch(setError(null));
-    
+
     try {
       await axios.delete(
         API_KEY + ORG_PATHS.DELETE_ORG.replace(":id", id.toString()),
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       dispatch(deleteLocalOrg(id));
+      return { success: true };
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setDeleting(false));
+    }
+  };
+
+export const verifyLocalOrgAction =
+  (id: number, is_verified: boolean, token: string) => async (dispatch: AppDispatch) => {
+    dispatch(setUpdating(true));
+    dispatch(setError(null));
+
+    try {
+      const { data } = await axios.patch(
+        API_KEY + ORG_PATHS.VERFIY_ORG.replace(":id", String(id)),
+        {is_verified},
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(setLocalOrgs([]));
+      return { success: true, data };
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
+    } finally {
+      dispatch(setUpdating(false));
     }
   };
