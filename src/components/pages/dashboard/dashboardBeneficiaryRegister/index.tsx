@@ -6,7 +6,8 @@ import RowForm from "@/components/molecules/rowForm";
 import { useEffect, useState } from "react";
 import Button from "@/components/atoms/button";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { addBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
+import { addBeneficiaryAction, editBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
+import { editUserAction } from "@/redux/slices/userSlice";
 import { generateRandomEmail } from "@/utils/utils";
 import { useBeneficiaryValidation } from "@/hooks/useBeneficiaryValidation";
 import { toast } from "sonner";
@@ -14,6 +15,9 @@ import { INPUTS_TYPE_ERROR } from "@/constants/forms";
 import Spinner from "@/components/feedback/Spinner";
 import { getAreas } from "@/redux/slices/areaSlice";
 import { getGovernorates } from "@/redux/slices/governorateSlice";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { IBeneficiary } from "@/@types/beneficiary";
+import { PATHS } from "@/routes/paths";
 
 // const defaultValues: IRegisterBeneficiaryForm = {
 //   name: "",
@@ -58,8 +62,9 @@ const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> 
 
 const DashboardBeneficiaryRegister = () => {
   const [region, setRegion] = useState<number>();
+  const navigate = useNavigate();
   const { accessToken } = useAppSelector((state) => state.auth);
-  const { isCreating, error } = useAppSelector((state) => state.beneficiaries);
+  const { isCreating, isUpdating, error } = useAppSelector((state) => state.beneficiaries);
   const { isFetching, governorates } = useAppSelector(
     (state) => state.governorates,
   );
@@ -68,11 +73,14 @@ const DashboardBeneficiaryRegister = () => {
   );
   const dispatch = useAppDispatch();
   const { isNationalIdExists } = useBeneficiaryValidation();
+  const location = useLocation();
+  const editBeneficiary = (location.state as { beneficiary: IBeneficiary } | null)?.beneficiary;
+  const isEditMode = !!editBeneficiary;
 
   const {
     formState: { errors },
     handleSubmit,
-    // reset,
+    reset,
     register,
   } = useForm<IRegisterBeneficiaryForm>({
     resolver: yupResolver(schemaRegisterBeneficiaryFrom),
@@ -85,13 +93,84 @@ const DashboardBeneficiaryRegister = () => {
     }
   }, [accessToken, dispatch, areas, governorates]);
 
-  const handleOnSubmit = (data: IRegisterBeneficiaryForm) => {
-    if (isNationalIdExists(data.national_id)) {
+  useEffect(() => {
+    if (editBeneficiary) {
+      reset({
+        name: editBeneficiary.users.name,
+        national_id: editBeneficiary.national_id,
+        phone: editBeneficiary.users.phone,
+        email: editBeneficiary.users.email,
+        family_size: editBeneficiary.family_size,
+        patients_count: editBeneficiary.patients_count,
+        disabled_count: editBeneficiary.disabled_count,
+        income: Number(editBeneficiary.income),
+        area_id: editBeneficiary.area_id,
+        is_displaced: editBeneficiary.is_displaced,
+        release_date: editBeneficiary.release_date ? new Date(editBeneficiary.release_date).toISOString().split('T')[0] : "",
+        status: "single",
+      });
+    }
+  }, [editBeneficiary, reset]);
+
+  useEffect(() => {
+    if (editBeneficiary && areas.length > 0) {
+      const area = areas.find((a) => a.id === editBeneficiary.area_id);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (area) setRegion(area.governorate_id);
+    }
+  }, [editBeneficiary, areas]);
+
+  const handleOnSubmit = async (data: IRegisterBeneficiaryForm) => {
+    if (!isEditMode && isNationalIdExists(data.national_id)) {
       toast.error("رقم الهوية موجود مسبقاً");
       return;
     }
 
-    dispatch(
+    if (isEditMode && editBeneficiary) {
+      const userResult = await dispatch(
+        editUserAction(
+          editBeneficiary.user_id,
+          { name: data.name, email: data.email || editBeneficiary.users.email, phone: data.phone },
+          accessToken || "",
+        ),
+      );
+      if (!userResult?.success) {
+        toast.error("حدث خطأ أثناء تعديل بيانات المستخدم");
+        return;
+      }
+
+      const result = await dispatch(
+        editBeneficiaryAction(
+          {
+            ...editBeneficiary,
+            users: {
+              ...editBeneficiary.users,
+              name: data.name,
+              email: data.email || editBeneficiary.users.email,
+              phone: data.phone,
+            },
+            national_id: data.national_id,
+            area_id: data.area_id,
+            family_size: data.family_size,
+            income: String(data.income),
+            patients_count: data.patients_count,
+            disabled_count: data.disabled_count || 0,
+            is_displaced: data.is_displaced || false,
+            release_date: new Date(data.release_date),
+          },
+          accessToken || "",
+        ),
+      );
+      if (result?.success) {
+        toast.success("تم تعديل المستفيد بنجاح");
+        navigate(PATHS.DASHBOARD.BENEFICIARIES_MANAGEMENT);
+      } else {
+        toast.error("حدث خطأ أثناء تعديل المستفيد");
+      }
+      return;
+    }
+
+    await dispatch(
       addBeneficiaryAction(
         {
           area_id: data.area_id,
@@ -112,12 +191,14 @@ const DashboardBeneficiaryRegister = () => {
     );
     if (!error && !isCreating) {
       toast.success("تم تسجيل المستفيد");
-      // reset(defaultValues);
     }
   };
 
   return (
     <section>
+      <h1 className="text-2xl font-semibold mb-6">
+        {isEditMode ? "تعديل المستفيد" : "تسجيل مستفيد جديد"}
+      </h1>
       <form
         className="flex flex-col gap-12"
         onSubmit={handleSubmit(handleOnSubmit)}
@@ -240,11 +321,10 @@ const DashboardBeneficiaryRegister = () => {
                 </label>
 
                 <select
-                  defaultValue={"select"}
+                  value={region || "select"}
                   className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
                   onChange={(e) => {
                     setRegion(Number(e.target.value));
-                    console.log("region ", region);
                   }}
                 >
                   <option disabled value="select">
@@ -311,11 +391,11 @@ const DashboardBeneficiaryRegister = () => {
           </div>
         </article>
 
-        {isCreating ? (
+        {isCreating || isUpdating ? (
           <Spinner />
         ) : (
           <Button className="self-start" type="submit">
-            تسجيل المستفيد
+            {isEditMode ? "تعديل المستفيد" : "تسجيل المستفيد"}
           </Button>
         )}
       </form>

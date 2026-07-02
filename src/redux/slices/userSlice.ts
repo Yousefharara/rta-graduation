@@ -36,10 +36,16 @@ const userSlice = createSlice({
     setUser: (state, action: PayloadAction<IUser>) => {
       state.user = action.payload;
     },
+    editUser: (state, action: PayloadAction<IUser>) => {
+      state.users = state.users.map((u) =>
+        u.id === action.payload.id ? action.payload : u,
+      );
+      if (state.user?.id === action.payload.id) state.user = action.payload;
+    },
   },
 });
 
-export const { setLoading, setError, setUsers, setUser } = userSlice.actions;
+export const { setLoading, setError, setUsers, setUser, editUser } = userSlice.actions;
 
 export default userSlice.reducer;
 
@@ -76,3 +82,24 @@ export const getUser = (id: number) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(false));
   }
 };
+
+export const editUserAction =
+  (id: number, body: Partial<IUser>, token: string) =>
+  async (dispatch: AppDispatch) => {
+    dispatch(setLoading(true));
+    dispatch(setError(""));
+    try {
+      const { data } = await axios.put<IUser>(
+        API_KEY + USER_PAHTS.EDIT_USER.replace(":id", String(id)),
+        body,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(editUser(data));
+      return { success: true, data };
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };

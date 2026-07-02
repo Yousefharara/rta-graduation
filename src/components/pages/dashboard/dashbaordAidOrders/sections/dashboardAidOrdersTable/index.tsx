@@ -45,6 +45,7 @@ const DashboardAidOrdersTable = ({
   setStatusFilter,
 }: TableProps) => {
   const [search, setSearch] = useState("");
+  const [viewModal, setViewModal] = useState<IBeneficiaryOrder | null>(null);
 
   const dispatch = useAppDispatch();
   const { accessToken, organization, role } = useAppSelector((state) => state.auth);
@@ -56,6 +57,7 @@ const DashboardAidOrdersTable = ({
   const { pickupLocations } = useAppSelector((state) => state.pickupLocations);
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
   const { aids } = useAppSelector((state) => state.aids);
+  const { localOrgs } = useAppSelector((state) => state.localOrg);
 
   useEffect(() => {
     if (accessToken) {
@@ -187,6 +189,16 @@ const DashboardAidOrdersTable = ({
     },
     [accessToken, dispatch, isUpdating],
   );
+
+  const getBeneficiaryName = (id: number) => {
+    const b = beneficiaries.find((b) => b.id === id);
+    return b?.users?.name || `#${id}`;
+  };
+
+  const getAidTypeName = (id: number) => {
+    const t = aidTypes.find((a) => Number(a.id) === Number(id));
+    return t?.name || `#${id}`;
+  };
 
   const columns = useMemo<ColumnDef<IBeneficiaryOrder>[]>(() => {
     return [
@@ -323,6 +335,7 @@ const DashboardAidOrdersTable = ({
             <div className="flex items-center gap-3">
               <button
                 title="عرض التفاصيل"
+                onClick={() => setViewModal(row.original)}
                 className="text-primary hover:text-blue-700 transition-colors cursor-pointer"
               >
                 <Eye strokeWidth={1.3} size={20} />
@@ -376,6 +389,9 @@ const DashboardAidOrdersTable = ({
     isUpdating,
     handleStatusClick,
     handleUpdateStatus,
+    setViewModal,
+    beneficiaries,
+    localOrgs,
   ]);
 
   if (isFetching) {
@@ -395,6 +411,58 @@ const DashboardAidOrdersTable = ({
     );
 
   return (
+    <>
+      {viewModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-4 flex flex-col gap-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">تفاصيل الطلب</h2>
+              <button
+                onClick={() => setViewModal(null)}
+                className="cursor-pointer p-1 hover:bg-zinc-100 rounded"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 text-sm">
+              <div>
+                <span className="font-medium text-zinc-500">رقم الطلب: </span>
+                <span className="text-primary font-medium">#{viewModal.id}</span>
+              </div>
+              <div>
+                <span className="font-medium text-zinc-500">المستفيد: </span>
+                <span>{getBeneficiaryName(viewModal.beneficiary_id)}</span>
+              </div>
+              <div>
+                <span className="font-medium text-zinc-500">نوع المساعدة: </span>
+                <span className="px-3 text-sm font-semibold border border-zinc-400 py-1 rounded-md">
+                  {getAidTypeName(viewModal.aid_type_id)}
+                </span>
+              </div>
+              <div>
+                <span className="font-medium text-zinc-500">الوصف: </span>
+                <p className="mt-1 p-3 bg-zinc-50 rounded-md">{viewModal.description}</p>
+              </div>
+              <div>
+                <span className="font-medium text-zinc-500">تاريخ الإنشاء: </span>
+                <span>{new Date(viewModal.created_at).toLocaleDateString("ar-SA")}</span>
+              </div>
+              <div>
+                <span className="font-medium text-zinc-500">الحالة: </span>
+                <span className={
+                  viewModal.status === "approved" ? "text-green-600" :
+                  viewModal.status === "rejected" ? "text-red-600" : "text-amber-600"
+                }>
+                  {viewModal.status === "approved" ? "موافق عليه" :
+                   viewModal.status === "rejected" ? "مرفوض" : "قيد الانتظار"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     <section className="flex flex-col gap-4 p-3 border border-zinc-400 bg-white rounded-md">
       <article className="flex items-center gap-4 flex-wrap">
         <div className="search-filter bg-[#EFF4FF] rounded-md px-4 py-2 flex flex-wrap items-center gap-2">
@@ -457,6 +525,7 @@ const DashboardAidOrdersTable = ({
         />
       </article>
     </section>
+    </>
   );
 };
 

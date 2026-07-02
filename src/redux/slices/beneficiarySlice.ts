@@ -129,8 +129,10 @@ export const addBeneficiaryAction =
         );
         console.log("data is < ", data)
         dispatch(addBeneficiary(data));
+        return { success: true, data };
       } catch (err) {
         if (err instanceof Error) dispatch(setError(err.message));
+        return { success: false, error: err };
       } finally {
         dispatch(setCreating(false));
       }
@@ -160,28 +162,35 @@ export const getBeneficiary =
   };
 
 export const editBeneficiaryAction =
-  (body: IBeneficiary) => async (dispatch: AppDispatch) => {
+  (body: IBeneficiary, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
     dispatch(setError(null));
 
     try {
       console.log("Inside editing >>>>>>");
-      const { data } = await axios.patch<IBeneficiary>(
+      const { data } = await axios.put<IBeneficiary>(
         API_KEY +
         BENEFICIARY_PATHS.EDIT_BENEFICIARY.replace(":id", String(body.id)),
         body,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       console.log("Updating data : ", data);
       dispatch(editBeneficiary(data));
+      return { success: true, data };
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setUpdating(false));
     }
   };
 
 export const deleteBeneficiaryAction =
-  (id: number) => async (dispatch: AppDispatch) => {
+  (id: number, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setDeleting(true));
     dispatch(setError(null));
 
@@ -189,6 +198,11 @@ export const deleteBeneficiaryAction =
       await axios.delete(
         API_KEY +
         BENEFICIARY_PATHS.DELETE_BENEFICIARY.replace(":id", id.toString()),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       dispatch(deleteBeneficiary(id));
     } catch (err) {
