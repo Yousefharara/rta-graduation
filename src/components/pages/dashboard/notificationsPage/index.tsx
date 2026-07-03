@@ -1,23 +1,31 @@
 import { useEffect, useState } from "react";
-import { BellDot, CheckCheck, RefreshCw } from "lucide-react";
+import {
+  BellDot,
+  // CheckCheck,
+  RefreshCw,
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getNotificationsAction,
   markNotificationAsReadAction,
-  markAllNotificationsAsReadAction,
+  // markAllNotificationsAsReadAction,
 } from "@/redux/slices/notificationSlice";
 
 const NotificationsPage = () => {
   const dispatch = useAppDispatch();
   const { accessToken } = useAppSelector((state) => state.auth);
-  const notificationState = useAppSelector((state) => state.notifications);
-  const notifications = Array.isArray(notificationState?.notifications) ? notificationState.notifications : [];
-  const loading = notificationState?.loading ?? false;
+  const { notifications, loading } = useAppSelector(
+    (state) => state.notifications,
+  );
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (accessToken) dispatch(getNotificationsAction(accessToken));
   }, [dispatch, accessToken, refreshKey]);
+
+  useEffect(() => {
+    console.log("notifications ; ", notifications);
+  });
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
@@ -25,9 +33,9 @@ const NotificationsPage = () => {
     if (accessToken) dispatch(markNotificationAsReadAction(id, accessToken));
   };
 
-  const handleMarkAllAsRead = () => {
-    if (accessToken) dispatch(markAllNotificationsAsReadAction(accessToken));
-  };
+  // const handleMarkAllAsRead = () => {
+  //   if (accessToken) dispatch(markAllNotificationsAsReadAction(accessToken));
+  // };
 
   return (
     <section className="flex flex-col gap-6">
@@ -50,7 +58,7 @@ const NotificationsPage = () => {
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             تحديث
           </button>
-          {unreadCount > 0 && (
+          {/* {unreadCount > 0 && (
             <button
               onClick={handleMarkAllAsRead}
               className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors cursor-pointer"
@@ -58,7 +66,7 @@ const NotificationsPage = () => {
               <CheckCheck size={16} />
               تحديد الكل كمقروء
             </button>
-          )}
+          )} */}
         </div>
       </div>
 

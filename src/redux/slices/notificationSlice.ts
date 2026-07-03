@@ -62,11 +62,12 @@ export const getNotificationsAction =
     dispatch(setLoading(true));
     dispatch(setError(null));
     try {
-      const { data } = await axios.get<INotification[]>(
+      const { data } = await axios.get<{data: INotification[]}>(
         API_KEY + NOTIFICATION_PATHS.GET_NOTIFICATIONS,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      dispatch(setNotifications(data));
+      dispatch(setNotifications(data.data));
+      console.log('notify data , ', data.data);
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
     } finally {
@@ -112,7 +113,7 @@ export const markNotificationAsReadAction =
 export const markAllNotificationsAsReadAction =
   (token: string) => async (dispatch: AppDispatch) => {
     try {
-      await axios.patch(
+      await axios.put(
         API_KEY + NOTIFICATION_PATHS.GET_NOTIFICATIONS,
         { is_read: true },
         { headers: { Authorization: `Bearer ${token}` } },

@@ -6,7 +6,10 @@ import RowForm from "@/components/molecules/rowForm";
 import { useEffect, useState } from "react";
 import Button from "@/components/atoms/button";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { addBeneficiaryAction, editBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
+import {
+  addBeneficiaryAction,
+  editBeneficiaryAction,
+} from "@/redux/slices/beneficiarySlice";
 import { editUserAction } from "@/redux/slices/userSlice";
 import { generateRandomEmail } from "@/utils/utils";
 import { useBeneficiaryValidation } from "@/hooks/useBeneficiaryValidation";
@@ -55,16 +58,15 @@ const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> 
     is_displaced: Yup.boolean(),
 
     email: Yup.string(),
-    status: Yup.mixed<"single" | "married">()
-      .oneOf(["single", "married"], "حالة المستفيد مطلوبه")
-      .required(""),
   });
 
 const DashboardBeneficiaryRegister = () => {
   const [region, setRegion] = useState<number>();
   const navigate = useNavigate();
   const { accessToken } = useAppSelector((state) => state.auth);
-  const { isCreating, isUpdating, error } = useAppSelector((state) => state.beneficiaries);
+  const { isCreating, isUpdating, error } = useAppSelector(
+    (state) => state.beneficiaries,
+  );
   const { isFetching, governorates } = useAppSelector(
     (state) => state.governorates,
   );
@@ -74,7 +76,9 @@ const DashboardBeneficiaryRegister = () => {
   const dispatch = useAppDispatch();
   const { isNationalIdExists } = useBeneficiaryValidation();
   const location = useLocation();
-  const editBeneficiary = (location.state as { beneficiary: IBeneficiary } | null)?.beneficiary;
+  const editBeneficiary = (
+    location.state as { beneficiary: IBeneficiary } | null
+  )?.beneficiary;
   const isEditMode = !!editBeneficiary;
 
   const {
@@ -106,8 +110,9 @@ const DashboardBeneficiaryRegister = () => {
         income: Number(editBeneficiary.income),
         area_id: editBeneficiary.area_id,
         is_displaced: editBeneficiary.is_displaced,
-        release_date: editBeneficiary.release_date ? new Date(editBeneficiary.release_date).toISOString().split('T')[0] : "",
-        status: "single",
+        release_date: editBeneficiary.release_date
+          ? new Date(editBeneficiary.release_date).toISOString().split("T")[0]
+          : "",
       });
     }
   }, [editBeneficiary, reset]);
@@ -130,7 +135,11 @@ const DashboardBeneficiaryRegister = () => {
       const userResult = await dispatch(
         editUserAction(
           editBeneficiary.user_id,
-          { name: data.name, email: data.email || editBeneficiary.users.email, phone: data.phone },
+          {
+            name: data.name,
+            email: data.email || editBeneficiary.users.email,
+            phone: data.phone,
+          },
           accessToken || "",
         ),
       );
@@ -275,24 +284,6 @@ const DashboardBeneficiaryRegister = () => {
               register={register}
               onlyPositiveNumbers
             />
-
-            <div className="flex flex-col gap-4 my-4 w-full">
-              <label className="text-sm font-semibold">الحالة الاجتماعيه</label>
-              <select
-                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["status"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                defaultValue={"select"}
-                {...register("status")}
-              >
-                <option disabled value="select">
-                  Select
-                </option>
-                <option value="single">single</option>
-                <option value="married">married</option>
-              </select>
-              {errors["status"] && (
-                <span className="span__error">{errors["status"]?.message}</span>
-              )}
-            </div>
           </div>
 
           <RowForm<IRegisterBeneficiaryForm>

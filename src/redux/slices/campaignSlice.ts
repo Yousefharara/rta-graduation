@@ -148,20 +148,25 @@ export const getCampaign = (id: number, token: string) => async (dispatch: AppDi
 };
 
 export const editCampaignAction =
-  (body: ICampaign) => async (dispatch: AppDispatch) => {
+  (body: Partial<ICampaign> & { id: number }, token?: string) =>
+  async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
     dispatch(setError(null));
     try {
-      console.log("Inside editing >>>>>>");
-      const { data } = await axios.patch<ICampaign>(
+      const headers = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : undefined;
+      const { data } = await axios.put<ICampaign>(
         API_KEY +
           CAMPAIGN_PATHS.EDIT_CAMPAIGN.replace(":id", String(body.id)),
         body,
+        headers,
       );
-      console.log("Updating data : ", data);
       dispatch(editCampaign(data));
+      return { success: true, data };
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setUpdating(false));
     }

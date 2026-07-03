@@ -1,8 +1,16 @@
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { X, BellDot, CheckCheck } from "lucide-react";
+import {
+  X,
+  BellDot,
+  // CheckCheck
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { getNotificationsAction, markAllNotificationsAsReadAction, markNotificationAsReadAction } from "@/redux/slices/notificationSlice";
+import {
+  getNotificationsAction,
+  // markAllNotificationsAsReadAction,
+  markNotificationAsReadAction,
+} from "@/redux/slices/notificationSlice";
 import { PATHS } from "@/routes/paths";
 
 interface Props {
@@ -13,8 +21,7 @@ interface Props {
 const NotificationSlider = ({ open, setOpen }: Props) => {
   const dispatch = useAppDispatch();
   const { accessToken } = useAppSelector((state) => state.auth);
-  const notificationState = useAppSelector((state) => state.notifications);
-  const notifications = Array.isArray(notificationState?.notifications) ? notificationState.notifications : [];
+  const { notifications } = useAppSelector((state) => state.notifications);
 
   useEffect(() => {
     if (open && accessToken && notifications.length === 0)
@@ -30,17 +37,14 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
     if (accessToken) dispatch(markNotificationAsReadAction(id, accessToken));
   };
 
-  const handleMarkAllAsRead = () => {
-    if (accessToken) dispatch(markAllNotificationsAsReadAction(accessToken));
-  };
+  // const handleMarkAllAsRead = () => {
+  //   if (accessToken) dispatch(markAllNotificationsAsReadAction(accessToken));
+  // };
 
   return (
     <>
       {open && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
       )}
 
       <aside
@@ -66,7 +70,7 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
           </button>
         </div>
 
-        {unreadCount > 0 && (
+        {/* {unreadCount > 0 && (
           <button
             onClick={handleMarkAllAsRead}
             className="flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary/5 transition-colors cursor-pointer"
@@ -74,7 +78,7 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
             <CheckCheck size={16} />
             تحديد الكل كمقروء
           </button>
-        )}
+        )} */}
 
         <div className="flex-1 overflow-y-auto">
           {notifications.length === 0 ? (
@@ -91,9 +95,7 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
                   !n.is_read ? "bg-blue-50/40" : ""
                 }`}
               >
-                <p className="text-sm font-semibold text-zinc-800">
-                  {n.title}
-                </p>
+                <p className="text-sm font-semibold text-zinc-800">{n.title}</p>
                 <p className="text-xs text-zinc-500 mt-1 line-clamp-2">
                   {n.message}
                 </p>

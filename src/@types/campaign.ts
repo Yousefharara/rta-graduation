@@ -6,7 +6,7 @@ export interface ICampaign {
   collected_amount: number;
   start_date: Date;
   end_date: Date;
-  status: string;
+  status: TCampaignStatus;
   created_at: Date;
 }
 
@@ -17,3 +17,5 @@ export interface ICreateCampaign {
   start_date: Date;
   end_date: Date;
 }
+
+type TCampaignStatus = "active" | "closed";

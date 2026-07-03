@@ -40,7 +40,6 @@ export interface IRegisterBeneficiaryForm
   email?: string | null;
   password?: string;
   disabled_count?: number;
-  status: 'single' | 'married';
 }
 
 

@@ -24,6 +24,7 @@ import { getCampaigns } from "@/redux/slices/campaignSlice";
 import Error from "@/components/feedback/Error";
 import Spinner from "@/components/feedback/Spinner";
 import { addDonationAction } from "@/redux/slices/donationSlice";
+import { editCampaignAction } from "@/redux/slices/campaignSlice";
 
 const defaultValues: IDonationForm = {
   donationCampaign: "",
@@ -108,19 +109,34 @@ const DonationForm = () => {
     if (!pendingData) return;
 
     const finalBudget = pendingData.customBudget || pendingData.budget;
-
-    console.log({
+console.log({
       ...pendingData,
       budget: finalBudget,
       email,
     });
-
     dispatch(addDonationAction({
       ...pendingData,
       amount: finalBudget,
       currency: "USD",
       guest_email: email
     }))
+
+    // Update campaign collected_amount
+    const selectedCampaign = campaigns.find(
+      (c) => c.title === pendingData.donationCampaign,
+    );
+    if (selectedCampaign) {
+      const newCollected = selectedCampaign.collected_amount + finalBudget;
+      const updatedStatus =
+        newCollected >= selectedCampaign.target_amount ? "closed" : selectedCampaign.status;
+      dispatch(
+        editCampaignAction({
+          id: selectedCampaign.id,
+          collected_amount: newCollected,
+          status: updatedStatus,
+        }),
+      );
+    }
 
     toast.success("تمت عملية التبرع بنجاح ❤️");
 
@@ -146,33 +162,59 @@ const DonationForm = () => {
           <h3>اختر الحملة</h3>
           <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))"}}>
 
-            {campaigns.map(campaign => (
-              <label
-              key={campaign.id}
-              htmlFor={campaign.title + campaign.id}
-              className="lable-gaza flex flex-col w-full offer active border border-zinc-300 rounded-lg p-3"
-            >
-              <input
-                className="hidden"
-                defaultChecked
-                value={campaign.title}
-                {...register("donationCampaign")}
-                type="radio"
-                id={campaign.title + campaign.id}
-              />
-
-              <div className="lable-check-icon hidden rounded-full self-end text-end w-fit p-1 bg-[#004AC6] justify-center items-center">
-                <Check size={12} strokeWidth={3} className="text-white" />
-              </div>
-              <h4 className="text-[#004AC6] text-sm">{campaign.title}</h4>
-              <p className="text-xl font-medium mb-4">{campaign.description}</p>
-              <div className="slider-color slider-gaza w-full h-2 bg-neutral-300 rounded-full"></div>
-              <div className="flex justify-between items-center">
-                <small>تم جمع {Math.round((campaign.collected_amount + 10000 / campaign.target_amount) * 100)}%</small>
-                <small>المستهدف {campaign.target_amount}$</small>
-              </div>
-            </label>
-            ))}
+            {campaigns.map((campaign) => {
+              const percentage = Math.min(
+                Math.round((campaign.collected_amount / campaign.target_amount) * 100),
+                100,
+              );
+              const isCompleted =
+                campaign.collected_amount >= campaign.target_amount;
+                
+              return (
+                <label
+                  key={campaign.id}
+                  htmlFor={campaign.title + campaign.id}
+                  className={`lable-gaza flex flex-col w-full offer active border rounded-lg p-3 ${
+                    isCompleted
+                      ? "border-green-400 bg-green-50/50 opacity-70"
+                      : "border-zinc-300"
+                  }`}
+                >
+                  <input
+                    className="hidden"
+                    value={campaign.title}
+                    {...register("donationCampaign")}
+                    type="radio"
+                    id={campaign.title + campaign.id}
+                    disabled={isCompleted}
+                  />
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[#004AC6] text-sm">{campaign.title}</h4>
+                    {isCompleted && (
+                      <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
+                        مكتمل
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xl font-medium mb-4">{campaign.description}</p>
+                  <div className="w-full h-2 bg-neutral-300 rounded-full overflow-hidden">
+                    <span
+                      className="block h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${percentage}%`,
+                        backgroundColor: isCompleted ? "#16a34a" : "hsl(133, 50%, 20%)",
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center mt-1">
+                    <small>
+                      تم جمع {percentage}%
+                    </small>
+                    <small>المستهدف {campaign.target_amount}$</small>
+                  </div>
+                </label>
+              );
+            })}
 
 
           </div>
@@ -194,7 +236,6 @@ const DonationForm = () => {
                 value={10}
                 className="hidden"
                 id="budget10"
-                defaultChecked
               />
               <p className="text-center text-xl font-semibold">10$</p>
             </label>

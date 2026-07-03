@@ -92,6 +92,7 @@ export const addDonationAction =
         console.log("data is < ", data)
         dispatch(addDonation(data));
       } catch (err) {
+        // console.log("error in donation : ", err.details.message);
         if (err instanceof Error) dispatch(setError(err.message));
       } finally {
         dispatch(setCreating(false));

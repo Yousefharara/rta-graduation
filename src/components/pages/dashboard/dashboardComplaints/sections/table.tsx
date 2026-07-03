@@ -1,5 +1,5 @@
 import { Search, Check, X, MessageCircle, Eye } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { getComplaints, resolveCampaignAction } from "@/redux/slices/complaintSlice";
@@ -37,10 +37,10 @@ const DashboardComplaintsTable = () => {
         pageSize: PAGE_SIZE,
     });
 
-    const getBeneficiaryName = (id: number) => {
+    const getBeneficiaryName = useCallback((id: number) => {
         const b = beneficiaries.find((b) => b.id === id);
         return b?.users?.name || `#${id}`;
-    };
+    }, [beneficiaries])
 
     const filteredData = useMemo(() => {
         return complaints.filter((item) => {
@@ -169,7 +169,7 @@ const DashboardComplaintsTable = () => {
                 },
             },
         ];
-    }, []);
+    }, [getBeneficiaryName, isUpdating]);
 
     if (isFetching) {
         return (
@@ -295,7 +295,7 @@ const DashboardComplaintsTable = () => {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="min-w-64 outline-0"
+                        className="outline-0 w-full"
                         placeholder="بحث عن رقم الشكوى، اسم المستفيد أو الموضوع..."
                     />
                 </div>
