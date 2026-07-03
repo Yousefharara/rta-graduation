@@ -53,7 +53,7 @@ const defaultValues: ICreateAidForm = {
 
 const schemaCreateAidFrom: Yup.ObjectSchema<ICreateAidForm> = Yup.object({
   aidType: Yup.string().required("نوع المساعدة مطلوب"),
-  quantity: Yup.number().required("الكمية مطلوبة"),
+  quantity: Yup.number().min(1, "القيمة غير صحيحة").required("الكمية مطلوبة"),
 });
 
 const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
@@ -216,15 +216,17 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
               </NavLink>
             </li>
 
-            {role === "admin" && <li>
-              <NavLink
-                className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
-                to={PATHS.DASHBOARD.AIDS}
-              >
-                <PackageOpen />
-                {!isMobileSider && <p className="font-semibold">المساعدات</p>}
-              </NavLink>
-            </li>}
+            {role === "admin" && (
+              <li>
+                <NavLink
+                  className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
+                  to={PATHS.DASHBOARD.AIDS}
+                >
+                  <PackageOpen />
+                  {!isMobileSider && <p className="font-semibold">المساعدات</p>}
+                </NavLink>
+              </li>
+            )}
 
             <li>
               <NavLink

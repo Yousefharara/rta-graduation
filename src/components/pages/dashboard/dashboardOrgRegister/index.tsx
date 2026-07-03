@@ -10,13 +10,14 @@ import { addLocalOrgAction, editLocalOrgAction } from "@/redux/slices/localOrgSl
 import { editUserAction } from "@/redux/slices/userSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { PATHS } from "@/routes/paths";
-import { generateRandomEmail } from "@/utils/utils";
+import { generateRandomEmail, generateRandomPassword } from "@/utils/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import * as Yup from "yup";
+import { Eye, EyeOff } from "lucide-react";
 
 const defaultDate: IRegisterLocalOrgForm = {
   area_id: 0,
@@ -30,14 +31,14 @@ const defaultDate: IRegisterLocalOrgForm = {
 
 const schemaRegisterLocalOrgFrom: Yup.ObjectSchema<IRegisterLocalOrgForm> =
   Yup.object({
-    name: Yup.string().required("الاسم مطلوب"),
+    name: Yup.string().min(3, "الاسم غير صحيح").required("الاسم مطلوب"),
     email: Yup.string().email().required("البريد اللكتروني مطلوب"),
-    password: Yup.string(),
-    phone: Yup.string().required("رقم الجوال مطلوب"),
-    org_name: Yup.string().required("الاسم بالانجليزي مطلوب"),
+    password: Yup.string().min(5).required("كلمة المرور مطلوية"),
+    phone: Yup.string().min(10).required("رقم الجوال مطلوب"),
+    org_name: Yup.string().min(3).required("الاسم بالانجليزي مطلوب"),
     area_id: Yup.number().required(),
-    focus_area: Yup.string().required("مجال التركيز مطلوب"),
-    staff_count: Yup.number().required("طاقم العمل مطلوب"),
+    focus_area: Yup.string().min(3).required("مجال التركيز مطلوب"),
+    staff_count: Yup.number().min(2).required("طاقم العمل مطلوب"),
   });
 
 const DashboardOrgRegister = () => {
@@ -47,6 +48,7 @@ const DashboardOrgRegister = () => {
     (state) => state.localOrg,
   );
   const dispatch = useAppDispatch();
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const editOrg = (location.state as { org: ILocalOrg } | null)?.org;
@@ -57,6 +59,7 @@ const DashboardOrgRegister = () => {
     handleSubmit,
     reset,
     register,
+    setValue,
   } = useForm<IRegisterLocalOrgForm>({
     resolver: yupResolver(schemaRegisterLocalOrgFrom),
   });
@@ -198,16 +201,6 @@ const DashboardOrgRegister = () => {
               register={register}
               placeholder=""
             />
-          </div>
-
-          <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-            <RowForm<IRegisterLocalOrgForm>
-              errors={errors}
-              label="email"
-              title="البريد الإلكتروني الرسمي"
-              register={register}
-              placeholder="example@gmail.com"
-            />
 
             <RowForm<IRegisterLocalOrgForm>
               errors={errors}
@@ -217,8 +210,75 @@ const DashboardOrgRegister = () => {
               placeholder="05XXXXXXX"
               onlyPositiveNumbers
             />
+          </div>
 
-            {isFetching ? (
+          <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
+            <div className="flex flex-col gap-4 my-4 w-full">
+              <label className="text-sm font-semibold">البريد الإلكتروني الرسمي</label>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="email"
+                  placeholder="example@gmail.com"
+                  className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 ${errors["email"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                  {...register("email")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setValue("email", generateRandomEmail(), { shouldValidate: true })}
+                  className="px-3 py-3 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  توليد
+                </button>
+              </div>
+              {errors["email"]?.message && (
+                <span className="text-sm text-rose-600">{String(errors["email"]?.message)}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-4 my-4 w-full">
+              <label className="text-sm font-semibold">كلمة المرور</label>
+              <div className="flex gap-2 items-center">
+                <div className="relative flex-1">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="أدخل كلمة المرور"
+                    className={`w-full px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 pl-10 ${errors["password"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                    {...register("password")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((p) => !p)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setValue("password", "password123", { shouldValidate: true })}
+                  className="px-3 py-3 text-sm bg-zinc-200 text-zinc-700 rounded-md hover:bg-zinc-300 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  افتراضي
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setValue("password", generateRandomPassword(), { shouldValidate: true })}
+                  className="px-3 py-3 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  توليد
+                </button>
+              </div>
+              {errors["password"]?.message && (
+                <span className="text-sm text-rose-600">{String(errors["password"]?.message)}</span>
+              )}
+            </div>
+
+            
+
+            
+          </div>
+
+{isFetching ? (
               <Spinner />
             ) : (
               <div className="flex flex-col gap-4 my-4 w-full">
@@ -249,7 +309,7 @@ const DashboardOrgRegister = () => {
                 )}
               </div>
             )}
-          </div>
+
         </article>
 
         {isCreating || isUpdating ? (

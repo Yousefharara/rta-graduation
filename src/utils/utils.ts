@@ -9,6 +9,15 @@ export const positiveNumberOnly = (value: string): number => {
   return Number(value.replace(/\D/g, ""));
 };
 
+export const generateRandomPassword = () => {
+  const chars = "abcdefghjkmnpqrstuvwxyz23456789";
+  let result = "";
+  for (let i = 0; i < 9; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
 export const generateRandomAlgorithm = () => {
   return Math.floor(Math.random() * 99) + 1;
 }

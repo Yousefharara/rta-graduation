@@ -8,6 +8,8 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { setLogin } from "../../../redux/slices/authSlice";
 import type { ILoginForm } from "@/@types/forms";
 import Spinner from "@/components/feedback/Spinner";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 const schemaLoginFrom: Yup.ObjectSchema<ILoginForm> = Yup.object({
   email: Yup.string().email().required(),
@@ -18,6 +20,7 @@ const schemaLoginFrom: Yup.ObjectSchema<ILoginForm> = Yup.object({
 });
 
 const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const {
     formState: { errors },
     handleSubmit,
@@ -73,14 +76,27 @@ const LoginForm = () => {
         type="email"
         placeholder="example@rta.org"
       />
-      <RowForm<ILoginForm>
-        placeholder="*********"
-        title="كلمه المرور"
-        errors={errors}
-        label="password"
-        register={register}
-        type="password"
-      />
+      <div className="flex flex-col gap-4 my-4 w-full">
+        <label className="text-sm font-semibold">كلمة المرور</label>
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="*********"
+            className={`w-full px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 pl-10 ${errors["password"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+            {...register("password")}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((p) => !p)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700 cursor-pointer"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+        {errors["password"]?.message && (
+          <span className="text-sm text-rose-600">{String(errors["password"]?.message)}</span>
+        )}
+      </div>
       <article
         className="
           flex

@@ -8,7 +8,7 @@ const StatisticsAbout = () => {
 
         <article className="flex flex-col gap-3 justify-center items-center">
             <h3 className="text-4xl font-bold text-primary">500K+</h3>
-            <p className="font-medium">وجبة تم تسليمها</p>
+            <p className="font-medium">المستفيدين</p>
         </article>
         <article className="flex flex-col gap-3 justify-center items-center">
             <h3 className="text-4xl font-bold text-primary">120+</h3>

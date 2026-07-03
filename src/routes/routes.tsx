@@ -11,22 +11,40 @@ const LoginPage = lazy(() => import("@/components/pages/loginPage"));
 const ContactusPage = lazy(() => import("../components/pages/contactusPage"));
 const TrackAidPage = lazy(() => import("../components/pages/trackAidPage"));
 const DonationPage = lazy(() => import("../components/pages/donationPage"));
-const TrackAidUser = lazy(() => import("@/components/pages/trackAidPage/trackAidUser"));
-const DashboardHomePage = lazy(() => import("@/components/pages/dashboard/dashboardHome"));
-const DashboardAidOrders = lazy(() => import("@/components/pages/dashboard/dashbaordAidOrders"));
-const DashboardBeneficiariesManagement = lazy(() => import("@/components/pages/dashboard/dashboardBeneficiariesManagement"));
-const DashboardOrgRegister = lazy(() => import("@/components/pages/dashboard/dashboardOrgRegister"));
-const DashboardBeneficiaryRegister = lazy(() => import("@/components/pages/dashboard/dashboardBeneficiaryRegister"));
-const DashboardComplaints = lazy(() => import("@/components/pages/dashboard/dashboardComplaints"));
-const DashboardAids = lazy(() => import("@/components/pages/dashboard/dashboardAids"));
-const NotificationsPage = lazy(() => import("@/components/pages/dashboard/notificationsPage"));
-const DashboardCampaigns = lazy(() => import("@/components/pages/dashboard/dashboardCampaigns"));
-
+const TrackAidUser = lazy(
+  () => import("@/components/pages/trackAidPage/trackAidUser"),
+);
+const DashboardHomePage = lazy(
+  () => import("@/components/pages/dashboard/dashboardHome"),
+);
+const DashboardAidOrders = lazy(
+  () => import("@/components/pages/dashboard/dashbaordAidOrders"),
+);
+const DashboardBeneficiariesManagement = lazy(
+  () => import("@/components/pages/dashboard/dashboardBeneficiariesManagement"),
+);
+const DashboardOrgRegister = lazy(
+  () => import("@/components/pages/dashboard/dashboardOrgRegister"),
+);
+const DashboardBeneficiaryRegister = lazy(
+  () => import("@/components/pages/dashboard/dashboardBeneficiaryRegister"),
+);
+const DashboardComplaints = lazy(
+  () => import("@/components/pages/dashboard/dashboardComplaints"),
+);
+const DashboardAids = lazy(
+  () => import("@/components/pages/dashboard/dashboardAids"),
+);
+const NotificationsPage = lazy(
+  () => import("@/components/pages/dashboard/notificationsPage"),
+);
+const DashboardCampaigns = lazy(
+  () => import("@/components/pages/dashboard/dashboardCampaigns"),
+);
 
 // ! -----------------------------------------------------------------
 // ? ------------------- User Routes ---------------------------------
 // ! -----------------------------------------------------------------
-
 
 const userRoutes: RouteObject[] = [
   {
@@ -41,7 +59,6 @@ const userRoutes: RouteObject[] = [
   },
 ];
 
-
 // ! -----------------------------------------------------------------
 // ? ------------------- Admin Routes --------------------------------
 // ! -----------------------------------------------------------------
@@ -49,7 +66,7 @@ const userRoutes: RouteObject[] = [
 const adminRoutes: RouteObject[] = [
   {
     path: PATHS.DASHBOARD.ROOT,
-    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    element: <AdminGuard allowedRoles={["admin", "local_org"]} />,
     children: [
       {
         index: true,
@@ -59,11 +76,11 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: "/dashboard",
-    element: <Navigate to={PATHS.DASHBOARD.ROOT} />
+    element: <Navigate to={PATHS.DASHBOARD.ROOT} />,
   },
   {
     path: PATHS.DASHBOARD.AID_ORDERS,
-    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    element: <AdminGuard allowedRoles={["admin", "local_org"]} />,
     children: [
       {
         index: true,
@@ -73,7 +90,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.BENEFICIARIES_MANAGEMENT,
-    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    element: <AdminGuard allowedRoles={["admin", "local_org"]} />,
     children: [
       {
         index: true,
@@ -83,7 +100,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.BENEFICIARY_REGISTER,
-    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    element: <AdminGuard allowedRoles={["admin", "local_org"]} />,
     children: [
       {
         index: true,
@@ -93,7 +110,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.ORG_REGISTER,
-    element: <AdminGuard allowedRoles={['admin']} />,
+    element: <AdminGuard allowedRoles={["admin"]} />,
     children: [
       {
         index: true,
@@ -103,7 +120,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.COMPLAINTS,
-    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    element: <AdminGuard allowedRoles={["admin", "local_org"]} />,
     children: [
       {
         index: true,
@@ -113,7 +130,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.AIDS,
-    element: <AdminGuard allowedRoles={['admin']} />,
+    element: <AdminGuard allowedRoles={["admin"]} />,
     children: [
       {
         index: true,
@@ -123,7 +140,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.NOTIFICATIONS,
-    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    element: <AdminGuard allowedRoles={["admin", "local_org"]} />,
     children: [
       {
         index: true,
@@ -133,7 +150,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.CAMPAIGNS,
-    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    element: <AdminGuard allowedRoles={["admin", "local_org"]} />,
     children: [
       {
         index: true,
@@ -143,12 +160,9 @@ const adminRoutes: RouteObject[] = [
   },
 ];
 
-
 // ! -----------------------------------------------------------------
 // ? -------------------- Guest Routes -------------------------------
 // ! -----------------------------------------------------------------
-
-
 
 const guestRoutes: RouteObject[] = [
   {
@@ -159,14 +173,19 @@ const guestRoutes: RouteObject[] = [
       </GuestGuard>
     ),
   },
+  {
+    path: PATHS.DONATION,
+    element: (
+      <GuestGuard>
+        <DonationPage />
+      </GuestGuard>
+    ),
+  },
 ];
-
 
 // ! -----------------------------------------------------------------
 // ? -------------------- Error Routes ---------------------------------
 // ! -----------------------------------------------------------------
-
-
 
 const errorRoutes: RouteObject[] = [
   {
@@ -179,11 +198,9 @@ const errorRoutes: RouteObject[] = [
   },
 ];
 
-
 // ! -----------------------------------------------------------------
 // ? -------------------- Routes Routes ---------------------------------
 // ! -----------------------------------------------------------------
-
 
 export const routes = [
   {
@@ -201,10 +218,6 @@ export const routes = [
   {
     path: PATHS.TRACK_AID.ROOT,
     element: <TrackAidPage />,
-  },
-  {
-    path: PATHS.DONATION,
-    element: <DonationPage />,
   },
   {
     path: PATHS.ABOUT,

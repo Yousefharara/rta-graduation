@@ -30,8 +30,8 @@ const defaultValues: ISendComplaintForm = {
 
 const schemaSendComplaintForm: Yup.ObjectSchema<ISendComplaintForm> =
   Yup.object({
-    subject: Yup.string().required("الموضوع مطلوب"),
-    message: Yup.string().required("الرسالة مطلوبة"),
+    subject: Yup.string().min(5).required("الموضوع مطلوب"),
+    message: Yup.string().min(5).required("الرسالة مطلوبة"),
   });
 
   interface IPorps {

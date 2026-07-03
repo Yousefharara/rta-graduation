@@ -130,7 +130,7 @@ const TrackAidUserHero = () => {
   }, [dispatch, latestOrder, latestOrderAid]);
 
   const schemaSendOrderFrom: Yup.ObjectSchema<ISendOrderForm> = Yup.object({
-    reason: Yup.string().required("السبب مطلوب"),
+    reason: Yup.string().min(5).required("السبب مطلوب"),
     typeAid: Yup.string().required("نوع المساعدة مطلوب"),
   });
 
@@ -215,7 +215,6 @@ const TrackAidUserHero = () => {
                 <p>
                   تاريخ إنشاء الطلب:{" "}
                   {latestOrder.created_at.toString().split("T")[0]}
-                  
                 </p>
               </>
             ) : (
@@ -233,7 +232,6 @@ const TrackAidUserHero = () => {
         <div className="flex flex-wrap gap-3">
           <Button
             onClick={() => setOpenComplaint(true)}
-
             className="flex gap-3 items-center font-semibold"
             variant="outline"
           >
@@ -243,7 +241,7 @@ const TrackAidUserHero = () => {
             onClick={() => setOpenEdit(true)}
             className="flex gap-3 items-center font-semibold"
             variant="outline"
-          style={{minWidth: "fit-content"}}
+            style={{ minWidth: "fit-content" }}
           >
             تعديل البيانات
             <Pencil />
@@ -251,7 +249,7 @@ const TrackAidUserHero = () => {
           <Button
             onClick={() => setOpen(true)}
             className="flex gap-3 items-center font-semibold"
-            style={{minWidth: "fit-content"}}
+            style={{ minWidth: "fit-content" }}
           >
             أضافة طلب جديد
             <SquareRoundCorner />
@@ -360,7 +358,7 @@ const TrackAidUserHero = () => {
         </DialogContent>
       </Dialog>
 
-      <ComplaintDialog  open={openComplaint} setOpen={setOpenComplaint}/>
+      <ComplaintDialog open={openComplaint} setOpen={setOpenComplaint} />
       <EditBeneficiaryDialog open={openEdit} setOpen={setOpenEdit} />
     </>
   );

@@ -11,7 +11,7 @@ import {
   editBeneficiaryAction,
 } from "@/redux/slices/beneficiarySlice";
 import { editUserAction } from "@/redux/slices/userSlice";
-import { generateRandomEmail } from "@/utils/utils";
+import { generateRandomEmail, generateRandomPassword } from "@/utils/utils";
 import { useBeneficiaryValidation } from "@/hooks/useBeneficiaryValidation";
 import { toast } from "sonner";
 import { INPUTS_TYPE_ERROR } from "@/constants/forms";
@@ -21,47 +21,75 @@ import { getGovernorates } from "@/redux/slices/governorateSlice";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { IBeneficiary } from "@/@types/beneficiary";
 import { PATHS } from "@/routes/paths";
+import { Eye, EyeOff } from "lucide-react";
 
-// const defaultValues: IRegisterBeneficiaryForm = {
-//   name: "",
-//   disabled_count: 0,
-//   area_id: 1,
-//   family_size: 0,
-//   national_id: "",
-//   password: "",
-//   patients_count: 0,
-//   phone: "",
-//   is_displaced: false,
-//   income: 0,
-//   status: "single",
-//   email: "",
-//   release_date: new Date().toISOString()
-// };
+const defaultValues: IRegisterBeneficiaryForm = {
+  name: "",
+  disabled_count: 0,
+  area_id: 1,
+  family_size: 0,
+  national_id: "",
+  password: "",
+  patients_count: 0,
+  phone: "",
+  is_displaced: false,
+  income: 0,
+  email: "",
+  release_date: new Date().toISOString(),
+};
 
 const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> =
   Yup.object({
-    name: Yup.string().required("الاسم مطلوب"),
-    password: Yup.string(),
+    name: Yup.string().min(3, "الاسم غير صحيح").required("الاسم مطلوب"),
+    password: Yup.string().required("كلمة المرور مطلوبة"),
 
-    phone: Yup.string().required("رقم الهاتف مطلوب"),
-    national_id: Yup.string().required("رقم الهويه مطلوبه"),
+    phone: Yup.string().min(10, "الرقم غير صحيح").required("رقم الهاتف مطلوب"),
+    national_id: Yup.string()
+      .length(9, "رقم الهوبة غير صحيح")
+      .required("رقم الهويه مطلوبه"),
     release_date: Yup.string().required("رقم الهويه مطلوبه"),
     area_id: Yup.number()
       .transform((value, originalValue) => (originalValue === "" ? -1 : value))
       .required("المحافظه مطلوب"),
 
-    family_size: Yup.number().required("عدد الافراد مطلوب"),
+    family_size: Yup.number().min(1).required("عدد أفراد الأسرة مطلوب"),
     income: Yup.number().required("الدخل مطلوب"),
-    patients_count: Yup.number().required("عدد المرضى مطلوب"),
+    patients_count: Yup.number()
+      .required("عدد المرضى مطلوب")
+      .min(0, "لا يمكن أن يكون سالباً")
+      .test(
+        "max-family",
+        "عدد المرضى يجب أن يكون أقل من أو يساوي عدد أفراد الأسرة",
+        function (value) {
+          const { family_size } = this.parent;
+          if (!family_size || value == null) return true;
+          return value <= family_size;
+        },
+      ),
 
-    disabled_count: Yup.number(),
-    is_displaced: Yup.boolean(),
+    disabled_count: Yup.number()
+      .min(0, "لا يمكن أن يكون سالباً")
+      .test(
+        "max-family",
+        "عدد العاجزين يجب أن يكون أقل من أو يساوي عدد أفراد الأسرة",
+        function (value) {
+          const { family_size } = this.parent;
+          if (!family_size || value == null) return true;
+          return value <= family_size;
+        },
+      ),
+    is_displaced: Yup.boolean().transform((value) => {
+      if (value === "true") return true;
+      if (value === "false") return false;
+      return value;
+    }),
 
-    email: Yup.string(),
+    email: Yup.string().required('الايميل مطلوب'),
   });
 
 const DashboardBeneficiaryRegister = () => {
   const [region, setRegion] = useState<number>();
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { accessToken } = useAppSelector((state) => state.auth);
   const { isCreating, isUpdating, error } = useAppSelector(
@@ -86,6 +114,7 @@ const DashboardBeneficiaryRegister = () => {
     handleSubmit,
     reset,
     register,
+    setValue,
   } = useForm<IRegisterBeneficiaryForm>({
     resolver: yupResolver(schemaRegisterBeneficiaryFrom),
   });
@@ -131,6 +160,8 @@ const DashboardBeneficiaryRegister = () => {
       return;
     }
 
+    const isDisplaced = data.is_displaced === true;
+
     if (isEditMode && editBeneficiary) {
       const userResult = await dispatch(
         editUserAction(
@@ -164,7 +195,7 @@ const DashboardBeneficiaryRegister = () => {
             income: String(data.income),
             patients_count: data.patients_count,
             disabled_count: data.disabled_count || 0,
-            is_displaced: data.is_displaced || false,
+            is_displaced: isDisplaced,
             release_date: new Date(data.release_date),
           },
           accessToken || "",
@@ -192,7 +223,7 @@ const DashboardBeneficiaryRegister = () => {
           password: data.password || "password123",
           patients_count: data.patients_count,
           phone: data.phone,
-          is_displaced: false,
+          is_displaced: isDisplaced,
           release_date: data.release_date,
         },
         accessToken || "",
@@ -200,6 +231,7 @@ const DashboardBeneficiaryRegister = () => {
     );
     if (!error && !isCreating) {
       toast.success("تم تسجيل المستفيد");
+      reset(defaultValues);
     }
   };
 
@@ -253,13 +285,73 @@ const DashboardBeneficiaryRegister = () => {
               placeholder="05XXXXXXX"
               onlyPositiveNumbers
             />
-            <RowForm<IRegisterBeneficiaryForm>
-              errors={errors}
-              label="email"
-              title="البريد الإلكتروني (اختياري)"
-              register={register}
-              placeholder="example@gmail.com"
-            />
+            <div className="flex flex-col gap-4 my-4 w-full">
+              <label className="text-sm font-semibold">البريد الإلكتروني</label>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="email"
+                  placeholder="example@gmail.com"
+                  className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 ${errors["email"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                  {...register("email")}
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setValue("email", generateRandomEmail(), {
+                      shouldValidate: true,
+                    })
+                  }
+                  className="px-3 py-3 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  توليد
+                </button>
+              </div>
+              {errors["email"]?.message && (
+                <span className="text-sm text-rose-600">
+                  {String(errors["email"]?.message)}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-4 my-4 w-full">
+              <label className="text-sm font-semibold">كلمة المرور</label>
+              <div className="flex gap-2 items-center">
+                <div className="relative flex-1">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="أدخل كلمة المرور"
+                    className={`w-full px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 pl-10 ${errors["password"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                    {...register("password")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((p) => !p)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setValue("password", "password123", { shouldValidate: true })}
+                  className="px-3 py-3 text-sm bg-zinc-200 text-zinc-700 rounded-md hover:bg-zinc-300 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  افتراضي
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setValue("password", generateRandomPassword(), { shouldValidate: true })}
+                  className="px-3 py-3 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  توليد
+                </button>
+              </div>
+              {errors["password"]?.message && (
+                <span className="text-sm text-rose-600">
+                  {String(errors["password"]?.message)}
+                </span>
+              )}
+            </div>
           </div>
         </article>
 
@@ -280,20 +372,40 @@ const DashboardBeneficiaryRegister = () => {
               errors={errors}
               label="patients_count"
               type="number"
-              title="عدد المرضى "
+              title="عدد المرضى"
+              register={register}
+              onlyPositiveNumbers
+            />
+            <RowForm<IRegisterBeneficiaryForm>
+              errors={errors}
+              label="disabled_count"
+              type="number"
+              title="عدد العاجزين"
               register={register}
               onlyPositiveNumbers
             />
           </div>
 
-          <RowForm<IRegisterBeneficiaryForm>
-            errors={errors}
-            label="income"
-            type="number"
-            title="الدخل الحالي للاسرة"
-            register={register}
-            onlyPositiveNumbers
-          />
+          <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
+            <RowForm<IRegisterBeneficiaryForm>
+              errors={errors}
+              label="income"
+              type="number"
+              title="الدخل الحالي للأسرة"
+              register={register}
+              onlyPositiveNumbers
+            />
+            <div className="flex flex-col gap-4 my-4 w-full">
+              <label className="text-sm font-semibold">نازح</label>
+              <select
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 outline-gray-300 border-gray-300`}
+                {...register("is_displaced")}
+              >
+                <option value="false">لا</option>
+                <option value="true">نعم</option>
+              </select>
+            </div>
+          </div>
         </article>
 
         <article className="flex flex-col gap-4 bg-white rounded-md border border-zinc-300 px-6 py-4">

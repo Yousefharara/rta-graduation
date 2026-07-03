@@ -371,7 +371,6 @@ const DashboardAidOrdersTable = ({
                     }
                     className="cursor-pointer disabled:opacity-40"
                   >
-                    {aid_type_id}
                     <CircleCheck
                       size={22}
                       strokeWidth={1.3}

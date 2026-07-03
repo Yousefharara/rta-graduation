@@ -38,14 +38,14 @@ const defaultValues: IDonationForm = {
 
 const schemaDonationFrom: Yup.ObjectSchema<IDonationForm> = Yup.object({
   donationCampaign: Yup.string().required("الحملة مطلوبة"),
-  budget: Yup.number().required("budget is required !"),
+  budget: Yup.number().min(1, "المبلغ غير صحيح").required("المبلغ مطلوب"),
   customBudget: Yup.number()
     .transform((value, originalValue) => (originalValue === "" ? null : value))
     .nullable(),
   nameOfCard: Yup.string().required(""),
   cardNumber: Yup.string().required(""),
   endDate: Yup.date().required(""),
-  CVV: Yup.number().required(""),
+  CVV: Yup.number().min(3).max(3).required(""),
 });
 
 const DonationForm = () => {

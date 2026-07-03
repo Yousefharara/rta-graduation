@@ -8,9 +8,9 @@ import type { IContactForm } from "@/@types/forms";
 
 const schemaLoginFrom: Yup.ObjectSchema<IContactForm> = Yup.object({
   email: Yup.string().email().required(),
-  fullName: Yup.string().required("full name is required !"),
-  title: Yup.string().required("title is required !"),
-  description: Yup.string().required("description is required !"),
+  fullName: Yup.string().min(5, "الاسم غير صحيح").required("full name is required !"),
+  title: Yup.string().min(5, "العنوان فصير").required("title is required !"),
+  description: Yup.string().min(5, "الوصف قصير").required("description is required !"),
 });
 
 const ContactForm = () => {
