@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollToTop from "../../atoms/scrollToTop";
+import OfflineBanner from "../../feedback/OfflineBanner";
 import { isAuthPath, isDashboardPath } from "../../../utils/router.helper";
 import Navbar from "@/components/organisms/navbar";
 import Footer from "@/components/organisms/footer";
@@ -50,7 +51,7 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
     return (
       <article className="flex flex-col gap-20 bg-[#F8F9FF]">
         <ScrollToTop />
-
+        <OfflineBanner />
         <Navbar />
         <div className="mt-20">{children}</div>
         <Footer />
@@ -79,6 +80,7 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
   return (
     <article className="">
       <ScrollToTop />
+      <OfflineBanner />
       <Navbar />
       <div className="mt-20">{children}</div>
       <Footer />

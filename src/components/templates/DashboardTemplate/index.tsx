@@ -1,5 +1,6 @@
 import NavbarDashboard from "@/components/organisms/navbarDashboard";
 import Sidebar from "@/components/organisms/sidebar";
+import OfflineBanner from "@/components/feedback/OfflineBanner";
 import type { ReactNode } from "react";
 
 interface IDashbaordTemplate {
@@ -31,6 +32,7 @@ const DashbaordTemplate = ({
         handleCloseAside={handleCloseAside}
       />
       <main className="w-full min-h-screen flex flex-col gap-4">
+        <OfflineBanner />
         <NavbarDashboard handleOpenAside={handleOpenAside} />
         <article className="w-full rounded-lg my-10 min-h-screen p-4">
           {/* main content */}
