@@ -30,9 +30,7 @@ const RsourceAllocation = () => {
   }, [dispatch, accessToken, aidTypes.length, beneficiaryAids.length]);
 
   const data = useMemo(() => {
-    const delivered = beneficiaryAids.filter(
-      (a) => a.status === "delivered",
-    );
+    const delivered = beneficiaryAids.filter((a) => a.status === "delivered");
     const total = delivered.length;
     if (total === 0) return [];
 
@@ -43,9 +41,7 @@ const RsourceAllocation = () => {
 
     return Object.entries(counts)
       .map(([aidTypeId, count]) => {
-        const type = aidTypes.find(
-          (t) => Number(t.id) === Number(aidTypeId),
-        );
+        const type = aidTypes.find((t) => Number(t.id) === Number(aidTypeId));
         return {
           name: type?.name || `نوع ${aidTypeId}`,
           percentage: Math.round((count / total) * 100),

@@ -3,10 +3,22 @@ import Error from "@/components/feedback/Error";
 import Spinner from "@/components/feedback/Spinner";
 import ReactTable from "@/components/organisms/reactTable";
 import { getAreas } from "@/redux/slices/areaSlice";
-import { deleteLocalOrgAction, getLocalOrgs, verifyLocalOrgAction } from "@/redux/slices/localOrgSlice";
+import {
+  deleteLocalOrgAction,
+  getLocalOrgs,
+  verifyLocalOrgAction,
+} from "@/redux/slices/localOrgSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Check, Eye, Search, Trash2, Pencil, ShieldCheck, X } from "lucide-react";
+import {
+  Check,
+  Eye,
+  Search,
+  Trash2,
+  Pencil,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/routes/paths";
@@ -22,9 +34,8 @@ const ActiveOrganization = () => {
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const { localOrgs, isFetching, isUpdating, isDeleting, error } = useAppSelector(
-    (state) => state.localOrg,
-  );
+  const { localOrgs, isFetching, isUpdating, isDeleting, error } =
+    useAppSelector((state) => state.localOrg);
   const { accessToken } = useAppSelector((state) => state.auth);
   const { areas } = useAppSelector((state) => state.areas);
   const dispatch = useAppDispatch();
@@ -32,10 +43,10 @@ const ActiveOrganization = () => {
 
   useEffect(() => {
     if (accessToken) {
-      if (localOrgs.length === 0) dispatch(getLocalOrgs(accessToken));
-      if (areas.length === 0) dispatch(getAreas(accessToken));
+      dispatch(getAreas(accessToken));
+      dispatch(getLocalOrgs(accessToken));
     }
-  }, [dispatch, accessToken, areas, localOrgs]);
+  }, [dispatch, accessToken, areas.length]);
 
   const filteredData = useMemo(() => {
     return localOrgs.filter((data) =>
@@ -57,7 +68,9 @@ const ActiveOrganization = () => {
 
   const handleDelete = async () => {
     if (!deleteModal) return;
-    const result = await dispatch(deleteLocalOrgAction(deleteModal.id, accessToken || ""));
+    const result = await dispatch(
+      deleteLocalOrgAction(deleteModal.id, accessToken || ""),
+    );
     if (result?.success) {
       dispatch(getLocalOrgs(accessToken || ""));
       setDeleteModal(null);
@@ -68,7 +81,9 @@ const ActiveOrganization = () => {
   };
 
   const handleVerify = async (id: number) => {
-    const result = await dispatch(verifyLocalOrgAction(id, true, accessToken || ""));
+    const result = await dispatch(
+      verifyLocalOrgAction(id, true, accessToken || ""),
+    );
     if (result?.success) {
       dispatch(getLocalOrgs(accessToken || ""));
       toast.success("تم التحقق من المنظمة بنجاح");
@@ -145,8 +160,8 @@ const ActiveOrganization = () => {
         },
       },
     ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [areas, isUpdating]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ isUpdating]);
 
   if (isFetching) {
     return (
@@ -181,11 +196,15 @@ const ActiveOrganization = () => {
                 <span>{viewModal.users.name}</span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">الاسم بالإنجليزية: </span>
+                <span className="font-medium text-zinc-500">
+                  الاسم بالإنجليزية:{" "}
+                </span>
                 <span>{viewModal.org_name}</span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">البريد الإلكتروني: </span>
+                <span className="font-medium text-zinc-500">
+                  البريد الإلكتروني:{" "}
+                </span>
                 <span>{viewModal.users.email}</span>
               </div>
               <div>
@@ -197,7 +216,9 @@ const ActiveOrganization = () => {
                 <span>{getAreaName(viewModal.area_id)}</span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">مجال التركيز: </span>
+                <span className="font-medium text-zinc-500">
+                  مجال التركيز:{" "}
+                </span>
                 <span>{viewModal.focus_area}</span>
               </div>
               <div>
@@ -206,7 +227,11 @@ const ActiveOrganization = () => {
               </div>
               <div>
                 <span className="font-medium text-zinc-500">حالة التحقق: </span>
-                <span className={viewModal.is_verified ? "text-green-600" : "text-amber-600"}>
+                <span
+                  className={
+                    viewModal.is_verified ? "text-green-600" : "text-amber-600"
+                  }
+                >
                   {viewModal.is_verified ? "موثقة" : "غير موثقة"}
                 </span>
               </div>
@@ -249,7 +274,8 @@ const ActiveOrganization = () => {
             </div>
 
             <p className="text-zinc-600 text-sm">
-              هل أنت متأكد من حذف المنظمة <strong>{deleteModal.users.name}</strong>؟
+              هل أنت متأكد من حذف المنظمة{" "}
+              <strong>{deleteModal.users.name}</strong>؟
             </p>
 
             <div className="flex gap-3 justify-end">

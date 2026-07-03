@@ -27,7 +27,7 @@ const DashboardBMHero = () => {
       if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
       if (aids.length === 0) dispatch(getAids(accessToken))
     }
-  }, [accessToken, aids, beneficiaries, dispatch]);
+  }, [accessToken, aids.length, beneficiaries.length, dispatch]);
 
 
   if (isFetching || isLoading || aidsFetching) return <Spinner />;

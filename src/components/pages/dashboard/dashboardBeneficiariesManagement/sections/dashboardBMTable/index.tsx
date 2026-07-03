@@ -122,7 +122,7 @@ const DashbaordBMTable = () => {
     if(accessToken) {
       if(beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
     }
-  }, [dispatch, accessToken, beneficiaries]);
+  }, [dispatch, accessToken, beneficiaries.length]);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,

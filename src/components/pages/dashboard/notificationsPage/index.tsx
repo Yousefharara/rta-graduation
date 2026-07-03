@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import {
   BellDot,
-  // CheckCheck,
+  Trash2,
   RefreshCw,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getNotificationsAction,
   markNotificationAsReadAction,
-  // markAllNotificationsAsReadAction,
+  deleteNotificationAction,
 } from "@/redux/slices/notificationSlice";
 
 const NotificationsPage = () => {
   const dispatch = useAppDispatch();
-  const { accessToken } = useAppSelector((state) => state.auth);
+  const { accessToken, role } = useAppSelector((state) => state.auth);
   const { notifications, loading } = useAppSelector(
     (state) => state.notifications,
   );
@@ -31,6 +31,15 @@ const NotificationsPage = () => {
 
   const handleMarkAsRead = (id: number) => {
     if (accessToken) dispatch(markNotificationAsReadAction(id, accessToken));
+  };
+
+  const handleDelete = async (id: number) => {
+    if (accessToken) {
+      const result = await dispatch(deleteNotificationAction(id, accessToken));
+      if (result?.success) {
+        // notification removed from state
+      }
+    }
   };
 
   // const handleMarkAllAsRead = () => {
@@ -107,6 +116,18 @@ const NotificationsPage = () => {
                   })}
                 </p>
               </div>
+              {role === "admin" && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(n.id);
+                  }}
+                  title="حذف الإشعار"
+                  className="shrink-0 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                >
+                  <Trash2 size={18} strokeWidth={1.5} />
+                </button>
+              )}
             </div>
           ))}
         </div>

@@ -20,6 +20,7 @@ const DashboardBeneficiaryRegister = lazy(() => import("@/components/pages/dashb
 const DashboardComplaints = lazy(() => import("@/components/pages/dashboard/dashboardComplaints"));
 const DashboardAids = lazy(() => import("@/components/pages/dashboard/dashboardAids"));
 const NotificationsPage = lazy(() => import("@/components/pages/dashboard/notificationsPage"));
+const DashboardCampaigns = lazy(() => import("@/components/pages/dashboard/dashboardCampaigns"));
 
 
 // ! -----------------------------------------------------------------
@@ -112,7 +113,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: PATHS.DASHBOARD.AIDS,
-    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    element: <AdminGuard allowedRoles={['admin']} />,
     children: [
       {
         index: true,
@@ -127,6 +128,16 @@ const adminRoutes: RouteObject[] = [
       {
         index: true,
         element: <NotificationsPage />,
+      },
+    ],
+  },
+  {
+    path: PATHS.DASHBOARD.CAMPAIGNS,
+    element: <AdminGuard allowedRoles={['admin', 'local_org']} />,
+    children: [
+      {
+        index: true,
+        element: <DashboardCampaigns />,
       },
     ],
   },

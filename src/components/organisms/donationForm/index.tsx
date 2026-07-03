@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import "./style.css";
 import Input from "../../atoms/input";
-import { Check, Heart, Lock, ShieldCheck } from "lucide-react";
+import { Heart, Lock, ShieldCheck } from "lucide-react";
 import RowForm from "../../molecules/rowForm";
 import Button from "../../atoms/button";
 import type { IDonationForm } from "@/@types/forms";
@@ -29,7 +29,7 @@ import { editCampaignAction } from "@/redux/slices/campaignSlice";
 const defaultValues: IDonationForm = {
   donationCampaign: "",
   budget: 0,
-  customBudget: undefined,
+  customBudget: 0,
   nameOfCard: "",
   cardNumber: "",
   endDate: new Date(),
@@ -37,7 +37,7 @@ const defaultValues: IDonationForm = {
 };
 
 const schemaDonationFrom: Yup.ObjectSchema<IDonationForm> = Yup.object({
-  donationCampaign: Yup.string().required(),
+  donationCampaign: Yup.string().required("الحملة مطلوبة"),
   budget: Yup.number().required("budget is required !"),
   customBudget: Yup.number()
     .transform((value, originalValue) => (originalValue === "" ? null : value))
@@ -65,7 +65,7 @@ const DonationForm = () => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [pendingData, setPendingData] = useState<IDonationForm | null>(null);
-  const [budget, setBudget] = useState<number>(0);
+  const [budget, setBudget] = useState<number>(10);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/incompatible-library
@@ -77,7 +77,7 @@ const DonationForm = () => {
   }, [watch]);
 
   useEffect(() => {
-    if(campaigns.length === 0)dispatch(getCampaigns());
+    if (campaigns.length === 0) dispatch(getCampaigns());
   }, [dispatch, campaigns]);
 
   useEffect(() => {
@@ -93,12 +93,8 @@ const DonationForm = () => {
   }
 
   if (error) {
-    return (
-      <Error message={error} onRetry={() => dispatch(getCampaigns())} />
-    );
+    return <Error message={error} onRetry={() => dispatch(getCampaigns())} />;
   }
-
-  
 
   const handleOnSubmit = (data: IDonationForm) => {
     setPendingData(data);
@@ -109,26 +105,33 @@ const DonationForm = () => {
     if (!pendingData) return;
 
     const finalBudget = pendingData.customBudget || pendingData.budget;
-console.log({
+
+    if(finalBudget <= 0) return;
+    console.log({
       ...pendingData,
       budget: finalBudget,
       email,
     });
-    dispatch(addDonationAction({
-      ...pendingData,
-      amount: finalBudget,
-      currency: "USD",
-      guest_email: email
-    }))
+    dispatch(
+      addDonationAction({
+        ...pendingData,
+        amount: finalBudget,
+        currency: "USD",
+        guest_email: email,
+      }),
+    );
 
     // Update campaign collected_amount
     const selectedCampaign = campaigns.find(
       (c) => c.title === pendingData.donationCampaign,
     );
     if (selectedCampaign) {
-      const newCollected = selectedCampaign.collected_amount + finalBudget;
+      const newCollected = Number(selectedCampaign.collected_amount) + Number(finalBudget);
       const updatedStatus =
-        newCollected >= selectedCampaign.target_amount ? "closed" : selectedCampaign.status;
+        newCollected >= selectedCampaign.target_amount
+          ? "closed"
+          : selectedCampaign.status;
+          console.log('status : ', newCollected);
       dispatch(
         editCampaignAction({
           id: selectedCampaign.id,
@@ -142,7 +145,7 @@ console.log({
 
     reset(defaultValues);
 
-    setBudget(0);
+    setBudget(10);
 
     setEmail("");
     setPendingData(null);
@@ -160,16 +163,28 @@ console.log({
           className="bg-white border h-fit border-zinc-300 py-3 px-6 rounded-lg"
         >
           <h3>اختر الحملة</h3>
-          <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))"}}>
-
+          <div
+            className="grid gap-4"
+            style={{
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            }}
+          >
             {campaigns.map((campaign) => {
               const percentage = Math.min(
-                Math.round((campaign.collected_amount / campaign.target_amount) * 100),
+                Math.round(
+                  (campaign.collected_amount / campaign.target_amount) * 100,
+                ),
                 100,
               );
               const isCompleted =
-                campaign.collected_amount >= campaign.target_amount;
-                
+                Number(campaign.collected_amount) >=
+                Number(campaign.target_amount);
+
+              console.log(
+                `${campaign.collected_amount} >= ${campaign.target_amount}  : `,
+                isCompleted,
+              );
+
               return (
                 <label
                   key={campaign.id}
@@ -196,28 +211,31 @@ console.log({
                       </span>
                     )}
                   </div>
-                  <p className="text-xl font-medium mb-4">{campaign.description}</p>
+                  <p className="text-xl font-medium mb-4">
+                    {campaign.description}
+                  </p>
                   <div className="w-full h-2 bg-neutral-300 rounded-full overflow-hidden">
                     <span
                       className="block h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${percentage}%`,
-                        backgroundColor: isCompleted ? "#16a34a" : "hsl(133, 50%, 20%)",
+                        backgroundColor: isCompleted
+                          ? "#16a34a"
+                          : "hsl(133, 50%, 20%)",
                       }}
                     />
                   </div>
                   <div className="flex justify-between items-center mt-1">
-                    <small>
-                      تم جمع {percentage}%
-                    </small>
+                    <small>تم جمع {percentage}%</small>
                     <small>المستهدف {campaign.target_amount}$</small>
                   </div>
                 </label>
               );
             })}
-
-
           </div>
+
+          {errors['donationCampaign']?.message && <p>{errors['donationCampaign']?.message}</p>}
+
         </section>
 
         <section
@@ -236,6 +254,7 @@ console.log({
                 value={10}
                 className="hidden"
                 id="budget10"
+                defaultChecked
               />
               <p className="text-center text-xl font-semibold">10$</p>
             </label>
@@ -287,6 +306,7 @@ console.log({
               placeholder="أو ادخل مبلغا أخر"
               type="number"
               className="bg-[#F8F9FF]!"
+              onlyPositiveNumbers
             />
           </div>
         </section>

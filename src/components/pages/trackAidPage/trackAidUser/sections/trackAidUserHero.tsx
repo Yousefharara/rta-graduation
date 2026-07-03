@@ -171,7 +171,7 @@ const TrackAidUserHero = () => {
       dispatch(
         createNotificationAction(
           {
-            user_id: 1,
+            user_id: user?.id || 1,
             title: "طلب مساعدة جديد",
             message: `تم تقديم طلب مساعدة جديدة من ${beneficiary?.users?.name || "مستفيد"}: ${data.typeAid}`,
           },

@@ -30,7 +30,7 @@ const DashboardAidsTable = () => {
       dispatch(getAidTypes(accessToken));
       dispatch(getLocalOrgs(accessToken));
     }
-  }, [dispatch, accessToken, aids.length, aidTypes.length, localOrgs.length]);
+  }, [dispatch, accessToken]);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,

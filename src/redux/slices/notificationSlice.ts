@@ -44,6 +44,9 @@ const notificationSlice = createSlice({
         is_read: true,
       }));
     },
+    removeNotification: (state, action: PayloadAction<number>) => {
+      state.notifications = state.notifications.filter((n) => n.id !== action.payload);
+    },
   },
 });
 
@@ -54,6 +57,7 @@ export const {
   addNotification,
   markAsRead,
   markAllAsRead,
+  removeNotification,
 } = notificationSlice.actions;
 export default notificationSlice.reducer;
 
@@ -107,6 +111,21 @@ export const markNotificationAsReadAction =
       dispatch(markAsRead(id));
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+    }
+  };
+
+export const deleteNotificationAction =
+  (id: number, token: string) => async (dispatch: AppDispatch) => {
+    try {
+      await axios.delete(
+        API_KEY + NOTIFICATION_PATHS.DELETE_NOTIFICATION.replace(":id", String(id)),
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(removeNotification(id));
+      return { success: true };
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     }
   };
 

@@ -70,7 +70,7 @@ const DashboardOrgRegister = () => {
   useEffect(() => {
     if (accessToken)
       if (areas.length === 0) dispatch(getAreas(accessToken || ""));
-  }, [dispatch, accessToken, areas]);
+  }, [dispatch, accessToken, areas.length]);
 
   useEffect(() => {
     if (editOrg) {

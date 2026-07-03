@@ -9,6 +9,7 @@ export const PATHS = {
     COMPLAINTS: "/dashboard/complaints",
     AIDS: "/dashboard/aids",
     NOTIFICATIONS: "/dashboard/notifications",
+    CAMPAIGNS: "/dashboard/campaigns",
   },
   ABOUT: "/about",
   CONTACT_US: "/contactus",

@@ -17,6 +17,7 @@ import {
   MessageSquareText,
   PackageOpen,
   Bell,
+  Megaphone,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "./style.css";
@@ -57,8 +58,11 @@ const schemaCreateAidFrom: Yup.ObjectSchema<ICreateAidForm> = Yup.object({
 
 const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
   const [open, setOpen] = useState(false);
+  const [isMobileSider, setIsMobileSider] = useState<boolean>();
 
-  const { organization, accessToken, user, role } = useAppSelector((state) => state.auth);
+  const { organization, accessToken, user, role } = useAppSelector(
+    (state) => state.auth,
+  );
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
   const { isCreating } = useAppSelector((state) => state.aids);
   const dispatch = useAppDispatch();
@@ -73,8 +77,22 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
   const aidTypeError = errors["aidType"]?.message;
 
   useEffect(() => {
-    if(accessToken) dispatch(getAidTypes(accessToken))
-  }, [dispatch, accessToken])
+    if (accessToken) dispatch(getAidTypes(accessToken));
+  }, [dispatch, accessToken]);
+
+  useEffect(() => {
+    const mobileSiderResizing = () => {
+      setIsMobileSider(window.innerWidth < 640);
+    };
+
+    mobileSiderResizing();
+
+    window.addEventListener("resize", mobileSiderResizing);
+
+    return () => {
+      window.removeEventListener("resize", mobileSiderResizing);
+    };
+  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -86,7 +104,11 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
 
     const result = await dispatch(
       addAidAction(
-        { aid_type_id: Number(aidTypeId), org_id: organization?.id || 1, quantity: data.quantity },
+        {
+          aid_type_id: Number(aidTypeId),
+          org_id: organization?.id || 1,
+          quantity: data.quantity,
+        },
         accessToken || "",
       ),
     );
@@ -98,7 +120,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
       dispatch(
         createNotificationAction(
           {
-            user_id: 1,
+            user_id: user?.id || 1,
             title: "شحنة جديدة",
             message: `تم إضافة شحنة جديدة من ${organization?.users.name || user?.name || "منظمة"}: ${data.aidType} بكمية ${data.quantity}`,
           },
@@ -128,7 +150,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
         </div>
 
         <article className="flex flex-col gap-8">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-start">
             <div className="flex justify-center items-center p-3 bg-primary rounded-lg">
               <svg
                 width="22"
@@ -143,68 +165,83 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 />
               </svg>
             </div>
-            <p className="text-2xl text-primary font-semibold">
-              {role === "admin" ? "رئيس الإغاثة" : user?.name}
-            </p>
+            {!isMobileSider && (
+              <p className="text-2xl text-primary font-semibold ">
+                {role === "admin" ? "رئيس الإغاثة" : user?.name}
+              </p>
+            )}
           </div>
           <ul className="sidebar-links flex flex-col gap-1 ">
             <li>
               <NavLink
-                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                className="flex items-center justify-center gap-3 text-primary-foreground p-4 rounded-lg sm:justify-start"
                 to={PATHS.DASHBOARD.ROOT}
               >
                 <LayoutPanelTop />
-                <p className="font-semibold">لوحة التحكم</p>
+                {!isMobileSider && <p className="font-semibold">لوحة التحكم</p>}
               </NavLink>
             </li>
 
             <li>
               <NavLink
-                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
                 to={PATHS.DASHBOARD.AID_ORDERS}
               >
                 <FolderClosed />
-                <p className="font-semibold">طلبات المساعدة</p>
+                {!isMobileSider && (
+                  <p className="font-semibold">طلبات المساعدة</p>
+                )}
               </NavLink>
             </li>
 
             <li>
               <NavLink
-                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                className="flex items-center justify-center gap-3 text-primary-foreground p-4 rounded-lg sm:justify-start"
                 to={PATHS.DASHBOARD.BENEFICIARIES_MANAGEMENT}
               >
                 <Users />
-                <p className="font-semibold">إدارة المستفيدين</p>
+                {!isMobileSider && (
+                  <p className="font-semibold">إدارة المستفيدين</p>
+                )}
               </NavLink>
             </li>
 
             <li>
               <NavLink
-                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
                 to={PATHS.DASHBOARD.COMPLAINTS}
               >
                 <MessageSquareText />
-                <p className="font-semibold">الشكاوى</p>
+                {!isMobileSider && <p className="font-semibold">الشكاوى</p>}
               </NavLink>
             </li>
 
-            <li>
+            {role === "admin" && <li>
               <NavLink
-                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
                 to={PATHS.DASHBOARD.AIDS}
               >
                 <PackageOpen />
-                <p className="font-semibold">المساعدات</p>
+                {!isMobileSider && <p className="font-semibold">المساعدات</p>}
               </NavLink>
-            </li>
+            </li>}
 
             <li>
               <NavLink
-                className="flex items-center gap-3 text-primary-foreground p-4 rounded-lg"
+                className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
+                to={PATHS.DASHBOARD.CAMPAIGNS}
+              >
+                <Megaphone />
+                {!isMobileSider && <p className="font-semibold">الحملات</p>}
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
                 to={PATHS.DASHBOARD.NOTIFICATIONS}
               >
                 <Bell />
-                <p className="font-semibold">الإشعارات</p>
+                {!isMobileSider && <p className="font-semibold">الإشعارات</p>}
               </NavLink>
             </li>
           </ul>
@@ -217,7 +254,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
               className="sidebar-org rounded-md flex items-center gap-3 justify-center py-3 cursor-pointer"
             >
               <Plus size={18} />
-              <p className="font-semibold"> تسجيل منظمه</p>
+              {!isMobileSider && <p className="font-semibold"> تسجيل منظمه</p>}
             </NavLink>
           )}
           {role === "local_org" && (
@@ -227,15 +264,15 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
               className="rounded-md w-full mb-3 flex items-center gap-3 justify-center py-3 cursor-pointer"
             >
               <Plus size={18} />
-              <p className="font-semibold"> اضافة شحنة</p>
+              {!isMobileSider && <p className="font-semibold"> اضافة شحنة</p>}
             </Button>
           )}
-          <div className="flex items-center gap-3 justify-center py-3 text-red-800 cursor-pointer border-t border-t-zinc-400">
+          <div
+            className="flex items-center gap-3 justify-center py-3 text-red-800 cursor-pointer border-t border-t-zinc-400"
+            onClick={handleLogout}
+          >
             <LogOut size={18} />
-            <p className="font-semibold" onClick={handleLogout}>
-              {" "}
-              تسجيل الخروج
-            </p>
+            {!isMobileSider && <p className="font-semibold">تسجيل الخروج</p>}
           </div>
         </div>
       </aside>

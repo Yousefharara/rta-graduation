@@ -40,7 +40,7 @@ const schemaSendComplaintForm: Yup.ObjectSchema<ISendComplaintForm> =
   }
 
 const ComplaintDialog = ({open = false, setOpen} : IPorps) => {
-  const { beneficiary, accessToken } = useAppSelector((state) => state.auth);
+  const { beneficiary, accessToken, user } = useAppSelector((state) => state.auth);
   const { isCreating } = useAppSelector((state) => state.complaints);
 
   const dispatch = useAppDispatch();
@@ -77,7 +77,7 @@ const ComplaintDialog = ({open = false, setOpen} : IPorps) => {
       dispatch(
         createNotificationAction(
           {
-            user_id: 1,
+            user_id: user?.id || 1,
             title: "شكوى جديدة",
             message: `تم تقديم شكوى جديدة: ${data.subject}`,
           },

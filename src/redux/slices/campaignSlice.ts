@@ -120,8 +120,10 @@ export const addCampaignAction =
         },
       );
       dispatch(addCampaign(data));
+      return { success: true, data };
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setCreating(false));
     }

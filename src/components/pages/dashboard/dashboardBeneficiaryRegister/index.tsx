@@ -95,7 +95,7 @@ const DashboardBeneficiaryRegister = () => {
       if (areas.length === 0) dispatch(getAreas(accessToken));
       if (governorates.length === 0) dispatch(getGovernorates(accessToken));
     }
-  }, [accessToken, dispatch, areas, governorates]);
+  }, [accessToken, dispatch, areas.length, governorates.length]);
 
   useEffect(() => {
     if (editBeneficiary) {
