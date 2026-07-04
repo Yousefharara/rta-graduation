@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/dialog";
 import Button from "@/components/atoms/button";
 import RowForm from "@/components/molecules/rowForm";
-import { formatDate, toDateStr } from "@/utils/utils";
+import { toDateStr } from "@/utils/utils";
 
 const campaignSchema: yup.ObjectSchema<ICreateCampaign> = yup.object({
   title: yup.string().required("عنوان الحملة مطلوب"),
@@ -49,7 +49,18 @@ const campaignSchema: yup.ObjectSchema<ICreateCampaign> = yup.object({
     .nullable()
     .min(0, "المبلغ يجب أن يكون 0 أو أكثر"),
   start_date: yup.date().required("تاريخ البداية مطلوب"),
-  end_date: yup.date().required("تاريخ النهاية مطلوب"),
+  end_date: yup
+    .date()
+    .required("تاريخ النهاية مطلوب")
+    .test(
+      "is-after-start",
+      "تاريخ النهاية يجب أن يكون بعد تاريخ البداية",
+      function (endDate) {
+        const { start_date } = this.parent;
+        if (!start_date || !endDate) return true;
+        return new Date(endDate) >= new Date(start_date);
+      },
+    ),
 });
 
 const PAGE_SIZE = 5;
@@ -148,8 +159,8 @@ const DashboardCampaignsTable = () => {
       description: campaign.description,
       target_amount:
         campaign.target_amount === 0 ? null : campaign.target_amount,
-      start_date: toDateStr(campaign.start_date),
-      end_date: toDateStr(campaign.end_date),
+      start_date: campaign.start_date,
+      end_date: campaign.end_date,
       status: campaign.status,
     });
     setEditDialogOpen(true);
@@ -228,7 +239,7 @@ const DashboardCampaignsTable = () => {
         header: "تاريخ البداية",
         cell: ({ row }) => (
           <p className="text-sm text-zinc-500">
-            {new Date(row.original.start_date).toLocaleDateString("ar-SA")}
+            {toDateStr(row.original.start_date)}
           </p>
         ),
       },
@@ -236,7 +247,7 @@ const DashboardCampaignsTable = () => {
         header: "تاريخ النهاية",
         cell: ({ row }) => (
           <p className="text-sm text-zinc-500">
-            {new Date(row.original.end_date).toLocaleDateString("ar-SA")}
+            {toDateStr(row.original.end_date)}
           </p>
         ),
       },
@@ -354,7 +365,7 @@ const DashboardCampaignsTable = () => {
                   تاريخ البداية:{" "}
                 </span>
                 <span>
-                  {new Date(viewModal.start_date).toLocaleDateString("ar-SA")}
+                  {toDateStr(viewModal.start_date)}
                 </span>
               </div>
               <div>
@@ -362,7 +373,7 @@ const DashboardCampaignsTable = () => {
                   تاريخ النهاية:{" "}
                 </span>
                 <span>
-                  {new Date(viewModal.end_date).toLocaleDateString("ar-SA")}
+                  {toDateStr(viewModal.end_date)}
                 </span>
               </div>
               <div>
@@ -370,7 +381,7 @@ const DashboardCampaignsTable = () => {
                   تاريخ الإنشاء:{" "}
                 </span>
                 <span>
-                  {new Date(viewModal.created_at).toLocaleDateString("ar-SA")}
+                  {toDateStr(viewModal.created_at)}
                 </span>
               </div>
               <div>
@@ -433,7 +444,7 @@ const DashboardCampaignsTable = () => {
           if (!open) addForm.reset();
         }}
       >
-        <DialogContent className="p-0 bg-[#EFF4FF]">
+        <DialogContent className="p-0 bg-[#EFF4FF] max-h-[85vh] overflow-y-auto">
           <DialogHeader className="mt-10 px-6 text-start!">
             <DialogTitle dir="rtl">إضافة حملة جديدة</DialogTitle>
             <DialogDescription dir="rtl">
@@ -522,9 +533,7 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ البداية</label>
                 <input
                   type="date"
-                  {...addForm.register("start_date", {
-                    setValueAs: (v) => new Date(v),
-                  })}
+                  {...addForm.register("start_date")}
                   className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
                     addForm.formState.errors.start_date
                       ? "outline-rose-500 border-rose-500"
@@ -541,9 +550,7 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ النهاية</label>
                 <input
                   type="date"
-                  {...addForm.register("end_date", {
-                    setValueAs: (v) => new Date(v),
-                  })}
+                  {...addForm.register("end_date")}
                   className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
                     addForm.formState.errors.end_date
                       ? "outline-rose-500 border-rose-500"
@@ -576,7 +583,7 @@ const DashboardCampaignsTable = () => {
 
       {/* Edit Campaign Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="p-0 bg-[#EFF4FF]">
+        <DialogContent className="p-0 bg-[#EFF4FF] max-h-[85vh] overflow-y-auto">
           <DialogHeader className="mt-10 px-6 text-start!">
             <DialogTitle dir="rtl">تعديل الحملة</DialogTitle>
             <DialogDescription dir="rtl">
@@ -665,9 +672,7 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ البداية</label>
                 <input
                   type="date"
-                  {...editForm.register("start_date", {
-                    setValueAs: (v) => new Date(v),
-                  })}
+                  {...editForm.register("start_date")}
                   className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
                     editForm.formState.errors.start_date
                       ? "outline-rose-500 border-rose-500"
@@ -684,9 +689,7 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ النهاية</label>
                 <input
                   type="date"
-                  {...editForm.register("end_date", {
-                    setValueAs: (v) => new Date(v),
-                  })}
+                  {...editForm.register("end_date")}
                   className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
                     editForm.formState.errors.end_date
                       ? "outline-rose-500 border-rose-500"
