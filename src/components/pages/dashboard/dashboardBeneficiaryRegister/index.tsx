@@ -266,14 +266,7 @@ const DashboardBeneficiaryRegister = () => {
               placeholder="0000000000"
               onlyPositiveNumbers
             />
-            <RowForm<IRegisterBeneficiaryForm>
-              errors={errors}
-              label="release_date"
-              title="تاريخ الاصدار"
-              register={register}
-              type="date"
-              placeholder="2020-10-10"
-            />
+            
           </div>
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
@@ -285,6 +278,21 @@ const DashboardBeneficiaryRegister = () => {
               placeholder="05XXXXXXX"
               onlyPositiveNumbers
             />
+
+<RowForm<IRegisterBeneficiaryForm>
+              errors={errors}
+              label="release_date"
+              title="تاريخ الاصدار"
+              register={register}
+              type="date"
+              placeholder="2020-10-10"
+            />
+
+            
+          </div>
+
+          <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
+
             <div className="flex flex-col gap-4 my-4 w-full">
               <label className="text-sm font-semibold">البريد الإلكتروني</label>
               <div className="flex gap-2 items-center">
@@ -353,6 +361,7 @@ const DashboardBeneficiaryRegister = () => {
               )}
             </div>
           </div>
+
         </article>
 
         <article className="flex flex-col gap-4 bg-white rounded-md border border-zinc-300 px-6 py-4">

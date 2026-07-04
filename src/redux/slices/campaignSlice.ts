@@ -176,13 +176,18 @@ export const editCampaignAction =
   };
 
 export const deleteCampaignAction =
-  (id: number) => async (dispatch: AppDispatch) => {
+  (id: number, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setDeleting(true));
     dispatch(setError(null));
     try {
       await axios.delete(
         API_KEY +
           CAMPAIGN_PATHS.DELETE_CAMPAIGN.replace(":id", id.toString()),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       dispatch(deleteCampaign(id));
     } catch (err) {

@@ -9,7 +9,10 @@ import {
   Megaphone,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { isNumberArray, type ColumnDef } from "@tanstack/react-table";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { type ColumnDef } from "@tanstack/react-table";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getCampaigns,
@@ -17,7 +20,11 @@ import {
   editCampaignAction,
   deleteCampaignAction,
 } from "@/redux/slices/campaignSlice";
-import type { ICampaign, ICreateCampaign } from "@/@types/campaign";
+import type {
+  ICampaign,
+  ICreateCampaign,
+  IEditCampaign,
+} from "@/@types/campaign";
 import ReactTable from "@/components/organisms/reactTable";
 import Spinner from "@/components/feedback/Spinner";
 import Error from "@/components/feedback/Error";
@@ -31,13 +38,26 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Button from "@/components/atoms/button";
+import RowForm from "@/components/molecules/rowForm";
+import { formatDate, toDateStr } from "@/utils/utils";
+
+const campaignSchema: yup.ObjectSchema<ICreateCampaign> = yup.object({
+  title: yup.string().required("عنوان الحملة مطلوب"),
+  description: yup.string().required("الوصف مطلوب"),
+  target_amount: yup
+    .number()
+    .nullable()
+    .min(0, "المبلغ يجب أن يكون 0 أو أكثر"),
+  start_date: yup.date().required("تاريخ البداية مطلوب"),
+  end_date: yup.date().required("تاريخ النهاية مطلوب"),
+});
 
 const PAGE_SIZE = 5;
 
 const defaultFormValues: ICreateCampaign = {
   title: "",
   description: "",
-  target_amount: "",
+  target_amount: null,
   start_date: new Date(),
   end_date: new Date(),
 };
@@ -49,12 +69,16 @@ const DashboardCampaignsTable = () => {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editCampaign, setEditCampaign] = useState<ICampaign | null>(null);
-  const [isUnlimited, setIsUnlimited] = useState(false);
-  const [formValues, setFormValues] =
-    useState<ICreateCampaign>(defaultFormValues);
-  const [editFormValues, setEditFormValues] = useState<
-    ICreateCampaign & { status?: "active" | "closed" }
-  >({} as any);
+
+  const addForm = useForm<ICreateCampaign>({
+    defaultValues: defaultFormValues,
+    resolver: yupResolver(campaignSchema),
+  });
+  const editForm = useForm<ICreateCampaign & { status?: "active" | "closed" }>({
+    resolver: yupResolver(campaignSchema),
+  });
+  const addUnlimited = addForm.watch("target_amount") === null;
+  const editUnlimited = editForm.watch("target_amount") === null;
 
   const dispatch = useAppDispatch();
   const { accessToken } = useAppSelector((state) => state.auth);
@@ -71,7 +95,13 @@ const DashboardCampaignsTable = () => {
   });
 
   const formatAmount = useCallback((amount: number | string) => {
-    if (amount === null || amount === 0) return "غير محدود";
+    if (
+      amount === null ||
+      amount === 0 ||
+      amount === "" ||
+      amount === "unlimited"
+    )
+      return "غير محدود";
     return Number(amount).toLocaleString();
   }, []);
 
@@ -95,27 +125,16 @@ const DashboardCampaignsTable = () => {
     return filteredData.slice(start, end);
   }, [pagination, filteredData]);
 
-  const resetAddForm = () => {
-    setFormValues(defaultFormValues);
-    setIsUnlimited(false);
-  };
-
-  const handleAdd = async () => {
-    if (!formValues.title.trim() || !formValues.description.trim()) {
-      toast.error("يرجى تعبئة جميع الحقول المطلوبة");
-      return;
-    }
+  const handleAdd = async (data: ICreateCampaign) => {
     const body: ICreateCampaign = {
-      ...formValues,
-      target_amount: isUnlimited
-        ? null
-        : formValues.target_amount || 0,
+      ...data,
+      target_amount: addUnlimited ? null : data.target_amount || 0,
     };
     const result = await dispatch(addCampaignAction(body, accessToken || ""));
     if (result?.success) {
       toast.success("تم إضافة الحملة بنجاح");
       setAddDialogOpen(false);
-      resetAddForm();
+      addForm.reset();
     } else {
       toast.error("حدث خطأ أثناء إضافة الحملة");
     }
@@ -123,40 +142,32 @@ const DashboardCampaignsTable = () => {
 
   const openEditDialog = (campaign: ICampaign) => {
     setEditCampaign(campaign);
-    setEditFormValues({
+    
+    editForm.reset({
       title: campaign.title,
       description: campaign.description,
       target_amount:
-        campaign.target_amount === 0
-          ? null
-          : campaign.target_amount,
-      start_date: campaign.start_date,
-      end_date: campaign.end_date,
+        campaign.target_amount === 0 ? null : campaign.target_amount,
+      start_date: toDateStr(campaign.start_date),
+      end_date: toDateStr(campaign.end_date),
       status: campaign.status,
     });
-    setIsUnlimited(campaign.target_amount === 0);
     setEditDialogOpen(true);
   };
 
-  const handleEdit = async () => {
+  const handleEdit = async (
+    data: ICreateCampaign & { status?: "active" | "closed" },
+  ) => {
     if (!editCampaign) return;
-    if (!editFormValues.title.trim() || !editFormValues.description.trim()) {
-      toast.error("يرجى تعبئة جميع الحقول المطلوبة");
-      return;
-    }
-    const body = {
+    const body: IEditCampaign = {
       id: editCampaign.id,
-      title: editFormValues.title,
-      description: editFormValues.description,
-      target_amount: isUnlimited
-        ? "unlimited"
-        : editFormValues.target_amount || "0",
-      start_date: editFormValues.start_date,
-      end_date: editFormValues.end_date,
+      title: data.title,
+      description: data.description,
+      target_amount: editUnlimited ? null : data.target_amount || 0,
+      start_date: data.start_date,
+      end_date: data.end_date,
     };
-    const result = await dispatch(
-      editCampaignAction(body as any, accessToken || ""),
-    );
+    const result = await dispatch(editCampaignAction(body, accessToken || ""));
     if (result?.success) {
       toast.success("تم تحديث الحملة بنجاح");
       setEditDialogOpen(false);
@@ -168,7 +179,7 @@ const DashboardCampaignsTable = () => {
 
   const handleDelete = async () => {
     if (!deleteModal) return;
-    await dispatch(deleteCampaignAction(deleteModal.id));
+    await dispatch(deleteCampaignAction(deleteModal.id, accessToken || ""));
     toast.success("تم حذف الحملة بنجاح");
     setDeleteModal(null);
   };
@@ -419,7 +430,7 @@ const DashboardCampaignsTable = () => {
         open={addDialogOpen}
         onOpenChange={(open) => {
           setAddDialogOpen(open);
-          if (!open) resetAddForm();
+          if (!open) addForm.reset();
         }}
       >
         <DialogContent className="p-0 bg-[#EFF4FF]">
@@ -430,7 +441,7 @@ const DashboardCampaignsTable = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex items-center gap-4 px-6">
+          <div className="flex items-center gap-2 px-6">
             <div className="p-2 rounded-full bg-primary/10">
               <Megaphone className="text-primary" size={22} />
             </div>
@@ -438,102 +449,112 @@ const DashboardCampaignsTable = () => {
           </div>
 
           <form
-            className="bg-white p-6 flex flex-col gap-4 rounded-b-md"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAdd();
-            }}
+            className="bg-white p-6 flex flex-col gap-1 rounded-b-md"
+            onSubmit={addForm.handleSubmit(handleAdd)}
           >
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-semibold">عنوان الحملة</label>
-              <input
-                type="text"
-                value={formValues.title}
-                onChange={(e) =>
-                  setFormValues({ ...formValues, title: e.target.value })
-                }
-                placeholder="أدخل عنوان الحملة"
-                className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
-              />
-            </div>
+            <RowForm<ICreateCampaign>
+              errors={addForm.formState.errors}
+              label="title"
+              title="عنوان الحملة"
+              register={addForm.register}
+              placeholder="أدخل عنوان الحملة"
+            />
 
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-4 w-full">
               <label className="text-sm font-semibold">الوصف</label>
               <textarea
                 rows={3}
-                value={formValues.description}
-                onChange={(e) =>
-                  setFormValues({ ...formValues, description: e.target.value })
-                }
+                {...addForm.register("description")}
                 placeholder="أدخل وصف الحملة"
-                className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300 resize-none"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 resize-none ${
+                  addForm.formState.errors.description
+                    ? "outline-rose-500 border-rose-500"
+                    : "outline-gray-300 border-gray-300"
+                }`}
               />
+              {addForm.formState.errors.description && (
+                <span className="text-sm text-rose-600">
+                  {String(addForm.formState.errors.description.message)}
+                </span>
+              )}
             </div>
 
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-4 w-full">
               <label className="text-sm font-semibold">المبلغ المستهدف</label>
               <div className="flex items-center gap-3">
                 <input
                   type="number"
-                  disabled={isUnlimited}
-                  value={isUnlimited ? 0 : Number(formValues.target_amount) || 0}
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      target_amount: Number(e.target.value),
-                    })
-                  }
+                  disabled={addUnlimited}
+                  {...addForm.register("target_amount", {
+                    valueAsNumber: true,
+                  })}
                   placeholder="أدخل المبلغ المستهدف"
-                  className="flex-1 px-4 py-3 bg-transparent text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300 disabled:bg-zinc-100 disabled:cursor-not-allowed"
+                  className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 disabled:bg-zinc-100 disabled:cursor-not-allowed ${
+                    addForm.formState.errors.target_amount
+                      ? "outline-rose-500 border-rose-500"
+                      : "outline-gray-300 border-gray-300"
+                  }`}
                 />
                 <label className="flex items-center gap-2 text-sm cursor-pointer whitespace-nowrap">
                   <input
                     type="checkbox"
-                    checked={isUnlimited}
-                    onChange={(e) => setIsUnlimited(e.target.checked)}
+                    checked={addUnlimited}
+                    onChange={(e) =>
+                      addForm.setValue(
+                        "target_amount",
+                        e.target.checked ? null : 0,
+                      )
+                    }
                     className="w-4 h-4"
                   />
                   غير محدود
                 </label>
               </div>
+              {addForm.formState.errors.target_amount && (
+                <span className="text-sm text-rose-600">
+                  {String(addForm.formState.errors.target_amount.message)}
+                </span>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-4 w-full">
                 <label className="text-sm font-semibold">تاريخ البداية</label>
                 <input
                   type="date"
-                  value={
-                    formValues.start_date instanceof Date
-                      ? formValues.start_date.toISOString().split("T")[0]
-                      : formValues.start_date
-                  }
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      start_date: new Date(e.target.value),
-                    })
-                  }
-                  className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
+                  {...addForm.register("start_date", {
+                    setValueAs: (v) => new Date(v),
+                  })}
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
+                    addForm.formState.errors.start_date
+                      ? "outline-rose-500 border-rose-500"
+                      : "outline-gray-300 border-gray-300"
+                  }`}
                 />
+                {addForm.formState.errors.start_date && (
+                  <span className="text-sm text-rose-600">
+                    {String(addForm.formState.errors.start_date.message)}
+                  </span>
+                )}
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-4 w-full">
                 <label className="text-sm font-semibold">تاريخ النهاية</label>
                 <input
                   type="date"
-                  value={
-                    formValues.end_date instanceof Date
-                      ? formValues.end_date.toISOString().split("T")[0]
-                      : formValues.end_date
-                  }
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      end_date: new Date(e.target.value),
-                    })
-                  }
-                  className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
+                  {...addForm.register("end_date", {
+                    setValueAs: (v) => new Date(v),
+                  })}
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
+                    addForm.formState.errors.end_date
+                      ? "outline-rose-500 border-rose-500"
+                      : "outline-gray-300 border-gray-300"
+                  }`}
                 />
+                {addForm.formState.errors.end_date && (
+                  <span className="text-sm text-rose-600">
+                    {String(addForm.formState.errors.end_date.message)}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -572,107 +593,111 @@ const DashboardCampaignsTable = () => {
 
           <form
             className="bg-white p-6 flex flex-col gap-4 rounded-b-md"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleEdit();
-            }}
+            onSubmit={editForm.handleSubmit(handleEdit)}
           >
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-semibold">عنوان الحملة</label>
-              <input
-                type="text"
-                value={editFormValues.title || ""}
-                onChange={(e) =>
-                  setEditFormValues({
-                    ...editFormValues,
-                    title: e.target.value,
-                  })
-                }
-                placeholder="أدخل عنوان الحملة"
-                className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
-              />
-            </div>
+            <RowForm<ICreateCampaign & { status?: "active" | "closed" }>
+              errors={editForm.formState.errors}
+              label="title"
+              title="عنوان الحملة"
+              register={editForm.register}
+              placeholder="أدخل عنوان الحملة"
+            />
 
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-4 w-full">
               <label className="text-sm font-semibold">الوصف</label>
               <textarea
                 rows={3}
-                value={editFormValues.description || ""}
-                onChange={(e) =>
-                  setEditFormValues({
-                    ...editFormValues,
-                    description: e.target.value,
-                  })
-                }
+                {...editForm.register("description")}
                 placeholder="أدخل وصف الحملة"
-                className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300 resize-none"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 resize-none ${
+                  editForm.formState.errors.description
+                    ? "outline-rose-500 border-rose-500"
+                    : "outline-gray-300 border-gray-300"
+                }`}
               />
+              {editForm.formState.errors.description && (
+                <span className="text-sm text-rose-600">
+                  {String(editForm.formState.errors.description.message)}
+                </span>
+              )}
             </div>
 
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-4 w-full">
               <label className="text-sm font-semibold">المبلغ المستهدف</label>
               <div className="flex items-center gap-3">
                 <input
                   type="number"
-                  disabled={isUnlimited}
-                  value={isUnlimited ? "" : editFormValues.target_amount || ""}
-                  onChange={(e) =>
-                    setEditFormValues({
-                      ...editFormValues,
-                      target_amount: Number(e.target.value),
-                    })
-                  }
+                  disabled={editUnlimited}
+                  {...editForm.register("target_amount", {
+                    valueAsNumber: true,
+                  })}
                   placeholder="أدخل المبلغ المستهدف"
-                  className="flex-1 px-4 py-3 bg-transparent text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300 disabled:bg-zinc-100 disabled:cursor-not-allowed"
+                  className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 disabled:bg-zinc-100 disabled:cursor-not-allowed ${
+                    editForm.formState.errors.target_amount
+                      ? "outline-rose-500 border-rose-500"
+                      : "outline-gray-300 border-gray-300"
+                  }`}
                 />
                 <label className="flex items-center gap-2 text-sm cursor-pointer whitespace-nowrap">
                   <input
                     type="checkbox"
-                    checked={isUnlimited}
-                    onChange={(e) => setIsUnlimited(e.target.checked)}
+                    checked={editUnlimited}
+                    onChange={(e) =>
+                      editForm.setValue(
+                        "target_amount",
+                        e.target.checked ? null : 0,
+                      )
+                    }
                     className="w-4 h-4"
                   />
                   غير محدود
                 </label>
               </div>
+              {editForm.formState.errors.target_amount && (
+                <span className="text-sm text-rose-600">
+                  {String(editForm.formState.errors.target_amount.message)}
+                </span>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-4 w-full">
                 <label className="text-sm font-semibold">تاريخ البداية</label>
                 <input
                   type="date"
-                  value={
-                    editFormValues.start_date instanceof Date
-                      ? editFormValues.start_date.toISOString().split("T")[0]
-                      : editFormValues.start_date || ""
-                  }
-                  onChange={(e) =>
-                    setEditFormValues({
-                      ...editFormValues,
-                      start_date: new Date(e.target.value),
-                    })
-                  }
-                  className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
+                  {...editForm.register("start_date", {
+                    setValueAs: (v) => new Date(v),
+                  })}
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
+                    editForm.formState.errors.start_date
+                      ? "outline-rose-500 border-rose-500"
+                      : "outline-gray-300 border-gray-300"
+                  }`}
                 />
+                {editForm.formState.errors.start_date && (
+                  <span className="text-sm text-rose-600">
+                    {String(editForm.formState.errors.start_date.message)}
+                  </span>
+                )}
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-4 w-full">
                 <label className="text-sm font-semibold">تاريخ النهاية</label>
                 <input
                   type="date"
-                  value={
-                    editFormValues.end_date instanceof Date
-                      ? editFormValues.end_date.toISOString().split("T")[0]
-                      : editFormValues.end_date || ""
-                  }
-                  onChange={(e) =>
-                    setEditFormValues({
-                      ...editFormValues,
-                      end_date: new Date(e.target.value),
-                    })
-                  }
-                  className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
+                  {...editForm.register("end_date", {
+                    setValueAs: (v) => new Date(v),
+                  })}
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
+                    editForm.formState.errors.end_date
+                      ? "outline-rose-500 border-rose-500"
+                      : "outline-gray-300 border-gray-300"
+                  }`}
                 />
+                {editForm.formState.errors.end_date && (
+                  <span className="text-sm text-rose-600">
+                    {String(editForm.formState.errors.end_date.message)}
+                  </span>
+                )}
               </div>
             </div>
 

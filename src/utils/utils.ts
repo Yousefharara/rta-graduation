@@ -29,3 +29,6 @@ export const formatDate = (date: Date) => {
     String(date.getDate()).padStart(2, "0"),
   ].join("-");
 };
+
+export const toDateStr = (d: Date | string) =>
+  d instanceof Date ? d.toISOString().split("T")[0] : String(d).split("T")[0];

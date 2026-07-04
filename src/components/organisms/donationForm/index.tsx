@@ -28,7 +28,7 @@ import { editCampaignAction } from "@/redux/slices/campaignSlice";
 
 const defaultValues: IDonationForm = {
   donationCampaign: "",
-  budget: 0,
+  budget: 10,
   customBudget: 0,
   nameOfCard: "",
   cardNumber: "",

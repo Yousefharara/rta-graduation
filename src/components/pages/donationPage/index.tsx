@@ -46,7 +46,7 @@ const DonationPage = () => {
         </article>
 
         <article>
-          <h2>أثر تبرعاتكم في الميدان</h2>
+          <h2 className="justify-center items-center w-full text-3xl text-center mb-10 font-semibold">أثر تبرعاتكم في الميدان</h2>
           <div style={{ gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))" }} className="grid gap-4">
 
 
