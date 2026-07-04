@@ -158,6 +158,7 @@ export const editCampaignAction =
       const headers = token
         ? { headers: { Authorization: `Bearer ${token}` } }
         : undefined;
+        console.log('editCampaignAction : ', body);
       const { data } = await axios.put<ICampaign>(
         API_KEY +
           CAMPAIGN_PATHS.EDIT_CAMPAIGN.replace(":id", String(body.id)),

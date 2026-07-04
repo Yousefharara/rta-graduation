@@ -36,7 +36,7 @@ const defaultValues: IDonationForm = {
   CVV: 0,
 };
 
-const schemaDonationFrom: Yup.ObjectSchema<IDonationForm> = Yup.object({
+const schemaDonationForm: Yup.ObjectSchema<IDonationForm> = Yup.object({
   donationCampaign: Yup.string().required("الحملة مطلوبة"),
   budget: Yup.number().min(1, "المبلغ غير صحيح").required("المبلغ مطلوب"),
   customBudget: Yup.number()
@@ -45,7 +45,7 @@ const schemaDonationFrom: Yup.ObjectSchema<IDonationForm> = Yup.object({
   nameOfCard: Yup.string().required(""),
   cardNumber: Yup.string().required(""),
   endDate: Yup.date().required(""),
-  CVV: Yup.number().min(3).max(3).required(""),
+  CVV: Yup.number().required(""),
 });
 
 const DonationForm = () => {
@@ -55,7 +55,7 @@ const DonationForm = () => {
     reset,
     watch,
     register,
-  } = useForm<IDonationForm>({ resolver: yupResolver(schemaDonationFrom) });
+  } = useForm<IDonationForm>({ resolver: yupResolver(schemaDonationForm) });
   const { campaigns, isFetching, error } = useAppSelector(
     (state) => state.campaigns,
   );
@@ -106,7 +106,7 @@ const DonationForm = () => {
 
     const finalBudget = pendingData.customBudget || pendingData.budget;
 
-    if(finalBudget <= 0) return;
+    if (finalBudget <= 0) return;
     console.log({
       ...pendingData,
       budget: finalBudget,
@@ -126,12 +126,16 @@ const DonationForm = () => {
       (c) => c.title === pendingData.donationCampaign,
     );
     if (selectedCampaign) {
-      const newCollected = Number(selectedCampaign.collected_amount) + Number(finalBudget);
+      const newCollected =
+        Number(selectedCampaign.collected_amount) + Number(finalBudget);
       const updatedStatus =
-        newCollected >= selectedCampaign.target_amount
-          ? "closed"
-          : selectedCampaign.status;
-          console.log('status : ', newCollected);
+        selectedCampaign.target_amount === null
+          ? selectedCampaign.status
+          : newCollected >= Number(selectedCampaign.target_amount)
+            ? "closed"
+            : selectedCampaign.status;
+      console.log("status : ", newCollected);
+
       dispatch(
         editCampaignAction({
           id: selectedCampaign.id,
@@ -170,12 +174,15 @@ const DonationForm = () => {
             }}
           >
             {campaigns.map((campaign) => {
-              const percentage = Math.min(
-                Math.round(
-                  (campaign.collected_amount / campaign.target_amount) * 100,
-                ),
-                100,
-              );
+              let percentage = null;
+              if (campaign.target_amount) {
+                percentage = Math.min(
+                  Math.round(
+                    (campaign.collected_amount / campaign.target_amount) * 100,
+                  ),
+                  100,
+                );
+              }
               const isCompleted =
                 Number(campaign.collected_amount) >=
                 Number(campaign.target_amount);
@@ -192,8 +199,8 @@ const DonationForm = () => {
                   className={`lable-gaza flex flex-col w-full offer active border rounded-lg p-3 ${
                     isCompleted
                       ? "border-green-400 bg-green-50/50 opacity-70"
-                      : "border-zinc-300"
-                  }`}
+                      : `${errors["donationCampaign"]?.message ? "border-rose-500" : "border-zinc-300"}`
+                  }`} 
                 >
                   <input
                     className="hidden"
@@ -226,7 +233,7 @@ const DonationForm = () => {
                     />
                   </div>
                   <div className="flex justify-between items-center mt-1">
-                    <small>تم جمع {percentage}%</small>
+                    <small>تم جمع {percentage ? percentage : "غير محدود"}%</small>
                     <small>المستهدف {campaign.target_amount}$</small>
                   </div>
                 </label>
@@ -234,8 +241,11 @@ const DonationForm = () => {
             })}
           </div>
 
-          {errors['donationCampaign']?.message && <p>{errors['donationCampaign']?.message}</p>}
-
+          {errors["donationCampaign"]?.message && (
+            <span className="text-sm text-rose-600 mt-5 block">
+              {String(errors["donationCampaign"]?.message)}
+            </span>
+          )}
         </section>
 
         <section

@@ -1,6 +1,15 @@
-import { Search, Eye, Pencil, Trash2, X, Plus, Check, Megaphone } from "lucide-react";
+import {
+  Search,
+  Eye,
+  Pencil,
+  Trash2,
+  X,
+  Plus,
+  Check,
+  Megaphone,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
+import { isNumberArray, type ColumnDef } from "@tanstack/react-table";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getCampaigns,
@@ -41,14 +50,16 @@ const DashboardCampaignsTable = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editCampaign, setEditCampaign] = useState<ICampaign | null>(null);
   const [isUnlimited, setIsUnlimited] = useState(false);
-  const [formValues, setFormValues] = useState<ICreateCampaign>(defaultFormValues);
-  const [editFormValues, setEditFormValues] = useState<ICreateCampaign & { status?: "active" | "closed" }>({} as any);
+  const [formValues, setFormValues] =
+    useState<ICreateCampaign>(defaultFormValues);
+  const [editFormValues, setEditFormValues] = useState<
+    ICreateCampaign & { status?: "active" | "closed" }
+  >({} as any);
 
   const dispatch = useAppDispatch();
   const { accessToken } = useAppSelector((state) => state.auth);
-  const { campaigns, isFetching, isCreating, isUpdating, isDeleting, error } = useAppSelector(
-    (state) => state.campaigns,
-  );
+  const { campaigns, isFetching, isCreating, isUpdating, isDeleting, error } =
+    useAppSelector((state) => state.campaigns);
 
   useEffect(() => {
     dispatch(getCampaigns());
@@ -60,7 +71,7 @@ const DashboardCampaignsTable = () => {
   });
 
   const formatAmount = useCallback((amount: number | string) => {
-    if (amount === "unlimited" || amount === 0) return "غير محدود";
+    if (amount === null || amount === 0) return "غير محدود";
     return Number(amount).toLocaleString();
   }, []);
 
@@ -96,7 +107,9 @@ const DashboardCampaignsTable = () => {
     }
     const body: ICreateCampaign = {
       ...formValues,
-      target_amount: isUnlimited ? "unlimited" : formValues.target_amount || "0",
+      target_amount: isUnlimited
+        ? null
+        : formValues.target_amount || 0,
     };
     const result = await dispatch(addCampaignAction(body, accessToken || ""));
     if (result?.success) {
@@ -113,7 +126,10 @@ const DashboardCampaignsTable = () => {
     setEditFormValues({
       title: campaign.title,
       description: campaign.description,
-      target_amount: campaign.target_amount === 0 ? "unlimited" : String(campaign.target_amount),
+      target_amount:
+        campaign.target_amount === 0
+          ? null
+          : campaign.target_amount,
       start_date: campaign.start_date,
       end_date: campaign.end_date,
       status: campaign.status,
@@ -132,11 +148,15 @@ const DashboardCampaignsTable = () => {
       id: editCampaign.id,
       title: editFormValues.title,
       description: editFormValues.description,
-      target_amount: isUnlimited ? "unlimited" : editFormValues.target_amount || "0",
+      target_amount: isUnlimited
+        ? "unlimited"
+        : editFormValues.target_amount || "0",
       start_date: editFormValues.start_date,
       end_date: editFormValues.end_date,
     };
-    const result = await dispatch(editCampaignAction(body as any, accessToken || ""));
+    const result = await dispatch(
+      editCampaignAction(body as any, accessToken || ""),
+    );
     if (result?.success) {
       toast.success("تم تحديث الحملة بنجاح");
       setEditDialogOpen(false);
@@ -181,7 +201,7 @@ const DashboardCampaignsTable = () => {
         header: "المبلغ المستهدف",
         cell: ({ row }) => (
           <p className="text-sm font-medium">
-            {formatAmount(row.original.target_amount)}
+            {formatAmount(String(row.original.target_amount))}
           </p>
         ),
       },
@@ -271,8 +291,7 @@ const DashboardCampaignsTable = () => {
     );
   }
 
-  if (error)
-    return <Error onRetry={() => dispatch(getCampaigns())} />;
+  if (error) return <Error onRetry={() => dispatch(getCampaigns())} />;
 
   return (
     <>
@@ -306,24 +325,42 @@ const DashboardCampaignsTable = () => {
                 </p>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">المبلغ المستهدف: </span>
-                <span>{formatAmount(viewModal.target_amount)}</span>
+                <span className="font-medium text-zinc-500">
+                  المبلغ المستهدف:{" "}
+                </span>
+                <span>{formatAmount(String(viewModal.target_amount))}</span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">المبلغ المجموع: </span>
-                <span className="text-green-600">{formatAmount(viewModal.collected_amount)}</span>
+                <span className="font-medium text-zinc-500">
+                  المبلغ المجموع:{" "}
+                </span>
+                <span className="text-green-600">
+                  {formatAmount(viewModal.collected_amount)}
+                </span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">تاريخ البداية: </span>
-                <span>{new Date(viewModal.start_date).toLocaleDateString("ar-SA")}</span>
+                <span className="font-medium text-zinc-500">
+                  تاريخ البداية:{" "}
+                </span>
+                <span>
+                  {new Date(viewModal.start_date).toLocaleDateString("ar-SA")}
+                </span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">تاريخ النهاية: </span>
-                <span>{new Date(viewModal.end_date).toLocaleDateString("ar-SA")}</span>
+                <span className="font-medium text-zinc-500">
+                  تاريخ النهاية:{" "}
+                </span>
+                <span>
+                  {new Date(viewModal.end_date).toLocaleDateString("ar-SA")}
+                </span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">تاريخ الإنشاء: </span>
-                <span>{new Date(viewModal.created_at).toLocaleDateString("ar-SA")}</span>
+                <span className="font-medium text-zinc-500">
+                  تاريخ الإنشاء:{" "}
+                </span>
+                <span>
+                  {new Date(viewModal.created_at).toLocaleDateString("ar-SA")}
+                </span>
               </div>
               <div>
                 <span className="font-medium text-zinc-500">الحالة: </span>
@@ -378,10 +415,13 @@ const DashboardCampaignsTable = () => {
       )}
 
       {/* Add Campaign Dialog */}
-      <Dialog open={addDialogOpen} onOpenChange={(open) => {
-        setAddDialogOpen(open);
-        if (!open) resetAddForm();
-      }}>
+      <Dialog
+        open={addDialogOpen}
+        onOpenChange={(open) => {
+          setAddDialogOpen(open);
+          if (!open) resetAddForm();
+        }}
+      >
         <DialogContent className="p-0 bg-[#EFF4FF]">
           <DialogHeader className="mt-10 px-6 text-start!">
             <DialogTitle dir="rtl">إضافة حملة جديدة</DialogTitle>
@@ -409,7 +449,9 @@ const DashboardCampaignsTable = () => {
               <input
                 type="text"
                 value={formValues.title}
-                onChange={(e) => setFormValues({ ...formValues, title: e.target.value })}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, title: e.target.value })
+                }
                 placeholder="أدخل عنوان الحملة"
                 className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
               />
@@ -420,7 +462,9 @@ const DashboardCampaignsTable = () => {
               <textarea
                 rows={3}
                 value={formValues.description}
-                onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, description: e.target.value })
+                }
                 placeholder="أدخل وصف الحملة"
                 className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300 resize-none"
               />
@@ -432,8 +476,13 @@ const DashboardCampaignsTable = () => {
                 <input
                   type="number"
                   disabled={isUnlimited}
-                  value={isUnlimited ? "" : formValues.target_amount}
-                  onChange={(e) => setFormValues({ ...formValues, target_amount: e.target.value })}
+                  value={isUnlimited ? 0 : Number(formValues.target_amount) || 0}
+                  onChange={(e) =>
+                    setFormValues({
+                      ...formValues,
+                      target_amount: Number(e.target.value),
+                    })
+                  }
                   placeholder="أدخل المبلغ المستهدف"
                   className="flex-1 px-4 py-3 bg-transparent text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300 disabled:bg-zinc-100 disabled:cursor-not-allowed"
                 />
@@ -454,8 +503,17 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ البداية</label>
                 <input
                   type="date"
-                  value={formValues.start_date instanceof Date ? formValues.start_date.toISOString().split('T')[0] : formValues.start_date}
-                  onChange={(e) => setFormValues({ ...formValues, start_date: new Date(e.target.value) })}
+                  value={
+                    formValues.start_date instanceof Date
+                      ? formValues.start_date.toISOString().split("T")[0]
+                      : formValues.start_date
+                  }
+                  onChange={(e) =>
+                    setFormValues({
+                      ...formValues,
+                      start_date: new Date(e.target.value),
+                    })
+                  }
                   className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
                 />
               </div>
@@ -463,8 +521,17 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ النهاية</label>
                 <input
                   type="date"
-                  value={formValues.end_date instanceof Date ? formValues.end_date.toISOString().split('T')[0] : formValues.end_date}
-                  onChange={(e) => setFormValues({ ...formValues, end_date: new Date(e.target.value) })}
+                  value={
+                    formValues.end_date instanceof Date
+                      ? formValues.end_date.toISOString().split("T")[0]
+                      : formValues.end_date
+                  }
+                  onChange={(e) =>
+                    setFormValues({
+                      ...formValues,
+                      end_date: new Date(e.target.value),
+                    })
+                  }
                   className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
                 />
               </div>
@@ -515,7 +582,12 @@ const DashboardCampaignsTable = () => {
               <input
                 type="text"
                 value={editFormValues.title || ""}
-                onChange={(e) => setEditFormValues({ ...editFormValues, title: e.target.value })}
+                onChange={(e) =>
+                  setEditFormValues({
+                    ...editFormValues,
+                    title: e.target.value,
+                  })
+                }
                 placeholder="أدخل عنوان الحملة"
                 className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
               />
@@ -526,7 +598,12 @@ const DashboardCampaignsTable = () => {
               <textarea
                 rows={3}
                 value={editFormValues.description || ""}
-                onChange={(e) => setEditFormValues({ ...editFormValues, description: e.target.value })}
+                onChange={(e) =>
+                  setEditFormValues({
+                    ...editFormValues,
+                    description: e.target.value,
+                  })
+                }
                 placeholder="أدخل وصف الحملة"
                 className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300 resize-none"
               />
@@ -539,7 +616,12 @@ const DashboardCampaignsTable = () => {
                   type="number"
                   disabled={isUnlimited}
                   value={isUnlimited ? "" : editFormValues.target_amount || ""}
-                  onChange={(e) => setEditFormValues({ ...editFormValues, target_amount: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormValues({
+                      ...editFormValues,
+                      target_amount: Number(e.target.value),
+                    })
+                  }
                   placeholder="أدخل المبلغ المستهدف"
                   className="flex-1 px-4 py-3 bg-transparent text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300 disabled:bg-zinc-100 disabled:cursor-not-allowed"
                 />
@@ -560,8 +642,17 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ البداية</label>
                 <input
                   type="date"
-                  value={editFormValues.start_date instanceof Date ? editFormValues.start_date.toISOString().split('T')[0] : editFormValues.start_date || ""}
-                  onChange={(e) => setEditFormValues({ ...editFormValues, start_date: new Date(e.target.value) })}
+                  value={
+                    editFormValues.start_date instanceof Date
+                      ? editFormValues.start_date.toISOString().split("T")[0]
+                      : editFormValues.start_date || ""
+                  }
+                  onChange={(e) =>
+                    setEditFormValues({
+                      ...editFormValues,
+                      start_date: new Date(e.target.value),
+                    })
+                  }
                   className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
                 />
               </div>
@@ -569,8 +660,17 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ النهاية</label>
                 <input
                   type="date"
-                  value={editFormValues.end_date instanceof Date ? editFormValues.end_date.toISOString().split('T')[0] : editFormValues.end_date || ""}
-                  onChange={(e) => setEditFormValues({ ...editFormValues, end_date: new Date(e.target.value) })}
+                  value={
+                    editFormValues.end_date instanceof Date
+                      ? editFormValues.end_date.toISOString().split("T")[0]
+                      : editFormValues.end_date || ""
+                  }
+                  onChange={(e) =>
+                    setEditFormValues({
+                      ...editFormValues,
+                      end_date: new Date(e.target.value),
+                    })
+                  }
                   className="px-4 py-3 bg-transparent w-full text-sm rounded-md border border-gray-300 outline-offset-4 outline-gray-300"
                 />
               </div>
