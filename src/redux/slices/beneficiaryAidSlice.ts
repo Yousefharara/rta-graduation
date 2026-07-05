@@ -104,6 +104,7 @@ export const createBeneficiaryAidAction =
   async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
     dispatch(setError(null));
+    console.log('createBeneficiaryAidAction : ', body);
     try {
       const { data } = await axios.post<IBeneficiaryAid>(
         API_KEY + BENEFICIARY_AID_PATHS.CREATE_BENEFICIARY_AID,

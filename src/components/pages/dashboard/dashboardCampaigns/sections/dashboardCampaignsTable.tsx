@@ -39,24 +39,23 @@ import {
 } from "@/components/ui/dialog";
 import Button from "@/components/atoms/button";
 import RowForm from "@/components/molecules/rowForm";
-import { toDateStr } from "@/utils/utils";
+import { toDateStr, toInputDateStr } from "@/utils/utils";
 
 const campaignSchema: yup.ObjectSchema<ICreateCampaign> = yup.object({
   title: yup.string().required("عنوان الحملة مطلوب"),
   description: yup.string().required("الوصف مطلوب"),
   target_amount: yup.number().nullable().min(0, "المبلغ يجب أن يكون 0 أو أكثر"),
-  start_date: yup.date().nullable().optional(),
+  start_date: yup.string().nullable(),
   end_date: yup
-    .date()
+    .string()
     .nullable()
-    .optional()
     .test(
       "is-after-start",
       "تاريخ النهاية يجب أن يكون بعد تاريخ البداية",
       function (endDate) {
         const { start_date } = this.parent;
         if (!start_date || !endDate) return true;
-        return new Date(endDate) >= new Date(start_date);
+        return endDate >= start_date;
       },
     ),
 });
@@ -155,8 +154,8 @@ const DashboardCampaignsTable = () => {
       description: campaign.description,
       target_amount:
         campaign.target_amount === 0 ? null : campaign.target_amount,
-      start_date: campaign.start_date,
-      end_date: campaign.end_date,
+      start_date: toInputDateStr(campaign.start_date),
+      end_date: toInputDateStr(campaign.end_date),
     });
     setDialogMode("edit");
   };

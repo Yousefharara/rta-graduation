@@ -1,4 +1,4 @@
-export const generateRandomEmail = () => {
+export const generateRandomEmail = (  ) => {
   const random = Math.random().toString(36).slice(2, 8);
 
   return `${random}@example.com`;
@@ -29,5 +29,16 @@ export const formatDate = (date: Date) => {
   ].join("-");
 };
 
-export const toDateStr = (d: Date | string | null) =>
-  d instanceof Date ? d.toISOString().split("T")[0] : String(d).split("T")[0];
+export const toDateStr = (d: Date | string | null) => {
+  if (!d) return "";
+  const date = typeof d === "string" ? new Date(d) : d;
+  if (isNaN(date.getTime())) return String(d);
+  return formatDate(date);
+};
+
+export const toInputDateStr = (d: Date | string | null | undefined): string => {
+  if (!d) return "";
+  const date = typeof d === "string" ? new Date(d) : d;
+  if (isNaN(date.getTime())) return "";
+  return formatDate(date);
+};

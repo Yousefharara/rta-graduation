@@ -4,8 +4,8 @@ export interface ICampaign {
   description: string;
   target_amount: number | null;
   collected_amount: number;
-  start_date?: Date | null;
-  end_date?: Date | null;
+  start_date?: string | null;
+  end_date?: string | null;
   status: TCampaignStatus;
   created_at: Date;
 }
@@ -14,8 +14,8 @@ export interface ICreateCampaign {
   title: string;
   description: string;
   target_amount?: number | null;
-  start_date?: Date | null;
-  end_date?: Date | null;
+  start_date?: string | null;
+  end_date?: string | null;
 }
 
 export interface IEditCampaign {
@@ -23,8 +23,8 @@ export interface IEditCampaign {
   title: string;
   description: string;
   target_amount: number | null;
-  start_date?: Date | null;
-  end_date?: Date | null;
+  start_date?: string | null;
+  end_date?: string | null;
 }
 
 type TCampaignStatus = "active" | "closed";

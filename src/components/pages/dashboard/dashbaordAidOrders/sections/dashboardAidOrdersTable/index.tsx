@@ -144,8 +144,7 @@ const DashboardAidOrdersTable = ({
           updateBeneficiaryOrderStatusAction(
             id,
             status,
-            accessToken || "",
-            pickupLocationId,
+            accessToken || ""
           ),
         );
         await dispatch(getBeneficiaryAids(accessToken || ""));
@@ -164,15 +163,16 @@ const DashboardAidOrdersTable = ({
             await dispatch(
               editAidDeductAction(editAid.id, 1, accessToken || ""),
             );
+            console.log('handleUpdateStatus : 1 order-id : ', id);
             await dispatch(
               updateBeneficiaryOrderStatusAction(
                 id,
                 status,
-                accessToken || "",
-                pickupLocationId,
+                accessToken || ""
               ),
             );
-            await dispatch(
+            console.log('handleUpdateStatus : 2 order-id : ', id);
+            const result = await dispatch(
               createBeneficiaryAidAction(
                 {
                   beneficiary_id: beneficiaryId,
@@ -184,9 +184,13 @@ const DashboardAidOrdersTable = ({
                 accessToken || "",
               ),
             );
-            await dispatch(getBeneficiaryAids(accessToken || ""));
+            console.log('handleUpdateStatus : 3 order-id ', id);
+            console.log('handleUpdateStatus : 3 result ', result);
+            // await dispatch(getBeneficiaryAids(accessToken || ""));
+            console.log('handleUpdateStatus : 4');
+            toast.success("تم قبول الطلب بنجاح");
+            return;
           }
-          toast.success("تم قبول الطلب بنجاح");
         } else {
           toast.error("لا يوجد ما يكفى من المساعدات لقبول هذا الطلب");
           return;

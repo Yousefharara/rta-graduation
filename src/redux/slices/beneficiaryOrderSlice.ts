@@ -126,13 +126,12 @@ export const updateBeneficiaryOrderStatusAction =
     id: number,
     status: IBeneficiaryOrder["status"],
     token: string,
-    pickupLocationId?: number,
   ) =>
   async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
     dispatch(setError(null));
 
-    console.log("update updateBeneficiaryOrderStatusAction , ", status);
+    console.log("update updateBeneficiaryOrderStatusAction , ", status, );
 
     try {
       await axios.put(
@@ -141,7 +140,7 @@ export const updateBeneficiaryOrderStatusAction =
             ":id",
             String(id),
           ),
-        { status, pickup_location_id: pickupLocationId },
+        { status },
         {
           headers: { Authorization: `Bearer ${token}` },
         },
