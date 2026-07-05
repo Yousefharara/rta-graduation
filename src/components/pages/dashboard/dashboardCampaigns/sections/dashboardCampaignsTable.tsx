@@ -96,6 +96,7 @@ const DashboardCampaignsTable = () => {
   });
 
   const isUnlimited = watch("target_amount") === null;
+  const noDate = watch("start_date") === null;
 
   const dispatch = useAppDispatch();
   const { accessToken } = useAppSelector((state) => state.auth);
@@ -548,8 +549,9 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ البداية</label>
                 <input
                   type="date"
+                  disabled={noDate}
                   {...register("start_date")}
-                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 disabled:bg-zinc-100 disabled:cursor-not-allowed ${
                     errors.start_date
                       ? "outline-rose-500 border-rose-500"
                       : "outline-gray-300 border-gray-300"
@@ -565,8 +567,9 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ النهاية</label>
                 <input
                   type="date"
+                  disabled={noDate}
                   {...register("end_date")}
-                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 disabled:bg-zinc-100 disabled:cursor-not-allowed ${
                     errors.end_date
                       ? "outline-rose-500 border-rose-500"
                       : "outline-gray-300 border-gray-300"
@@ -579,6 +582,19 @@ const DashboardCampaignsTable = () => {
                 )}
               </div>
             </div>
+            <label className="flex items-center gap-2 text-sm cursor-pointer w-fit">
+              <input
+                type="checkbox"
+                checked={noDate}
+                onChange={(e) => {
+                  const val = e.target.checked ? null : "";
+                  setValue("start_date", val);
+                  setValue("end_date", val);
+                }}
+                className="w-4 h-4"
+              />
+              بدون تاريخ
+            </label>
 
             <DialogFooter className="flex items-center flex-wrap gap-2">
               {(isEditMode ? isUpdating : isCreating) ? (
