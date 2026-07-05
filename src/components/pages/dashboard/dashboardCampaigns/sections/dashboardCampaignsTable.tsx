@@ -45,10 +45,11 @@ const campaignSchema: yup.ObjectSchema<ICreateCampaign> = yup.object({
   title: yup.string().required("عنوان الحملة مطلوب"),
   description: yup.string().required("الوصف مطلوب"),
   target_amount: yup.number().nullable().min(0, "المبلغ يجب أن يكون 0 أو أكثر"),
-  start_date: yup.string().required("تاريخ البداية مطلوب"),
+  start_date: yup.date().nullable().optional(),
   end_date: yup
-    .string()
-    .required("تاريخ النهاية مطلوب")
+    .date()
+    .nullable()
+    .optional()
     .test(
       "is-after-start",
       "تاريخ النهاية يجب أن يكون بعد تاريخ البداية",
@@ -66,8 +67,8 @@ const defaultFormValues: ICreateCampaign = {
   title: "",
   description: "",
   target_amount: null,
-  start_date: "",
-  end_date: "",
+  start_date: null,
+  end_date: null,
 };
 
 const DashboardCampaignsTable = () => {
@@ -149,18 +150,13 @@ const DashboardCampaignsTable = () => {
 
   const openEditDialog = (campaign: ICampaign) => {
     setEditingCampaign(campaign);
-    const toDateInput = (d: string | Date) => {
-      if (!d) return "";
-      const date = new Date(d);
-      return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
-    };
     reset({
       title: campaign.title,
       description: campaign.description,
       target_amount:
         campaign.target_amount === 0 ? null : campaign.target_amount,
-      start_date: toDateInput(campaign.start_date),
-      end_date: toDateInput(campaign.end_date),
+      start_date: campaign.start_date,
+      end_date: campaign.end_date,
     });
     setDialogMode("edit");
   };
