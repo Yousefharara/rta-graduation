@@ -15,4 +15,4 @@ export interface IComplaint {
   created_at: Date;
 }
 
-type TComplaintStatus = "open" | "resolved"
+type TComplaintStatus = "open" | "resolved";

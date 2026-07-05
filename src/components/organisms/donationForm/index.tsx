@@ -200,7 +200,7 @@ const DonationForm = () => {
                     isCompleted
                       ? "border-green-400 bg-green-50/50 opacity-70"
                       : `${errors["donationCampaign"]?.message ? "border-rose-500" : "border-zinc-300"}`
-                  }`} 
+                  }`}
                 >
                   <input
                     className="hidden"
@@ -233,7 +233,9 @@ const DonationForm = () => {
                     />
                   </div>
                   <div className="flex justify-between items-center mt-1">
-                    <small>تم جمع {percentage ? percentage : "غير محدود"}%</small>
+                    <small>
+                      تم جمع {percentage ? percentage : "غير محدود"}%
+                    </small>
                     <small>المستهدف {campaign.target_amount}$</small>
                   </div>
                 </label>

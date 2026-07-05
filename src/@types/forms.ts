@@ -29,20 +29,23 @@ export interface IDonationForm {
   CVV: number;
 }
 
-
 export interface ISendOrderForm {
   typeAid: string;
   reason: string;
 }
 
-export interface IBeneficiaryForm
-  extends Omit<ICreateBeneficiary, 'email' | 'password' | "disabled_count"> {
+export interface IBeneficiaryForm extends Omit<
+  ICreateBeneficiary,
+  "email" | "password" | "disabled_count"
+> {
   email?: string | null;
   password?: string;
   disabled_count?: number;
 }
 
-
-export interface IRegisterLocalOrgForm extends Omit<ICreateLocalOrg, "password"> {
+export interface IRegisterLocalOrgForm extends Omit<
+  ICreateLocalOrg,
+  "password"
+> {
   password?: string;
 }

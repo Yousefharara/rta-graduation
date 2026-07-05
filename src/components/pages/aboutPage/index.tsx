@@ -5,10 +5,7 @@ import VisionAbout from "./section/visionAbout";
 import ValueAbout from "./section/valueAbout";
 import TeamsAbout from "./section/teamsAbout";
 
-
 const About = () => {
-  
-
   return (
     <section className="flex flex-col gap-12">
       <HeroAbout />

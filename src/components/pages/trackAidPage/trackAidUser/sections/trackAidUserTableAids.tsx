@@ -145,12 +145,12 @@ const TrackAidUserTableAids = () => {
       </article>
       <div className="overflow-x-auto">
         <ReactTable
-        columns={columns}
-        data={paginationData}
-        onPaginationChange={setPagination}
-        pagination={pagination}
-        pageCount={pageCount}
-      />
+          columns={columns}
+          data={paginationData}
+          onPaginationChange={setPagination}
+          pagination={pagination}
+          pageCount={pageCount}
+        />
       </div>
     </section>
   );

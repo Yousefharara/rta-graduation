@@ -1,5 +1,5 @@
 .sidebar-links li a.active,
 a.sidebar-org.active {
-    background-color: var(--primary);
-    color: #fff;
+  background-color: var(--primary);
+  color: #fff;
 }

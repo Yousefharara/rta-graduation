@@ -1,4 +1,3 @@
-  
 export const generateRandomEmail = () => {
   const random = Math.random().toString(36).slice(2, 8);
 
@@ -20,7 +19,7 @@ export const generateRandomPassword = () => {
 
 export const generateRandomAlgorithm = () => {
   return Math.floor(Math.random() * 99) + 1;
-}
+};
 
 export const formatDate = (date: Date) => {
   return [

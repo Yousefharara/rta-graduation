@@ -1,5 +1,4 @@
 .search-filter p.active {
-
-    color: var(--color-primary);
-    font-weight: 700;
+  color: var(--color-primary);
+  font-weight: 700;
 }

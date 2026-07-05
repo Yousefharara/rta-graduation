@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionTimeoutManager } from "@/components/organisms/sessionTimeoutManager/SessionTimeoutManager";
 
-const ProviderTemplate = ({ children } : {children: ReactNode}) => {
+const ProviderTemplate = ({ children }: { children: ReactNode }) => {
   return (
     <HelmetProvider>
       <Helmet>

@@ -66,9 +66,7 @@ export async function syncNow(token?: string): Promise<number> {
           endpoint: op.endpoint,
           method: op.method,
         },
-        token
-          ? { headers: { Authorization: `Bearer ${token}` } }
-          : undefined,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
       );
       removeFromQueue(op.id);
       synced++;

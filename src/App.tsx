@@ -9,7 +9,13 @@ function App() {
   return (
     <ProviderTemplate>
       <LayoutTemplate>
-        <Suspense fallback={<div className="w-full h-42 flex justify-center items-center"><Spinner /></div>}>
+        <Suspense
+          fallback={
+            <div className="w-full h-42 flex justify-center items-center">
+              <Spinner />
+            </div>
+          }
+        >
           <Router />
         </Suspense>
       </LayoutTemplate>

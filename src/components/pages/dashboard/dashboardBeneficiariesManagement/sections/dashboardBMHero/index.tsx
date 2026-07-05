@@ -19,16 +19,19 @@ const DashboardBMHero = () => {
     isFetching,
     error: beneficiaryError,
   } = useAppSelector((state) => state.beneficiaries);
-  const {aids, error: aidError, isFetching: aidsFetching} = useAppSelector(state => state.aids)
+  const {
+    aids,
+    error: aidError,
+    isFetching: aidsFetching,
+  } = useAppSelector((state) => state.aids);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (accessToken) {
       if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
-      if (aids.length === 0) dispatch(getAids(accessToken))
+      if (aids.length === 0) dispatch(getAids(accessToken));
     }
   }, [accessToken, aids.length, beneficiaries.length, dispatch]);
-
 
   if (isFetching || isLoading || aidsFetching) return <Spinner />;
 
@@ -56,7 +59,18 @@ const DashboardBMHero = () => {
       </article>
 
       {error || beneficiaryError || aidError ? (
-        <Error message={error ? error : beneficiaryError ? beneficiaryError : aidError ? aidError : ""} onRetry={() => dispatch(getBeneficiaries(accessToken || ""))} />
+        <Error
+          message={
+            error
+              ? error
+              : beneficiaryError
+                ? beneficiaryError
+                : aidError
+                  ? aidError
+                  : ""
+          }
+          onRetry={() => dispatch(getBeneficiaries(accessToken || ""))}
+        />
       ) : (
         <article
           className="grid gap-4"
@@ -66,19 +80,27 @@ const DashboardBMHero = () => {
         >
           <div className="rounded-md text-white px-4 py-2 flex flex-col gap-2 bg-primary">
             <p className="">إجمالي المسجلين</p>
-            <small className="text-3xl font-semibold">{beneficiaries.length}</small>
+            <small className="text-3xl font-semibold">
+              {beneficiaries.length}
+            </small>
           </div>
           <div className="rounded-md px-4 py-2 flex flex-col gap-2 bg-[#D3E4FE]">
             <p className="">اجمال المساعدات الموجوده</p>
-            <small className="text-3xl font-semibold">{aids.reduce((sum, aid) => sum + aid.remaining_quantity , 0)}</small>
+            <small className="text-3xl font-semibold">
+              {aids.reduce((sum, aid) => sum + aid.remaining_quantity, 0)}
+            </small>
           </div>
           <div className="rounded-md px-4 py-2 flex flex-col gap-2 bg-[#D3E4FE]">
             <p className="">في انتظار التحقق</p>
-            <small className="text-3xl font-semibold">{beneficiaries.filter(b => b.status === "pending").length}</small>
+            <small className="text-3xl font-semibold">
+              {beneficiaries.filter((b) => b.status === "pending").length}
+            </small>
           </div>
           <div className="rounded-md px-4 py-2 flex flex-col gap-2 bg-[#6CF8BB]">
             <p className="">أولوية قصوى</p>
-            <small className="text-3xl font-semibold">{beneficiaries.filter(b => b.priority_score > 70).length}</small>
+            <small className="text-3xl font-semibold">
+              {beneficiaries.filter((b) => b.priority_score > 70).length}
+            </small>
           </div>
         </article>
       )}

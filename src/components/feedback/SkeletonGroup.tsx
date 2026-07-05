@@ -5,17 +5,11 @@ interface SkeletonGroupProps {
   className?: string;
 }
 
-const SkeletonGroup = ({
-  count = 5,
-  className,
-}: SkeletonGroupProps) => {
+const SkeletonGroup = ({ count = 5, className }: SkeletonGroupProps) => {
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (
-        <Skeleton
-          key={index}
-          className={className}
-        />
+        <Skeleton key={index} className={className} />
       ))}
     </>
   );

@@ -10,7 +10,7 @@ export function useNetworkStatus() {
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    console.log('network : ', isOnline);
+    console.log("network : ", isOnline);
 
     return () => {
       window.removeEventListener("online", handleOnline);

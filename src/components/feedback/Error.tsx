@@ -9,7 +9,10 @@ const Error = ({ message = "Something went wrong.", onRetry }: ErrorProps) => {
   return (
     <div className="flex min-h-87.5 flex-col items-center justify-center gap-5 rounded-xl border border-red-200 bg-red-50 p-8 text-center">
       <div className="rounded-full bg-red-100 p-4">
-        <AlertTriangle size={45} className="text-red-600 animate-pulse duration-500" />
+        <AlertTriangle
+          size={45}
+          className="text-red-600 animate-pulse duration-500"
+        />
       </div>
 
       <div>

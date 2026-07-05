@@ -24,7 +24,6 @@ const HomePage = () => {
         <Container>
           <StepHome />
         </Container>
-
       </section>
     </>
   );

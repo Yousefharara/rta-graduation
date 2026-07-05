@@ -2,7 +2,7 @@ export interface ICampaign {
   id: number;
   title: string;
   description: string;
-  target_amount: number | null; 
+  target_amount: number | null;
   collected_amount: number;
   start_date?: Date | null;
   end_date?: Date | null;
@@ -17,7 +17,6 @@ export interface ICreateCampaign {
   start_date?: Date | null;
   end_date?: Date | null;
 }
-
 
 export interface IEditCampaign {
   id: number;

@@ -50,7 +50,7 @@
 }
 
 :root {
-  --blue-primary: #004AC6;
+  --blue-primary: #004ac6;
   --dashboard-primary: #002046;
   /* !------------ */
   --radius: 0.625rem;
@@ -60,11 +60,11 @@
   --card-foreground: oklch(0.147 0.004 49.25);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.147 0.004 49.25);
-  --primary: #004AC6;
+  --primary: #004ac6;
   --primary-foreground: #213145;
-  --secondary: #016C49;
+  --secondary: #016c49;
   --secondary-foreground: oklch(0.216 0.006 56.043);
-  --muted: #6CF8BB;
+  --muted: #6cf8bb;
   --muted-foreground: oklch(0.553 0.013 58.071);
   --accent: oklch(0.97 0.001 106.424);
   --accent-foreground: oklch(0.216 0.006 56.043);
@@ -88,14 +88,14 @@
 }
 
 * {
-   font-family: "Tajawal", sans-serif;
+  font-family: "Tajawal", sans-serif;
   box-sizing: border-box;
 }
 
 body {
   font-family: "Poppins";
   overflow-x: hidden;
-  transition: background .4s;
+  transition: background 0.4s;
 }
 
 .span__error {
@@ -109,8 +109,6 @@ body {
   width: 10px;
   height: 10px;
 }
-
-
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--color-primary);

@@ -8,12 +8,15 @@ import {
 } from "lucide-react";
 import map from "@/assets/trackAid/map.png";
 import avatar from "@/assets/trackAid/Driver.png";
-import './description.css'
+import "./description.css";
 
 const TrackAidUserDescription = () => {
   return (
-    <section className="description-grid grid gap-8" >
-      <article className="flex flex-col gap-3 p-8 bg-white border border-zinc-300 rounded-lg" style={{"gridArea": "item1"}}>
+    <section className="description-grid grid gap-8">
+      <article
+        className="flex flex-col gap-3 p-8 bg-white border border-zinc-300 rounded-lg"
+        style={{ gridArea: "item1" }}
+      >
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="flex items-center gap-3">
             <Box className="text-primary" size={18} />
@@ -70,7 +73,10 @@ const TrackAidUserDescription = () => {
         </div> */}
       </article>
 
-      <article className="rounded-lg p-4 bg-red-600/10 h-fit" style={{"gridArea": "item2"}}>
+      <article
+        className="rounded-lg p-4 bg-red-600/10 h-fit"
+        style={{ gridArea: "item2" }}
+      >
         <h3 className="text-red-800 font-semibold text-lg">تنبيه هام</h3>
         <p className="font-medium">
           يرجى التأكد من إحضار الهوية الوطنية الأصلية عند الاستلام. لن يتم تسليم
@@ -78,13 +84,16 @@ const TrackAidUserDescription = () => {
         </p>
       </article>
 
-      <article className="flex flex-col gap-4 w-fit bg-white rounded-lg border border-zinc-300 p-8" style={{"gridArea": "item3"}}>
+      <article
+        className="flex flex-col gap-4 w-fit bg-white rounded-lg border border-zinc-300 p-8"
+        style={{ gridArea: "item3" }}
+      >
         <div className="flex justify-between gap-4">
           <div className="flex items-center gap-3">
-          <MapPin />
-          <p>نقطة التوزيع</p>
-        </div>
-        <p className=" underline text-rose-500 animate-bounce">Coming Soon</p>
+            <MapPin />
+            <p>نقطة التوزيع</p>
+          </div>
+          <p className=" underline text-rose-500 animate-bounce">Coming Soon</p>
         </div>
         <div>
           <p>مركز إغاثة "النور" - حي الرمال</p>

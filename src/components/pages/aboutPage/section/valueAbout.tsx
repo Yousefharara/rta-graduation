@@ -1,4 +1,3 @@
-
 const ValueAbout = () => {
   return (
     <section className="flex flex-col gap-12">
@@ -33,14 +32,13 @@ const ValueAbout = () => {
                 fill="#004AC6"
               />
             </svg>
-
           </div>
-            <h3 className="text-lg font-semibold">الشفافية المطلقة</h3>
+          <h3 className="text-lg font-semibold">الشفافية المطلقة</h3>
 
-            <p>
-              نؤمن بأن الثقة تبدأ بالوضوح. لهذا السبب، نوفر تتبعاً في الوقت
-              الفعلي لكل خطوة في رحلة المساعدات، من المستودع إلى يد المستفيد.
-            </p>
+          <p>
+            نؤمن بأن الثقة تبدأ بالوضوح. لهذا السبب، نوفر تتبعاً في الوقت الفعلي
+            لكل خطوة في رحلة المساعدات، من المستودع إلى يد المستفيد.
+          </p>
         </div>
 
         <div className="bg-white rounded-lg px-4 py-3 flex flex-col gap-2 border border-zinc-300">
@@ -57,14 +55,13 @@ const ValueAbout = () => {
                 fill="#004AC6"
               />
             </svg>
-
           </div>
-            <h3 className="text-lg font-semibold">العدالة في التوزيع</h3>
+          <h3 className="text-lg font-semibold">العدالة في التوزيع</h3>
 
-            <p>
-              نستخدم الخوارزميات الذكية لضمان توزيع المساعدات بناءً على
-              الاحتياجات الفعلية والأولويات الإنسانية، بعيداً عن أي تحيز.
-            </p>
+          <p>
+            نستخدم الخوارزميات الذكية لضمان توزيع المساعدات بناءً على الاحتياجات
+            الفعلية والأولويات الإنسانية، بعيداً عن أي تحيز.
+          </p>
         </div>
 
         <div className="bg-white rounded-lg px-4 py-3 flex flex-col gap-2 border border-zinc-300">
@@ -81,14 +78,13 @@ const ValueAbout = () => {
                 fill="#004AC6"
               />
             </svg>
-
           </div>
-            <h3 className="text-lg font-semibold">الكفاءة التشغيلية</h3>
+          <h3 className="text-lg font-semibold">الكفاءة التشغيلية</h3>
 
-            <p>
-              الوقت حاسم في الكوارث. تم تصميم نظامنا لتقليل البيروقراطية وتسريع
-              تدفق الخدمات اللوجستية لإنقاذ المزيد من الأرواح.
-            </p>
+          <p>
+            الوقت حاسم في الكوارث. تم تصميم نظامنا لتقليل البيروقراطية وتسريع
+            تدفق الخدمات اللوجستية لإنقاذ المزيد من الأرواح.
+          </p>
         </div>
       </article>
     </section>

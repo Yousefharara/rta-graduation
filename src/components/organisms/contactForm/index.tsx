@@ -8,9 +8,13 @@ import type { IContactForm } from "@/@types/forms";
 
 const schemaLoginFrom: Yup.ObjectSchema<IContactForm> = Yup.object({
   email: Yup.string().email().required(),
-  fullName: Yup.string().min(5, "الاسم غير صحيح").required("full name is required !"),
+  fullName: Yup.string()
+    .min(5, "الاسم غير صحيح")
+    .required("full name is required !"),
   title: Yup.string().min(5, "العنوان فصير").required("title is required !"),
-  description: Yup.string().min(5, "الوصف قصير").required("description is required !"),
+  description: Yup.string()
+    .min(5, "الوصف قصير")
+    .required("description is required !"),
 });
 
 const ContactForm = () => {
@@ -69,8 +73,8 @@ const ContactForm = () => {
 
       <Button variant="default">
         <div className="flex items-center gap-3">
-            أرسال الرسالة
-            <Send size={18} />
+          أرسال الرسالة
+          <Send size={18} />
         </div>
       </Button>
     </form>

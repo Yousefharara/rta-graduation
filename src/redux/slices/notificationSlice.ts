@@ -45,7 +45,9 @@ const notificationSlice = createSlice({
       }));
     },
     removeNotification: (state, action: PayloadAction<number>) => {
-      state.notifications = state.notifications.filter((n) => n.id !== action.payload);
+      state.notifications = state.notifications.filter(
+        (n) => n.id !== action.payload,
+      );
     },
   },
 });
@@ -66,12 +68,12 @@ export const getNotificationsAction =
     dispatch(setLoading(true));
     dispatch(setError(null));
     try {
-      const { data } = await axios.get<{data: INotification[]}>(
+      const { data } = await axios.get<{ data: INotification[] }>(
         API_KEY + NOTIFICATION_PATHS.GET_NOTIFICATIONS,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       dispatch(setNotifications(data.data));
-      console.log('notify data , ', data.data);
+      console.log("notify data , ", data.data);
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
     } finally {
@@ -104,7 +106,8 @@ export const markNotificationAsReadAction =
   (id: number, token: string) => async (dispatch: AppDispatch) => {
     try {
       await axios.patch(
-        API_KEY + NOTIFICATION_PATHS.READ_NOTIFICATION.replace(":id", String(id)),
+        API_KEY +
+          NOTIFICATION_PATHS.READ_NOTIFICATION.replace(":id", String(id)),
         {},
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -118,7 +121,8 @@ export const deleteNotificationAction =
   (id: number, token: string) => async (dispatch: AppDispatch) => {
     try {
       await axios.delete(
-        API_KEY + NOTIFICATION_PATHS.DELETE_NOTIFICATION.replace(":id", String(id)),
+        API_KEY +
+          NOTIFICATION_PATHS.DELETE_NOTIFICATION.replace(":id", String(id)),
         { headers: { Authorization: `Bearer ${token}` } },
       );
       dispatch(removeNotification(id));

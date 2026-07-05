@@ -10,7 +10,9 @@ const StepHome = () => {
           alt="stepImg"
         />
         <div className="absolute bg-white rounded-[100px] left-1/2 top-1/2 -translate-1/2 p-2 items-center flex flex-row-reverse gap-2">
-          <p style={{fontSize: "clamp(8px, 3vw, 15px)"}}>جاري تسليم 200 طرد في منطقة الرمال...</p>
+          <p style={{ fontSize: "clamp(8px, 3vw, 15px)" }}>
+            جاري تسليم 200 طرد في منطقة الرمال...
+          </p>
           <svg
             width="16"
             height="20"
@@ -26,7 +28,12 @@ const StepHome = () => {
         </div>
       </article>
       <article className="flex flex-col gap-4">
-        <h3 className="font-semibold" style={{fontSize : 'clamp(22px, 5vw, 28px)'}}>شفافية مطلقة في كل خطوة</h3>
+        <h3
+          className="font-semibold"
+          style={{ fontSize: "clamp(22px, 5vw, 28px)" }}
+        >
+          شفافية مطلقة في كل خطوة
+        </h3>
 
         <p>
           نؤمن أن الثقة هي أساس العمل الإنساني. لهذا نوفر لوحة تحكم عامة تعرض

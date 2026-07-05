@@ -23,7 +23,8 @@ export function setupAxiosInterceptors() {
   axios.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (!error.config || error.config._offlineHandled) return Promise.reject(error);
+      if (!error.config || error.config._offlineHandled)
+        return Promise.reject(error);
 
       const isNetworkError =
         !error.response &&
@@ -46,7 +47,12 @@ export function setupAxiosInterceptors() {
       }
 
       addToQueue({
-        operation_type: methodLower === "post" ? "create" : methodLower === "delete" ? "delete" : "update",
+        operation_type:
+          methodLower === "post"
+            ? "create"
+            : methodLower === "delete"
+              ? "delete"
+              : "update",
         table_name: getTableName(url || ""),
         endpoint: url || "",
         method: methodLower,
@@ -54,7 +60,9 @@ export function setupAxiosInterceptors() {
         record_id: getRecordId(url || "", methodLower),
       });
 
-      toast.warning("تم حفظ العملية محلياً وستتم مزامنتها تلقائياً عند عودة الإنترنت");
+      toast.warning(
+        "تم حفظ العملية محلياً وستتم مزامنتها تلقائياً عند عودة الإنترنت",
+      );
 
       return Promise.reject(error);
     },

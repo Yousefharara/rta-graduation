@@ -37,9 +37,7 @@ const ReactTable = <T,>({
   });
 
   return (
-    <div
-      className="flex flex-col justify-center items-center gap-4"
-    >
+    <div className="flex flex-col justify-center items-center gap-4">
       <table className="rounded-lg self-stretch">
         <thead className="border-b border-b-zinc-300">
           {table.getHeaderGroups().map((hg) => (

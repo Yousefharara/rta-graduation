@@ -14,7 +14,7 @@ export interface ICreateLocalOrg {
   phone: string;
   org_name: string;
   area_id: number;
-  focus_area: string ; 
+  focus_area: string;
   staff_count: number | null;
 }
 

@@ -114,7 +114,7 @@ export const addLocalOrgAction =
   (body: ICreateLocalOrg, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setCreating(true));
     dispatch(setError(null));
-    
+
     try {
       const { data } = await axios.post<ILocalOrg>(
         API_KEY + ORG_PATHS.CREATE_ORG,
@@ -139,7 +139,7 @@ export const getLocalOrg =
   (id: number, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setFetching(true));
     dispatch(setError(null));
-    
+
     try {
       const { data } = await axios.get<ILocalOrg>(
         API_KEY + ORG_PATHS.GET_ORG.replace(":id", String(id)),
@@ -200,14 +200,15 @@ export const deleteLocalOrgAction =
   };
 
 export const verifyLocalOrgAction =
-  (id: number, is_verified: boolean, token: string) => async (dispatch: AppDispatch) => {
+  (id: number, is_verified: boolean, token: string) =>
+  async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
     dispatch(setError(null));
 
     try {
       const { data } = await axios.patch(
         API_KEY + ORG_PATHS.VERFIY_ORG.replace(":id", String(id)),
-        {is_verified},
+        { is_verified },
         { headers: { Authorization: `Bearer ${token}` } },
       );
       dispatch(setLocalOrgs([]));

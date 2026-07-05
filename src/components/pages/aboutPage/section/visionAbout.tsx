@@ -2,7 +2,10 @@ import visionImg from "@/assets/about/visionAbout.png";
 
 const VisionAbout = () => {
   return (
-    <section className="flex flex-col justify-between gap-12 md:flex-row mx-auto" style={{width: "min(1400px, 100%)"}}>
+    <section
+      className="flex flex-col justify-between gap-12 md:flex-row mx-auto"
+      style={{ width: "min(1400px, 100%)" }}
+    >
       <article className="p-6 flex flex-col gap-4 bg-[#EFF4FF] rounded-2xl border-t-4 border-t-primary">
         <svg
           width="25"

@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  BellDot,
-  Trash2,
-  RefreshCw,
-} from "lucide-react";
+import { BellDot, Trash2, RefreshCw } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getNotificationsAction,

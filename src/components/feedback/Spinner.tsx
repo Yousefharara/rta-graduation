@@ -1,6 +1,6 @@
 interface SpinnerProps {
   size?: number;
-  className?: string
+  className?: string;
 }
 
 const Spinner = ({ size = 32, className }: SpinnerProps) => {

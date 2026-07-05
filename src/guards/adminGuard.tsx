@@ -1,21 +1,20 @@
-import { PATHS } from '@/routes/paths';
-import { useAppSelector } from '../redux/store';
-import { Navigate, Outlet } from 'react-router-dom';
-import type { RoleType } from '@/constants/roles';
+import { PATHS } from "@/routes/paths";
+import { useAppSelector } from "../redux/store";
+import { Navigate, Outlet } from "react-router-dom";
+import type { RoleType } from "@/constants/roles";
 
 interface Props {
-    allowedRoles: RoleType[]
+  allowedRoles: RoleType[];
 }
 
 const AdminGuard = ({ allowedRoles }: Props) => {
+  const { role } = useAppSelector((state) => state.auth);
 
-    const { role } = useAppSelector(state => state.auth)
+  if (!role) return;
 
-    if (!role) return;
+  if (allowedRoles.includes(role)) return <Outlet />;
 
-    if (allowedRoles.includes(role)) return <Outlet />;
-
-    return <Navigate to={PATHS.AUTH.LOGIN} replace={true} />
-}
+  return <Navigate to={PATHS.AUTH.LOGIN} replace={true} />;
+};
 
 export default AdminGuard;

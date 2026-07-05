@@ -44,10 +44,7 @@ import { toDateStr } from "@/utils/utils";
 const campaignSchema: yup.ObjectSchema<ICreateCampaign> = yup.object({
   title: yup.string().required("عنوان الحملة مطلوب"),
   description: yup.string().required("الوصف مطلوب"),
-  target_amount: yup
-    .number()
-    .nullable()
-    .min(0, "المبلغ يجب أن يكون 0 أو أكثر"),
+  target_amount: yup.number().nullable().min(0, "المبلغ يجب أن يكون 0 أو أكثر"),
   start_date: yup.string().required("تاريخ البداية مطلوب"),
   end_date: yup
     .string()
@@ -77,8 +74,12 @@ const DashboardCampaignsTable = () => {
   const [search, setSearch] = useState("");
   const [viewModal, setViewModal] = useState<ICampaign | null>(null);
   const [deleteModal, setDeleteModal] = useState<ICampaign | null>(null);
-  const [dialogMode, setDialogMode] = useState<"closed" | "add" | "edit">("closed");
-  const [editingCampaign, setEditingCampaign] = useState<ICampaign | null>(null);
+  const [dialogMode, setDialogMode] = useState<"closed" | "add" | "edit">(
+    "closed",
+  );
+  const [editingCampaign, setEditingCampaign] = useState<ICampaign | null>(
+    null,
+  );
 
   const isEditMode = dialogMode === "edit";
 
@@ -314,7 +315,7 @@ const DashboardCampaignsTable = () => {
         },
       },
     ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formatAmount]);
 
   if (isFetching) {
@@ -377,25 +378,19 @@ const DashboardCampaignsTable = () => {
                 <span className="font-medium text-zinc-500">
                   تاريخ البداية:{" "}
                 </span>
-                <span>
-                  {toDateStr(viewModal.start_date || null)}
-                </span>
+                <span>{toDateStr(viewModal.start_date || null)}</span>
               </div>
               <div>
                 <span className="font-medium text-zinc-500">
                   تاريخ النهاية:{" "}
                 </span>
-                <span>
-                  {toDateStr(viewModal.end_date || null)}
-                </span>
+                <span>{toDateStr(viewModal.end_date || null)}</span>
               </div>
               <div>
                 <span className="font-medium text-zinc-500">
                   تاريخ الإنشاء:{" "}
                 </span>
-                <span>
-                  {toDateStr(viewModal.created_at)}
-                </span>
+                <span>{toDateStr(viewModal.created_at)}</span>
               </div>
               <div>
                 <span className="font-medium text-zinc-500">الحالة: </span>
@@ -539,10 +534,7 @@ const DashboardCampaignsTable = () => {
                     type="checkbox"
                     checked={isUnlimited}
                     onChange={(e) =>
-                      setValue(
-                        "target_amount",
-                        e.target.checked ? null : 0,
-                      )
+                      setValue("target_amount", e.target.checked ? null : 0)
                     }
                     className="w-4 h-4"
                   />

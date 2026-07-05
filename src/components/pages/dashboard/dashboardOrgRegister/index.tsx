@@ -6,7 +6,10 @@ import Spinner from "@/components/feedback/Spinner";
 import RowForm from "@/components/molecules/rowForm";
 import { INPUTS_TYPE_ERROR } from "@/constants/forms";
 import { getAreas } from "@/redux/slices/areaSlice";
-import { addLocalOrgAction, editLocalOrgAction } from "@/redux/slices/localOrgSlice";
+import {
+  addLocalOrgAction,
+  editLocalOrgAction,
+} from "@/redux/slices/localOrgSlice";
 import { editUserAction } from "@/redux/slices/userSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { PATHS } from "@/routes/paths";
@@ -44,9 +47,7 @@ const schemaRegisterLocalOrgFrom: Yup.ObjectSchema<IRegisterLocalOrgForm> =
 const DashboardOrgRegister = () => {
   const { accessToken } = useAppSelector((state) => state.auth);
   const { areas, isFetching, error } = useAppSelector((state) => state.areas);
-  const { isCreating, isUpdating } = useAppSelector(
-    (state) => state.localOrg,
-  );
+  const { isCreating, isUpdating } = useAppSelector((state) => state.localOrg);
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -94,7 +95,11 @@ const DashboardOrgRegister = () => {
       const userResult = await dispatch(
         editUserAction(
           editOrg.user_id,
-          { name: data.name, email: data.email || editOrg.users.email, phone: data.phone },
+          {
+            name: data.name,
+            email: data.email || editOrg.users.email,
+            phone: data.phone,
+          },
           accessToken || "",
         ),
       );
@@ -214,24 +219,33 @@ const DashboardOrgRegister = () => {
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
             <div className="flex flex-col gap-4 my-4 w-full">
-              <label className="text-sm font-semibold">البريد الإلكتروني الرسمي</label>
+              <label className="text-sm font-semibold">
+                البريد الإلكتروني الرسمي
+              </label>
               <div className="flex gap-2 items-center">
                 <input
                   type="email"
+                  autoComplete="email"
                   placeholder="example@gmail.com"
                   className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 ${errors["email"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
                   {...register("email")}
                 />
                 <button
                   type="button"
-                  onClick={() => setValue("email", generateRandomEmail(), { shouldValidate: true })}
+                  onClick={() =>
+                    setValue("email", generateRandomEmail(), {
+                      shouldValidate: true,
+                    })
+                  }
                   className="px-3 py-3 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap"
                 >
                   توليد
                 </button>
               </div>
               {errors["email"]?.message && (
-                <span className="text-sm text-rose-600">{String(errors["email"]?.message)}</span>
+                <span className="text-sm text-rose-600">
+                  {String(errors["email"]?.message)}
+                </span>
               )}
             </div>
 
@@ -242,6 +256,7 @@ const DashboardOrgRegister = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="أدخل كلمة المرور"
+                    autoComplete="current-password"
                     className={`w-full px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 pl-10 ${errors["password"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
                     {...register("password")}
                   />
@@ -255,61 +270,66 @@ const DashboardOrgRegister = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setValue("password", "password123", { shouldValidate: true })}
+                  onClick={() =>
+                    setValue("password", "password123", {
+                      shouldValidate: true,
+                    })
+                  }
                   className="px-3 py-3 text-sm bg-zinc-200 text-zinc-700 rounded-md hover:bg-zinc-300 transition-colors cursor-pointer whitespace-nowrap"
                 >
                   افتراضي
                 </button>
                 <button
                   type="button"
-                  onClick={() => setValue("password", generateRandomPassword(), { shouldValidate: true })}
+                  onClick={() =>
+                    setValue("password", generateRandomPassword(), {
+                      shouldValidate: true,
+                    })
+                  }
                   className="px-3 py-3 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap"
                 >
                   توليد
                 </button>
               </div>
               {errors["password"]?.message && (
-                <span className="text-sm text-rose-600">{String(errors["password"]?.message)}</span>
+                <span className="text-sm text-rose-600">
+                  {String(errors["password"]?.message)}
+                </span>
               )}
             </div>
-
-            
-
-            
           </div>
 
-{isFetching ? (
-              <Spinner />
-            ) : (
-              <div className="flex flex-col gap-4 my-4 w-full">
-                <label className="text-sm font-semibold">
-                  الموقع الجغرافي الرئيسي
-                </label>
+          {isFetching ? (
+            <Spinner />
+          ) : (
+            <div className="flex flex-col gap-4 my-4 w-full">
+              <label className="text-sm font-semibold">
+                الموقع الجغرافي الرئيسي
+              </label>
 
-                <select
-                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                  defaultValue={"select"}
-                  {...register("area_id")}
-                >
-                  <option disabled value="select">
-                    Select
-                  </option>
-                  {areas.map((area) => {
-                    return (
-                      <option key={area.id} value={area.id}>
-                        {area.name}
-                      </option>
-                    );
-                  })}
-                </select>
-                {errors['area_id']?.message && (
-                  <span className="span__error">
-                    {INPUTS_TYPE_ERROR["area_id"]}
-                  </span>
-                )}
-              </div>
-            )}
-
+              <select
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4  border ${errors["area_id"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                defaultValue={"select"}
+                {...register("area_id")}
+              >
+                <option disabled value="select">
+                  Select
+                </option>
+                {areas.map((area) => {
+                  return (
+                    <option key={area.id} value={area.id}>
+                      {area.name}
+                    </option>
+                  );
+                })}
+              </select>
+              {errors["area_id"]?.message && (
+                <span className="span__error">
+                  {INPUTS_TYPE_ERROR["area_id"]}
+                </span>
+              )}
+            </div>
+          )}
         </article>
 
         {isCreating || isUpdating ? (

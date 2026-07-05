@@ -293,6 +293,7 @@ const DashboardBeneficiaryRegister = () => {
               <div className="flex gap-2 items-center">
                 <input
                   type="email"
+                  autoComplete="email"
                   placeholder="example@gmail.com"
                   className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 ${errors["email"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
                   {...register("email")}
@@ -323,6 +324,7 @@ const DashboardBeneficiaryRegister = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="أدخل كلمة المرور"
+                    autoComplete="current-password"
                     className={`w-full px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 pl-10 ${errors["password"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
                     {...register("password")}
                   />

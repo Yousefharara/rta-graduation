@@ -1,5 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
+import {
+  useDispatch,
+  useSelector,
+  type TypedUseSelectorHook,
+} from "react-redux";
 import { RootReducer } from "./rooteReducer";
 import { persistStore } from "redux-persist";
 // import { postsApi } from "./services/postsAPI";
@@ -12,7 +16,7 @@ export const store = configureStore({
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
     }),
-    // .concat(postsApi.middleware)
+  // .concat(postsApi.middleware)
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

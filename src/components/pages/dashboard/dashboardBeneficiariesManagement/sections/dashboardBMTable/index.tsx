@@ -3,7 +3,10 @@ import type { IBeneficiaryVerification } from "@/@types/verfityBeneficiary";
 import Error from "@/components/feedback/Error";
 import Spinner from "@/components/feedback/Spinner";
 import ReactTable from "@/components/organisms/reactTable";
-import { deleteBeneficiaryAction, getBeneficiaries } from "@/redux/slices/beneficiarySlice";
+import {
+  deleteBeneficiaryAction,
+  getBeneficiaries,
+} from "@/redux/slices/beneficiarySlice";
 import { verifyBeneficiaryAction } from "@/redux/slices/verificationSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -86,10 +89,11 @@ const ConfirmModal = ({
           <button
             onClick={() => onConfirm(notes)}
             disabled={isLoading}
-            className={`px-4 py-2 rounded-lg text-sm text-white font-medium transition-colors cursor-pointer ${isApprove
+            className={`px-4 py-2 rounded-lg text-sm text-white font-medium transition-colors cursor-pointer ${
+              isApprove
                 ? "bg-green-600 hover:bg-green-700"
                 : "bg-red-600 hover:bg-red-700"
-              } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+            } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {isLoading ? "جاري التنفيذ..." : isApprove ? "قبول" : "رفض"}
           </button>
@@ -112,15 +116,14 @@ const DashbaordBMTable = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { accessToken, user } = useAppSelector((state) => state.auth);
-  const { beneficiaries, isFetching, isDeleting, error } = useAppSelector((state) => state.beneficiaries);
-  const { isCreating } = useAppSelector(
-    (state) => state.verifications,
+  const { beneficiaries, isFetching, isDeleting, error } = useAppSelector(
+    (state) => state.beneficiaries,
   );
-  
+  const { isCreating } = useAppSelector((state) => state.verifications);
 
   useEffect(() => {
-    if(accessToken) {
-      if(beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
+    if (accessToken) {
+      if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
     }
   }, [dispatch, accessToken, beneficiaries.length]);
 
@@ -161,7 +164,6 @@ const DashbaordBMTable = () => {
       dispatch(getBeneficiaries(accessToken || ""));
       setConfirmModal(null);
     });
-    
   };
 
   const handleEdit = (beneficiary: IBeneficiary) => {
@@ -197,11 +199,11 @@ const DashbaordBMTable = () => {
       {
         header: "الأولويه (الخوارزميه)",
         accessorKey: "priority_score",
-        cell: ({row}) => {
-          let {priority_score} = row.original;
-          priority_score = Math.round(Number(priority_score))
+        cell: ({ row }) => {
+          let { priority_score } = row.original;
+          priority_score = Math.round(Number(priority_score));
           return (
-            <p className="flex items-center gap-2">
+            <article className="flex items-center gap-2">
               <div className="relative h-2 w-15">
                 <div className="absolute inset-0 bg-zinc-200 rounded-md" />
                 <div
@@ -218,7 +220,7 @@ const DashbaordBMTable = () => {
                 />
               </div>
               {priority_score}
-            </p>
+            </article>
           );
         },
       },
@@ -313,7 +315,10 @@ const DashbaordBMTable = () => {
     );
   }
 
-  if(error) return <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))}/>
+  if (error)
+    return (
+      <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))} />
+    );
 
   return (
     <>
@@ -346,7 +351,9 @@ const DashbaordBMTable = () => {
                 <span>{viewModal.users.name}</span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">الرقم التعريفي: </span>
+                <span className="font-medium text-zinc-500">
+                  الرقم التعريفي:{" "}
+                </span>
                 <span>{viewModal.national_id}</span>
               </div>
               <div>
@@ -358,19 +365,35 @@ const DashbaordBMTable = () => {
                 <span>{viewModal.income}</span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">درجة الأولوية: </span>
-                <span className={viewModal.priority_score > 70 ? "text-red-600 font-semibold" : "text-green-600"}>
+                <span className="font-medium text-zinc-500">
+                  درجة الأولوية:{" "}
+                </span>
+                <span
+                  className={
+                    viewModal.priority_score > 70
+                      ? "text-red-600 font-semibold"
+                      : "text-green-600"
+                  }
+                >
                   {Math.round(Number(viewModal.priority_score))}
                 </span>
               </div>
               <div>
                 <span className="font-medium text-zinc-500">حالة التحقق: </span>
-                <span className={
-                  viewModal.status === "eligible" ? "text-green-600" :
-                  viewModal.status === "not_eligible" ? "text-red-600" : "text-amber-600"
-                }>
-                  {viewModal.status === "eligible" ? "مؤهل" :
-                   viewModal.status === "not_eligible" ? "غير مؤهل" : "في الانتظار"}
+                <span
+                  className={
+                    viewModal.status === "eligible"
+                      ? "text-green-600"
+                      : viewModal.status === "not_eligible"
+                        ? "text-red-600"
+                        : "text-amber-600"
+                  }
+                >
+                  {viewModal.status === "eligible"
+                    ? "مؤهل"
+                    : viewModal.status === "not_eligible"
+                      ? "غير مؤهل"
+                      : "في الانتظار"}
                 </span>
               </div>
               <div>
@@ -378,7 +401,9 @@ const DashbaordBMTable = () => {
                 <span>{viewModal.patients_count}</span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">عدد ذوي الإعاقة: </span>
+                <span className="font-medium text-zinc-500">
+                  عدد ذوي الإعاقة:{" "}
+                </span>
                 <span>{viewModal.disabled_count}</span>
               </div>
               <div>
@@ -424,7 +449,8 @@ const DashbaordBMTable = () => {
             </div>
 
             <p className="text-zinc-600 text-sm">
-              هل أنت متأكد من حذف المستفيد <strong>{deleteModal.users.name}</strong>؟
+              هل أنت متأكد من حذف المستفيد{" "}
+              <strong>{deleteModal.users.name}</strong>؟
             </p>
 
             <div className="flex gap-3 justify-end">

@@ -48,7 +48,10 @@ const beneficiaryOrderSlice = createSlice({
     },
     updateOrderStatus(
       state,
-      action: PayloadAction<{ id: number; status: IBeneficiaryOrder["status"] }>,
+      action: PayloadAction<{
+        id: number;
+        status: IBeneficiaryOrder["status"];
+      }>,
     ) {
       state.orders = state.orders.map((order) =>
         order.id === action.payload.id
@@ -96,52 +99,57 @@ export const getBeneficiaryOrders =
 
 export const createBeneficiaryOrderAction =
   (body: ICreateBeneficiaryOrder, token: string) =>
-    async (dispatch: AppDispatch) => {
-      dispatch(setCreating(true));
-      dispatch(setError(null));
+  async (dispatch: AppDispatch) => {
+    dispatch(setCreating(true));
+    dispatch(setError(null));
 
-      try {
-        const { data } = await axios.post<IBeneficiaryOrder>(
-          API_KEY + BENEFICIARY_ORDER_PATHS.CREATE_BENEFICIARY_ORDER,
-          body,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-        dispatch(addOrder(data));
-        return { success: true };
-      } catch (err) {
-        if (err instanceof Error) dispatch(setError(err.message));
-        return { success: false };
-      } finally {
-        dispatch(setCreating(false));
-      }
-    };
+    try {
+      const { data } = await axios.post<IBeneficiaryOrder>(
+        API_KEY + BENEFICIARY_ORDER_PATHS.CREATE_BENEFICIARY_ORDER,
+        body,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      dispatch(addOrder(data));
+      return { success: true };
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false };
+    } finally {
+      dispatch(setCreating(false));
+    }
+  };
 
 export const updateBeneficiaryOrderStatusAction =
-  (id: number, status: IBeneficiaryOrder["status"], token: string, pickupLocationId?: number) =>
-    async (dispatch: AppDispatch) => {
-      dispatch(setUpdating(true));
-      dispatch(setError(null));
+  (
+    id: number,
+    status: IBeneficiaryOrder["status"],
+    token: string,
+    pickupLocationId?: number,
+  ) =>
+  async (dispatch: AppDispatch) => {
+    dispatch(setUpdating(true));
+    dispatch(setError(null));
 
-      console.log('update updateBeneficiaryOrderStatusAction , ', status);
+    console.log("update updateBeneficiaryOrderStatusAction , ", status);
 
-      try {
-        await axios.put(
-          API_KEY +
+    try {
+      await axios.put(
+        API_KEY +
           BENEFICIARY_ORDER_PATHS.EDIT_BENEFICIARY_ORDER.replace(
             ":id",
             String(id),
           ),
-          { status, pickup_location_id: pickupLocationId },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-        dispatch(updateOrderStatus({ id, status }));
-      } catch (err) {
-        if (err instanceof Error) dispatch(setError(err.message));
-      } finally {
-        dispatch(setUpdating(false));
-      }
-    };
+        { status, pickup_location_id: pickupLocationId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      dispatch(updateOrderStatus({ id, status }));
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setUpdating(false));
+    }
+  };

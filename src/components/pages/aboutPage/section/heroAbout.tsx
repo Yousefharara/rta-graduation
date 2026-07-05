@@ -24,7 +24,11 @@ const HeroAbout = () => {
           الإنسانية بكل شفافية.
         </p>
         <div className="flex items-center gap-4">
-          <Button onClick={() => navigate(PATHS.TRACK_AID.ROOT, {replace: true})}>بدء التتبع</Button>
+          <Button
+            onClick={() => navigate(PATHS.TRACK_AID.ROOT, { replace: true })}
+          >
+            بدء التتبع
+          </Button>
           <Button variant="outline">تعرف على أثرنا</Button>
         </div>
       </Container>

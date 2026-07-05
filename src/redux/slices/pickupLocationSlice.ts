@@ -40,17 +40,23 @@ const pickupLocationSlice = createSlice({
     },
     updatePickupLocation: (state, action: PayloadAction<IPickupLocation>) => {
       state.pickupLocations = state.pickupLocations.map((loc) =>
-        loc.id === action.payload.id ? action.payload : loc
+        loc.id === action.payload.id ? action.payload : loc,
       );
-      if (state.currentPickupLocation && state.currentPickupLocation.id === action.payload.id) {
+      if (
+        state.currentPickupLocation &&
+        state.currentPickupLocation.id === action.payload.id
+      ) {
         state.currentPickupLocation = action.payload;
       }
     },
     removePickupLocation: (state, action: PayloadAction<number>) => {
       state.pickupLocations = state.pickupLocations.filter(
-        (loc) => loc.id !== action.payload
+        (loc) => loc.id !== action.payload,
       );
-      if (state.currentPickupLocation && state.currentPickupLocation.id === action.payload) {
+      if (
+        state.currentPickupLocation &&
+        state.currentPickupLocation.id === action.payload
+      ) {
         state.currentPickupLocation = null;
       }
     },
@@ -70,75 +76,82 @@ export const {
 export default pickupLocationSlice.reducer;
 
 // Actions
-export const getPickupLocations = (token: string) => async (dispatch: AppDispatch) => {
-  dispatch(setLoading(true));
-  dispatch(setError(null));
-  try {
-    const { data } = await axios.get<IPickupLocation[]>(
-      API_KEY + PICKUP_LOCATION_PATHS.GET_PICKUP_LOCATIONS,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    dispatch(setPickupLocations(data));
-  } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+export const getPickupLocations =
+  (token: string) => async (dispatch: AppDispatch) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
+    try {
+      const { data } = await axios.get<IPickupLocation[]>(
+        API_KEY + PICKUP_LOCATION_PATHS.GET_PICKUP_LOCATIONS,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(setPickupLocations(data));
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
-export const getPickupLocation = (id: number, token: string) => async (dispatch: AppDispatch) => {
-  dispatch(setLoading(true));
-  dispatch(setError(null));
-  try {
-    const { data } = await axios.get<IPickupLocation>(
-      API_KEY + PICKUP_LOCATION_PATHS.GET_PICKUP_LOCATION.replace(":id", String(id)),
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    dispatch(setPickupLocation(data));
-  } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+export const getPickupLocation =
+  (id: number, token: string) => async (dispatch: AppDispatch) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
+    try {
+      const { data } = await axios.get<IPickupLocation>(
+        API_KEY +
+          PICKUP_LOCATION_PATHS.GET_PICKUP_LOCATION.replace(":id", String(id)),
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(setPickupLocation(data));
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
-export const editPickupLocationAction = (
-  id: number,
-  body: Partial<IPickupLocation>,
-  token: string
-) => async (dispatch: AppDispatch) => {
-  dispatch(setLoading(true));
-  dispatch(setError(null));
-  try {
-    const { data } = await axios.put<IPickupLocation>(
-      API_KEY + PICKUP_LOCATION_PATHS.EDIT_PICKUP_LOCATION.replace(":id", String(id)),
-      body,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    dispatch(updatePickupLocation(data));
-    return { success: true, data };
-  } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
-    return { success: false, error: err };
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+export const editPickupLocationAction =
+  (id: number, body: Partial<IPickupLocation>, token: string) =>
+  async (dispatch: AppDispatch) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
+    try {
+      const { data } = await axios.put<IPickupLocation>(
+        API_KEY +
+          PICKUP_LOCATION_PATHS.EDIT_PICKUP_LOCATION.replace(":id", String(id)),
+        body,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(updatePickupLocation(data));
+      return { success: true, data };
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
-export const deletePickupLocationAction = (id: number, token: string) => async (dispatch: AppDispatch) => {
-  dispatch(setLoading(true));
-  dispatch(setError(null));
-  try {
-    await axios.delete(
-      API_KEY + PICKUP_LOCATION_PATHS.DELETE_PICKUP_LOCATION.replace(":id", String(id)),
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    dispatch(removePickupLocation(id));
-    return { success: true };
-  } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
-    return { success: false, error: err };
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
+export const deletePickupLocationAction =
+  (id: number, token: string) => async (dispatch: AppDispatch) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
+    try {
+      await axios.delete(
+        API_KEY +
+          PICKUP_LOCATION_PATHS.DELETE_PICKUP_LOCATION.replace(
+            ":id",
+            String(id),
+          ),
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(removePickupLocation(id));
+      return { success: true };
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };

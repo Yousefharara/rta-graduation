@@ -1,10 +1,14 @@
-
 const BenefitsHome = () => {
   return (
     <section className="flex flex-col gap-12 ">
       <div className="relative w-fit py-4 mx-auto">
-        <h2 className="text-center font-semibold" style={{fontSize: "clamp(18px, 5vw, 38px)"}}>مميزات منصة RTA</h2>
-        <span className="bg-emerald-600 rounded-md w-44 h-1 block absolute  left-1/2 -translate-x-1/2 bottom-0"/>
+        <h2
+          className="text-center font-semibold"
+          style={{ fontSize: "clamp(18px, 5vw, 38px)" }}
+        >
+          مميزات منصة RTA
+        </h2>
+        <span className="bg-emerald-600 rounded-md w-44 h-1 block absolute  left-1/2 -translate-x-1/2 bottom-0" />
       </div>
 
       <article

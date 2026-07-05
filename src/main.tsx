@@ -11,8 +11,8 @@ setupAutoSync(() => store.getState()?.auth?.accessToken || null);
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <App />
+  </BrowserRouter>,
   // <StrictMode>
   // </StrictMode>,
 );

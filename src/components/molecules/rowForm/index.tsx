@@ -14,8 +14,7 @@ interface IRowLoginProps<
   label: Path<TFromValues>;
   register: UseFormRegister<TFromValues>;
   errors: FieldErrors<TFromValues>;
-    onlyPositiveNumbers?: boolean;
-
+  onlyPositiveNumbers?: boolean;
 }
 
 const RowForm = <TFromValues extends FieldValues>({

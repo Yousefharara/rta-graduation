@@ -6,18 +6,15 @@ export const BeneficiaryAidStatus = {
   delivered: "delivered",
 } as const;
 
-
 export type BeneficiaryAidStatus =
   (typeof BeneficiaryAidStatus)[keyof typeof BeneficiaryAidStatus];
-
 
 export interface IBeneficiaryAid {
   id: number;
   beneficiary_id: number;
   aid_type_id: number;
   pickup_location_id: number | null;
-  verify_by_user_id	: number;
+  verify_by_user_id: number;
   order_id: number | null;
   status: BeneficiaryAidStatus;
 }
-

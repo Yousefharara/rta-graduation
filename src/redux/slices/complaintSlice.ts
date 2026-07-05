@@ -93,26 +93,27 @@ export default complaintSlice.reducer;
 // ! ///////////////// Action ////////////////////////
 // ? /////////////////////////////////////////////////
 
-export const getComplaints = (token: string) => async (dispatch: AppDispatch) => {
-  dispatch(setFetching(true));
-  dispatch(setError(null));
-  try {
-    const { data } = await axios.get<IComplaint[]>(
-      API_KEY + COMPLAINT_PATHS.GET_COMPLAINTS,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+export const getComplaints =
+  (token: string) => async (dispatch: AppDispatch) => {
+    dispatch(setFetching(true));
+    dispatch(setError(null));
+    try {
+      const { data } = await axios.get<IComplaint[]>(
+        API_KEY + COMPLAINT_PATHS.GET_COMPLAINTS,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-    dispatch(setComplaints(data));
-  } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
-  } finally {
-    dispatch(setFetching(false));
-  }
-};
+      dispatch(setComplaints(data));
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
 
 export const addComplaintAction =
   (body: ICreateComplaint, token: string) => async (dispatch: AppDispatch) => {
@@ -129,17 +130,22 @@ export const addComplaintAction =
         },
       );
       dispatch(addComplaint(data));
-      return {success: true};
+      return { success: true };
     } catch (err) {
-        if (err instanceof Error) dispatch(setError(err.message));
-        return {success: false};
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false };
     } finally {
       dispatch(setCreating(false));
     }
   };
 
 export const resolveCampaignAction =
-  (id: number, status: IComplaint["status"], admin_response: string, token: string) =>
+  (
+    id: number,
+    status: IComplaint["status"],
+    admin_response: string,
+    token: string,
+  ) =>
   async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
     dispatch(setError(null));
@@ -149,10 +155,10 @@ export const resolveCampaignAction =
         API_KEY + COMPLAINT_PATHS.RESOLVE_COMPLAINT.replace(":id", String(id)),
         { status, admin_response },
         {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       console.log("Updating data : ", data);
       dispatch(resolveComplaint({ id, admin_response, status }));

@@ -29,12 +29,12 @@ const HeroDashboardHome = () => {
   } = useAppSelector((state) => state.localOrg);
 
   useEffect(() => {
-    if (accessToken && role === 'admin') {
+    if (accessToken && role === "admin") {
       if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
       if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
       if (localOrgs.length === 0) dispatch(getLocalOrgs(accessToken));
     }
-    if (accessToken && role === 'local_org') {
+    if (accessToken && role === "local_org") {
       if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
       if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
     }
@@ -55,18 +55,18 @@ const HeroDashboardHome = () => {
     );
   }
 
-  if(role === 'admin') {
+  if (role === "admin") {
     if (error || beneficiaryError || orderError || orgError) {
-    return (
-      <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))} />
-    );
-  }
-  }else {
+      return (
+        <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))} />
+      );
+    }
+  } else {
     if (error || beneficiaryError || orderError) {
-    return (
-      <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))} />
-    );
-  }
+      return (
+        <Error onRetry={() => dispatch(getBeneficiaries(accessToken || ""))} />
+      );
+    }
   }
 
   return (
@@ -91,7 +91,7 @@ const HeroDashboardHome = () => {
           <div>
             <small className="font-medium">إجمالي المستفيدين</small>
             <p className="text-3xl font-semibold text-primary-foreground">
-              {beneficiaries.filter(b => b.status === 'eligible').length}
+              {beneficiaries.filter((b) => b.status === "eligible").length}
             </p>
           </div>
         </section>
@@ -103,22 +103,24 @@ const HeroDashboardHome = () => {
           <div>
             <small className="font-medium">إجمالي المساعدات الموزعة</small>
             <p className="text-3xl font-semibold text-primary-foreground">
-              {orders.filter(o => o.status === "approved").length}
+              {orders.filter((o) => o.status === "approved").length}
             </p>
           </div>
         </section>
 
-        {role === 'admin' && <section className="rounded-lg px-6 py-4 border border-zinc-300 bg-white flex items-center gap-3">
-          <div className="px-4 py-3 rounded-lg bg-primary/20">
-            <LayoutPanelTop />
-          </div>
-          <div>
-            <small className="font-medium">المنظمات المصغرة</small>
-            <p className="text-3xl font-semibold text-primary-foreground">
-              {localOrgs.length}
-            </p>
-          </div>
-        </section>}
+        {role === "admin" && (
+          <section className="rounded-lg px-6 py-4 border border-zinc-300 bg-white flex items-center gap-3">
+            <div className="px-4 py-3 rounded-lg bg-primary/20">
+              <LayoutPanelTop />
+            </div>
+            <div>
+              <small className="font-medium">المنظمات المصغرة</small>
+              <p className="text-3xl font-semibold text-primary-foreground">
+                {localOrgs.length}
+              </p>
+            </div>
+          </section>
+        )}
       </article>
     </section>
   );

@@ -49,7 +49,9 @@ const DashboardAidOrdersTable = ({
   const [viewModal, setViewModal] = useState<IBeneficiaryOrder | null>(null);
 
   const dispatch = useAppDispatch();
-  const { accessToken, organization, role } = useAppSelector((state) => state.auth);
+  const { accessToken, organization, role } = useAppSelector(
+    (state) => state.auth,
+  );
   const { orders, isFetching, isUpdating, error } = useAppSelector(
     (state) => state.beneficiaryOrders,
   );
@@ -62,18 +64,18 @@ const DashboardAidOrdersTable = ({
 
   useEffect(() => {
     if (accessToken) {
-      // if (orders.length === 0) 
+      // if (orders.length === 0)
       //   if (beneficiaryAids.length === 0)
-      //     if (beneficiaries.length === 0) 
+      //     if (beneficiaries.length === 0)
       //       if (pickupLocations.length === 0)
-      //       if (aidTypes.length === 0) 
-      //       if (aids.length === 0) 
-        dispatch(getBeneficiaryOrders(accessToken));
-        dispatch(getBeneficiaries(accessToken));
-        dispatch(getBeneficiaryAids(accessToken));
-        dispatch(getPickupLocations(accessToken));
-        dispatch(getAidTypes(accessToken));
-        dispatch(getAids(accessToken));
+      //       if (aidTypes.length === 0)
+      //       if (aids.length === 0)
+      dispatch(getBeneficiaryOrders(accessToken));
+      dispatch(getBeneficiaries(accessToken));
+      dispatch(getBeneficiaryAids(accessToken));
+      dispatch(getPickupLocations(accessToken));
+      dispatch(getAidTypes(accessToken));
+      dispatch(getAids(accessToken));
     }
   }, [
     dispatch,
@@ -150,18 +152,18 @@ const DashboardAidOrdersTable = ({
         return;
       }
 
-      if(role === 'admin') {
-        editAid = aids.find(
-        (a) => a.aid_type_id === aid_type_id
-      );
-      console.log('heloo admin ', editAid);
+      if (role === "admin") {
+        editAid = aids.find((a) => a.aid_type_id === aid_type_id);
+        console.log("heloo admin ", editAid);
       }
 
       if (editAid) {
         if (editAid.remaining_quantity > 0) {
           if (status === "approved" && beneficiaryId) {
             pickupLocationId = resolvePickupLocationId(beneficiaryId);
-            await dispatch(editAidDeductAction(editAid.id, 1, accessToken || ""));
+            await dispatch(
+              editAidDeductAction(editAid.id, 1, accessToken || ""),
+            );
             await dispatch(
               updateBeneficiaryOrderStatusAction(
                 id,
@@ -184,7 +186,7 @@ const DashboardAidOrdersTable = ({
             );
             await dispatch(getBeneficiaryAids(accessToken || ""));
           }
-          toast.success("تم قبول الطلب بنجاح")
+          toast.success("تم قبول الطلب بنجاح");
         } else {
           toast.error("لا يوجد ما يكفى من المساعدات لقبول هذا الطلب");
           return;
@@ -397,7 +399,14 @@ const DashboardAidOrdersTable = ({
         },
       },
     ];
-  }, [aidTypes, beneficiaryAids, isUpdating, handleStatusClick, handleUpdateStatus, setViewModal]);
+  }, [
+    aidTypes,
+    beneficiaryAids,
+    isUpdating,
+    handleStatusClick,
+    handleUpdateStatus,
+    setViewModal,
+  ]);
   // }, [
   //   aidTypes,
   //   beneficiaryAids,
@@ -443,34 +452,52 @@ const DashboardAidOrdersTable = ({
             <div className="flex flex-col gap-3 text-sm">
               <div>
                 <span className="font-medium text-zinc-500">رقم الطلب: </span>
-                <span className="text-primary font-medium">#{viewModal.id}</span>
+                <span className="text-primary font-medium">
+                  #{viewModal.id}
+                </span>
               </div>
               <div>
                 <span className="font-medium text-zinc-500">المستفيد: </span>
                 <span>{getBeneficiaryName(viewModal.beneficiary_id)}</span>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">نوع المساعدة: </span>
+                <span className="font-medium text-zinc-500">
+                  نوع المساعدة:{" "}
+                </span>
                 <span className="px-3 text-sm font-semibold border border-zinc-400 py-1 rounded-md">
                   {getAidTypeName(viewModal.aid_type_id)}
                 </span>
               </div>
               <div>
                 <span className="font-medium text-zinc-500">الوصف: </span>
-                <p className="mt-1 p-3 bg-zinc-50 rounded-md">{viewModal.description}</p>
+                <p className="mt-1 p-3 bg-zinc-50 rounded-md">
+                  {viewModal.description}
+                </p>
               </div>
               <div>
-                <span className="font-medium text-zinc-500">تاريخ الإنشاء: </span>
-                <span>{new Date(viewModal.created_at).toLocaleDateString("ar-SA")}</span>
+                <span className="font-medium text-zinc-500">
+                  تاريخ الإنشاء:{" "}
+                </span>
+                <span>
+                  {new Date(viewModal.created_at).toLocaleDateString("ar-SA")}
+                </span>
               </div>
               <div>
                 <span className="font-medium text-zinc-500">الحالة: </span>
-                <span className={
-                  viewModal.status === "approved" ? "text-green-600" :
-                  viewModal.status === "rejected" ? "text-red-600" : "text-amber-600"
-                }>
-                  {viewModal.status === "approved" ? "موافق عليه" :
-                   viewModal.status === "rejected" ? "مرفوض" : "قيد الانتظار"}
+                <span
+                  className={
+                    viewModal.status === "approved"
+                      ? "text-green-600"
+                      : viewModal.status === "rejected"
+                        ? "text-red-600"
+                        : "text-amber-600"
+                  }
+                >
+                  {viewModal.status === "approved"
+                    ? "موافق عليه"
+                    : viewModal.status === "rejected"
+                      ? "مرفوض"
+                      : "قيد الانتظار"}
                 </span>
               </div>
             </div>
@@ -478,68 +505,74 @@ const DashboardAidOrdersTable = ({
         </div>
       )}
 
-    <section className="flex flex-col gap-4 p-3 border border-zinc-400 bg-white rounded-md">
-      <article className="flex items-center gap-4 flex-wrap">
-        <div className="search-filter bg-[#EFF4FF] rounded-md px-4 py-2 flex flex-wrap items-center gap-2">
-          <p
-            onClick={() => setStatusFilter("all")}
-            className={`px-3 py-2 rounded-md cursor-pointer ${
-              statusFilter === "all" ? "bg-primary text-white" : "bg-white"
-            }`}
-          >
-            الكل
-          </p>
+      <section className="flex flex-col gap-4 p-3 border border-zinc-400 bg-white rounded-md">
+        <article className="flex items-center gap-4 flex-wrap">
+          <div className="search-filter bg-[#EFF4FF] rounded-md px-4 py-2 flex flex-wrap items-center gap-2">
+            <p
+              onClick={() => setStatusFilter("all")}
+              className={`px-3 py-2 rounded-md cursor-pointer ${
+                statusFilter === "all" ? "bg-primary text-white" : "bg-white"
+              }`}
+            >
+              الكل
+            </p>
 
-          <p
-            onClick={() => setStatusFilter("pending")}
-            className={`px-3 py-2 rounded-md cursor-pointer ${
-              statusFilter === "pending" ? "bg-primary text-white" : "bg-white"
-            }`}
-          >
-            قيد الانتظار
-          </p>
+            <p
+              onClick={() => setStatusFilter("pending")}
+              className={`px-3 py-2 rounded-md cursor-pointer ${
+                statusFilter === "pending"
+                  ? "bg-primary text-white"
+                  : "bg-white"
+              }`}
+            >
+              قيد الانتظار
+            </p>
 
-          <p
-            onClick={() => setStatusFilter("approved")}
-            className={`px-3 py-2 rounded-md cursor-pointer ${
-              statusFilter === "approved" ? "bg-primary text-white" : "bg-white"
-            }`}
-          >
-            تمت الموافقة
-          </p>
+            <p
+              onClick={() => setStatusFilter("approved")}
+              className={`px-3 py-2 rounded-md cursor-pointer ${
+                statusFilter === "approved"
+                  ? "bg-primary text-white"
+                  : "bg-white"
+              }`}
+            >
+              تمت الموافقة
+            </p>
 
-          <p
-            onClick={() => setStatusFilter("rejected")}
-            className={`px-3 py-2 rounded-md cursor-pointer ${
-              statusFilter === "rejected" ? "bg-primary text-white" : "bg-white"
-            }`}
-          >
-            مرفوض
-          </p>
-        </div>
+            <p
+              onClick={() => setStatusFilter("rejected")}
+              className={`px-3 py-2 rounded-md cursor-pointer ${
+                statusFilter === "rejected"
+                  ? "bg-primary text-white"
+                  : "bg-white"
+              }`}
+            >
+              مرفوض
+            </p>
+          </div>
 
-        <div className="flex gap-2 basis-[48%] items-center border border-zinc-400 rounded-md px-3 py-2">
-          <Search size={18} />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full outline-0"
-            placeholder="بحث عن رقم الطلب أو رقم المستفيد..."
+          <div className="flex gap-2 basis-[48%] items-center border border-zinc-400 rounded-md px-3 py-2">
+            <Search size={18} />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full outline-0"
+              placeholder="بحث عن رقم الطلب أو رقم المستفيد..."
+            />
+          </div>
+        </article>
+
+        <article className="w-full overflow-x-auto">
+          <ReactTable
+            columns={columns}
+            data={paginationData}
+            onPaginationChange={setPagination}
+            pagination={pagination}
+            pageCount={pageCount}
           />
-        </div>
-      </article>
-
-      <article className="w-full overflow-x-auto">
-        <ReactTable
-          columns={columns}
-          data={paginationData}
-          onPaginationChange={setPagination}
-          pagination={pagination}
-          pageCount={pageCount}
-        />
-      </article>
-    </section>
+        </article>
+      </section>
     </>
   );
 };

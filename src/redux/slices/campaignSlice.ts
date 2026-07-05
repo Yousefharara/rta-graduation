@@ -30,19 +30,19 @@ const campaignSlice = createSlice({
   initialState,
   reducers: {
     setFetching(state, action: PayloadAction<boolean>) {
-        state.isFetching = action.payload;
+      state.isFetching = action.payload;
     },
 
     setCreating(state, action: PayloadAction<boolean>) {
-        state.isCreating = action.payload;
+      state.isCreating = action.payload;
     },
 
     setUpdating(state, action: PayloadAction<boolean>) {
-        state.isUpdating = action.payload;
+      state.isUpdating = action.payload;
     },
 
     setDeleting(state, action: PayloadAction<boolean>) {
-        state.isDeleting = action.payload;
+      state.isDeleting = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
@@ -93,7 +93,7 @@ export const getCampaigns = () => async (dispatch: AppDispatch) => {
   dispatch(setError(null));
   try {
     const { data } = await axios.get<ICampaign[]>(
-      API_KEY + CAMPAIGN_PATHS.GET_CAMPAIGNS
+      API_KEY + CAMPAIGN_PATHS.GET_CAMPAIGNS,
     );
 
     dispatch(setCampaigns(data));
@@ -105,8 +105,7 @@ export const getCampaigns = () => async (dispatch: AppDispatch) => {
 };
 
 export const addCampaignAction =
-  (body: ICreateCampaign, token: string) =>
-  async (dispatch: AppDispatch) => {
+  (body: ICreateCampaign, token: string) => async (dispatch: AppDispatch) => {
     dispatch(setCreating(true));
     dispatch(setError(null));
     try {
@@ -129,25 +128,27 @@ export const addCampaignAction =
     }
   };
 
-export const getCampaign = (id: number, token: string) => async (dispatch: AppDispatch) => {
-  dispatch(setFetching(true));
-  dispatch(setError(null));
-  try {
-    const { data } = await axios.get<ICampaign>(
-      API_KEY + CAMPAIGN_PATHS.GET_CAMPAIGN.replace(":id", String(id)), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-    );
+export const getCampaign =
+  (id: number, token: string) => async (dispatch: AppDispatch) => {
+    dispatch(setFetching(true));
+    dispatch(setError(null));
+    try {
+      const { data } = await axios.get<ICampaign>(
+        API_KEY + CAMPAIGN_PATHS.GET_CAMPAIGN.replace(":id", String(id)),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-    dispatch(setCampaign(data));
-  } catch (err) {
-    if (err instanceof Error) dispatch(setError(err.message));
-  } finally {
-    dispatch(setFetching(false));
-  }
-};
+      dispatch(setCampaign(data));
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
 
 export const editCampaignAction =
   (body: Partial<ICampaign> & { id: number }, token?: string) =>
@@ -158,10 +159,9 @@ export const editCampaignAction =
       const headers = token
         ? { headers: { Authorization: `Bearer ${token}` } }
         : undefined;
-        console.log('editCampaignAction : ', body);
+      console.log("editCampaignAction : ", body);
       const { data } = await axios.put<ICampaign>(
-        API_KEY +
-          CAMPAIGN_PATHS.EDIT_CAMPAIGN.replace(":id", String(body.id)),
+        API_KEY + CAMPAIGN_PATHS.EDIT_CAMPAIGN.replace(":id", String(body.id)),
         body,
         headers,
       );
@@ -181,13 +181,12 @@ export const deleteCampaignAction =
     dispatch(setError(null));
     try {
       await axios.delete(
-        API_KEY +
-          CAMPAIGN_PATHS.DELETE_CAMPAIGN.replace(":id", id.toString()),
+        API_KEY + CAMPAIGN_PATHS.DELETE_CAMPAIGN.replace(":id", id.toString()),
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       dispatch(deleteCampaign(id));
     } catch (err) {

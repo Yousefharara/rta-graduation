@@ -112,31 +112,31 @@ export const getBeneficiaries =
 
 export const addBeneficiaryAction =
   (body: ICreateBeneficiary, token: string) =>
-    async (dispatch: AppDispatch) => {
-      dispatch(setCreating(true));
-      dispatch(setError(null));
+  async (dispatch: AppDispatch) => {
+    dispatch(setCreating(true));
+    dispatch(setError(null));
 
-      console.log("body is < ", body)
-      try {
-        const { data } = await axios.post<IBeneficiary>(
-          API_KEY + BENEFICIARY_PATHS.CREATE_BENEFICIARY,
-          body,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+    console.log("body is < ", body);
+    try {
+      const { data } = await axios.post<IBeneficiary>(
+        API_KEY + BENEFICIARY_PATHS.CREATE_BENEFICIARY,
+        body,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
-        console.log("data is < ", data)
-        dispatch(addBeneficiary(data));
-        return { success: true, data };
-      } catch (err) {
-        if (err instanceof Error) dispatch(setError(err.message));
-        return { success: false, error: err };
-      } finally {
-        dispatch(setCreating(false));
-      }
-    };
+        },
+      );
+      console.log("data is < ", data);
+      dispatch(addBeneficiary(data));
+      return { success: true, data };
+    } catch (err) {
+      if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
+    } finally {
+      dispatch(setCreating(false));
+    }
+  };
 
 export const getBeneficiary =
   (id: number, token: string) => async (dispatch: AppDispatch) => {
@@ -170,13 +170,13 @@ export const editBeneficiaryAction =
       console.log("Inside editing >>>>>>");
       const { data } = await axios.put<IBeneficiary>(
         API_KEY +
-        BENEFICIARY_PATHS.EDIT_BENEFICIARY.replace(":id", String(body.id)),
+          BENEFICIARY_PATHS.EDIT_BENEFICIARY.replace(":id", String(body.id)),
         body,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       console.log("Updating data : ", data);
       dispatch(editBeneficiary(data));
@@ -197,12 +197,12 @@ export const deleteBeneficiaryAction =
     try {
       await axios.delete(
         API_KEY +
-        BENEFICIARY_PATHS.DELETE_BENEFICIARY.replace(":id", id.toString()),
+          BENEFICIARY_PATHS.DELETE_BENEFICIARY.replace(":id", id.toString()),
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       dispatch(deleteBeneficiary(id));
     } catch (err) {

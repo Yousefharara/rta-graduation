@@ -13,7 +13,9 @@ import { useEffect } from "react";
 import Spinner from "@/components/feedback/Spinner";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
-  IDNumber: Yup.string().length(9, "رقم الهوية غير صحيح").required("رقم الهوية مطلوب !"),
+  IDNumber: Yup.string()
+    .length(9, "رقم الهوية غير صحيح")
+    .required("رقم الهوية مطلوب !"),
   versionNumber: Yup.date().required("رقم الإصدار مطلوب !"),
 });
 

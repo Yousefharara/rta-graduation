@@ -1,4 +1,4 @@
 export interface IGovernorate {
-    id: number,
-    name: string
+  id: number;
+  name: string;
 }

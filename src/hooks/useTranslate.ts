@@ -8,7 +8,7 @@ const aidCategory: Record<string, string> = {
 };
 
 const dictionary: Record<string, string> = {
-  ...aidCategory
+  ...aidCategory,
 };
 
 export const useTranslate = () => {

@@ -58,14 +58,6 @@ const LoginForm = () => {
     );
   };
 
-  // useEffect(() => {
-  //   // Clear auth error on component unmount to prevent stale errors on other pages
-  //   return () => {
-  //     dispatch(setError(null));
-  //   };
-  // }, [dispatch]);
-
-
   return (
     <form onSubmit={handleSubmit(handleOnSubmit)}>
       <RowForm<ILoginForm>
@@ -74,6 +66,7 @@ const LoginForm = () => {
         label="email"
         register={register}
         type="email"
+        autoComplete="email"
         placeholder="example@rta.org"
       />
       <div className="flex flex-col gap-4 my-4 w-full">
@@ -82,6 +75,7 @@ const LoginForm = () => {
           <input
             type={showPassword ? "text" : "password"}
             placeholder="*********"
+            autoComplete="current-password"
             className={`w-full px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 pl-10 ${errors["password"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
             {...register("password")}
           />
@@ -94,7 +88,9 @@ const LoginForm = () => {
           </button>
         </div>
         {errors["password"]?.message && (
-          <span className="text-sm text-rose-600">{String(errors["password"]?.message)}</span>
+          <span className="text-sm text-rose-600">
+            {String(errors["password"]?.message)}
+          </span>
         )}
       </div>
       <article
@@ -176,20 +172,26 @@ const LoginForm = () => {
           {errors["remeberMe"]?.message}
         </span>
       )}
-      
-        <Button
-          variant="default"
-          disabled={isLoading}
-          type="submit"
-          className="
+
+      <Button
+        variant="default"
+        disabled={isLoading}
+        type="submit"
+        className="
           w-full
           mt-4
           disabled:bg-primary/50 disabled:cursor-not-allowed
         "
-        >
-          {isLoading ? <p className="flex items-center gap-4 justify-center">جاري تسجيل الدخول <Spinner /></p> : "تسجيل الدخول"}
-        </Button>
-      
+      >
+        {isLoading ? (
+          <div className="flex items-center gap-4 justify-center">
+            جاري تسجيل الدخول <Spinner />
+          </div>
+        ) : (
+          "تسجيل الدخول"
+        )}
+      </Button>
+
       {error && (
         <p
           className="

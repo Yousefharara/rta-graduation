@@ -8,9 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  addComplaintAction,
-} from "@/redux/slices/complaintSlice";
+import { addComplaintAction } from "@/redux/slices/complaintSlice";
 import { createNotificationAction } from "@/redux/slices/notificationSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -34,13 +32,15 @@ const schemaSendComplaintForm: Yup.ObjectSchema<ISendComplaintForm> =
     message: Yup.string().min(5).required("الرسالة مطلوبة"),
   });
 
-  interface IPorps {
-    open: boolean;
-    setOpen: (open : boolean) => void;
-  }
+interface IPorps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
 
-const ComplaintDialog = ({open = false, setOpen} : IPorps) => {
-  const { beneficiary, accessToken, user } = useAppSelector((state) => state.auth);
+const ComplaintDialog = ({ open = false, setOpen }: IPorps) => {
+  const { beneficiary, accessToken, user } = useAppSelector(
+    (state) => state.auth,
+  );
   const { isCreating } = useAppSelector((state) => state.complaints);
 
   const dispatch = useAppDispatch();
@@ -121,13 +121,11 @@ const ComplaintDialog = ({open = false, setOpen} : IPorps) => {
           className="bg-white p-6 flex flex-col gap-2 rounded-b-md"
           onSubmit={handleSubmit(handleOnSubmit)}
         >
-          
-
           <RowForm<ISendComplaintForm>
-          errors={errors}
-          label="subject"
-          register={register}
-          title="الموضوع"
+            errors={errors}
+            label="subject"
+            register={register}
+            title="الموضوع"
           />
 
           <div className="flex flex-col gap-4 my-4">

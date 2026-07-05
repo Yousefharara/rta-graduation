@@ -12,4 +12,3 @@ export interface ICreateNotification {
   title: string;
   message: string;
 }
-

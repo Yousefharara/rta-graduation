@@ -36,9 +36,7 @@ const DashbaordTemplate = ({
         <NavbarDashboard handleOpenAside={handleOpenAside} />
         <article className="w-full rounded-lg my-10 min-h-screen p-4">
           {/* main content */}
-          <div className="w-full ">
-            {children}
-          </div>
+          <div className="w-full ">{children}</div>
         </article>
       </main>
     </article>

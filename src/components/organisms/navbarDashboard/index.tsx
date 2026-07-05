@@ -1,7 +1,7 @@
 import { PATHS } from "../../../routes/paths";
 import { Link } from "react-router-dom";
 import { AppWindowMac, Bell, BellDot } from "lucide-react";
-import logo from "@/assets/images/logo.png"
+import logo from "@/assets/images/logo.png";
 import { useState, useMemo } from "react";
 import { useAppSelector } from "@/redux/store";
 import NotificationSlider from "./NotificationSlider";
@@ -13,12 +13,14 @@ interface INavbarDashboard {
 const NavbarDashboard = ({ handleOpenAside }: INavbarDashboard) => {
   const [openNotifications, setOpenNotifications] = useState(false);
   const notificationState = useAppSelector((state) => state.notifications);
-  const notifications = Array.isArray(notificationState?.notifications) ? notificationState.notifications : [];
 
-  const unreadCount = useMemo(
-    () => notifications.filter((n) => !n.is_read).length,
-    [notifications],
-  );
+  const unreadCount = useMemo(() => {
+    const notifications = Array.isArray(notificationState?.notifications)
+      ? notificationState.notifications
+      : [];
+
+    return notifications.filter((n) => !n.is_read).length;
+  }, [notificationState.notifications]);
 
   return (
     <>
@@ -59,13 +61,20 @@ const NavbarDashboard = ({ handleOpenAside }: INavbarDashboard) => {
           </div>
           <div>
             <div className="w-28 h-full overflow-hidden">
-              <img className="w-full h-full object-cover scale-125" src={logo} alt="" />
+              <img
+                className="w-full h-full object-cover scale-125"
+                src={logo}
+                alt=""
+              />
             </div>
           </div>
         </ul>
       </nav>
 
-      <NotificationSlider open={openNotifications} setOpen={setOpenNotifications} />
+      <NotificationSlider
+        open={openNotifications}
+        setOpen={setOpenNotifications}
+      />
     </>
   );
 };

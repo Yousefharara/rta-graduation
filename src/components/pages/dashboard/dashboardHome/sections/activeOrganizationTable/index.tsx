@@ -161,7 +161,7 @@ const ActiveOrganization = () => {
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ isUpdating]);
+  }, [isUpdating]);
 
   if (isFetching) {
     return (

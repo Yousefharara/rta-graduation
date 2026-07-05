@@ -4,10 +4,15 @@ import { useAppSelector } from "@/redux/store";
 
 interface HeroProps {
   statusFilter: "all" | "pending" | "approved" | "rejected";
-  setStatusFilter: (status: "all" | "pending" | "approved" | "rejected") => void;
+  setStatusFilter: (
+    status: "all" | "pending" | "approved" | "rejected",
+  ) => void;
 }
 
-const DashboardAidOrdersHero = ({ statusFilter, setStatusFilter }: HeroProps) => {
+const DashboardAidOrdersHero = ({
+  statusFilter,
+  setStatusFilter,
+}: HeroProps) => {
   const { orders } = useAppSelector((state) => state.beneficiaryOrders);
 
   const totalOrders = orders.length;
@@ -22,10 +27,12 @@ const DashboardAidOrdersHero = ({ statusFilter, setStatusFilter }: HeroProps) =>
         className="manage-orders__grid grid gap-6"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}
       >
-        <div 
+        <div
           onClick={() => setStatusFilter("all")}
           className={`px-6 py-4 rounded-md border transition-all duration-200 cursor-pointer flex flex-col gap-1 hover:shadow-md ${
-            statusFilter === "all" ? "border-primary bg-blue-50/20 ring-1 ring-primary" : "border-zinc-400 bg-white"
+            statusFilter === "all"
+              ? "border-primary bg-blue-50/20 ring-1 ring-primary"
+              : "border-zinc-400 bg-white"
           }`}
         >
           <div className="bg-[#E0E3E5] p-3 rounded-md w-fit">
@@ -37,10 +44,12 @@ const DashboardAidOrdersHero = ({ statusFilter, setStatusFilter }: HeroProps) =>
           <small className="font-bold text-xl">{totalOrders}</small>
         </div>
 
-        <div 
+        <div
           onClick={() => setStatusFilter("pending")}
           className={`px-6 py-4 rounded-md border transition-all duration-200 cursor-pointer flex flex-col gap-1 hover:shadow-md ${
-            statusFilter === "pending" ? "border-primary bg-blue-50/20 ring-1 ring-primary" : "border-zinc-400 bg-white"
+            statusFilter === "pending"
+              ? "border-primary bg-blue-50/20 ring-1 ring-primary"
+              : "border-zinc-400 bg-white"
           }`}
         >
           <div className="bg-[#DBE1FF] p-3 rounded-md w-fit">
@@ -63,10 +72,12 @@ const DashboardAidOrdersHero = ({ statusFilter, setStatusFilter }: HeroProps) =>
           <small className="font-bold text-xl">{pendingOrders}</small>
         </div>
 
-        <div 
+        <div
           onClick={() => setStatusFilter("approved")}
           className={`px-6 py-4 rounded-md border transition-all duration-200 cursor-pointer flex flex-col gap-1 hover:shadow-md ${
-            statusFilter === "approved" ? "border-primary bg-blue-50/20 ring-1 ring-primary" : "border-zinc-400 bg-white"
+            statusFilter === "approved"
+              ? "border-primary bg-blue-50/20 ring-1 ring-primary"
+              : "border-zinc-400 bg-white"
           }`}
         >
           <div className="bg-[#6FFBBE] p-3 rounded-md w-fit">
@@ -89,10 +100,12 @@ const DashboardAidOrdersHero = ({ statusFilter, setStatusFilter }: HeroProps) =>
           <small className="font-bold text-xl">{approvedOrders}</small>
         </div>
 
-        <div 
+        <div
           onClick={() => setStatusFilter("rejected")}
           className={`px-6 py-4 rounded-md border transition-all duration-200 cursor-pointer flex flex-col gap-1 hover:shadow-md ${
-            statusFilter === "rejected" ? "border-primary bg-blue-50/20 ring-1 ring-primary" : "border-zinc-400 bg-white"
+            statusFilter === "rejected"
+              ? "border-primary bg-blue-50/20 ring-1 ring-primary"
+              : "border-zinc-400 bg-white"
           }`}
         >
           <div className="bg-[#FFDAD6] p-3 rounded-md w-fit">

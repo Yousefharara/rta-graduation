@@ -21,8 +21,10 @@ const WARNING_THRESHOLD = 60 * 1000; // Warn 1 minute before expiration
 export const SessionTimeoutManager = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { accessToken, refreshToken, tokenAcquiredAt } = useAppSelector((state) => state.auth);
-  
+  const { accessToken, refreshToken, tokenAcquiredAt } = useAppSelector(
+    (state) => state.auth,
+  );
+
   const [isOpen, setIsOpen] = useState(false);
   const [countdown, setCountdown] = useState(60); // 60 seconds warning countdown
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -70,7 +72,7 @@ export const SessionTimeoutManager = () => {
         intervalRef.current = null;
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, tokenAcquiredAt]);
 
   const handleAutoLogout = () => {
@@ -109,11 +111,14 @@ export const SessionTimeoutManager = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      // Prevent closing by clicking outside or pressing Escape to ensure session is renewed or logged out
-      if (!open) return;
-    }}>
-      <DialogContent 
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        // Prevent closing by clicking outside or pressing Escape to ensure session is renewed or logged out
+        if (!open) return;
+      }}
+    >
+      <DialogContent
         className="max-w-md w-[95%] p-6 rounded-xl border border-zinc-200 bg-white/95 backdrop-blur-md shadow-2xl text-right"
         dir="rtl"
       >

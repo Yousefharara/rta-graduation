@@ -85,7 +85,7 @@ export const setLogin = (body: ILoginAuth) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   dispatch(setError(null));
 
-  console.log('setlogin body is , ', body);
+  console.log("setlogin body is , ", body);
 
   try {
     const { data } = await axios.post<IAuth>(API_KEY + AUTH_PATHS.LOGIN, body);
