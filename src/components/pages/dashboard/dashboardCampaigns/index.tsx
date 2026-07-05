@@ -1,5 +1,5 @@
-import DashboardCampaignsHero from "./sections/hero";
-import DashboardCampaignsTable from "./sections/table";
+import DashboardCampaignsHero from "./sections/dashboardCampaignsHero";
+import DashboardCampaignsTable from "./sections/dashboardCampaignsTable";
 
 const DashboardCampaigns = () => {
     return (

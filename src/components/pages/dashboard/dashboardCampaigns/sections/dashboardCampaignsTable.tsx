@@ -48,9 +48,9 @@ const campaignSchema: yup.ObjectSchema<ICreateCampaign> = yup.object({
     .number()
     .nullable()
     .min(0, "المبلغ يجب أن يكون 0 أو أكثر"),
-  start_date: yup.date().required("تاريخ البداية مطلوب"),
+  start_date: yup.string().required("تاريخ البداية مطلوب"),
   end_date: yup
-    .date()
+    .string()
     .required("تاريخ النهاية مطلوب")
     .test(
       "is-after-start",
@@ -69,27 +69,32 @@ const defaultFormValues: ICreateCampaign = {
   title: "",
   description: "",
   target_amount: null,
-  start_date: new Date(),
-  end_date: new Date(),
+  start_date: "",
+  end_date: "",
 };
 
 const DashboardCampaignsTable = () => {
   const [search, setSearch] = useState("");
   const [viewModal, setViewModal] = useState<ICampaign | null>(null);
   const [deleteModal, setDeleteModal] = useState<ICampaign | null>(null);
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editCampaign, setEditCampaign] = useState<ICampaign | null>(null);
+  const [dialogMode, setDialogMode] = useState<"closed" | "add" | "edit">("closed");
+  const [editingCampaign, setEditingCampaign] = useState<ICampaign | null>(null);
 
-  const addForm = useForm<ICreateCampaign>({
+  const isEditMode = dialogMode === "edit";
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+    reset,
+    setValue,
+    watch,
+  } = useForm<ICreateCampaign>({
     defaultValues: defaultFormValues,
     resolver: yupResolver(campaignSchema),
   });
-  const editForm = useForm<ICreateCampaign & { status?: "active" | "closed" }>({
-    resolver: yupResolver(campaignSchema),
-  });
-  const addUnlimited = addForm.watch("target_amount") === null;
-  const editUnlimited = editForm.watch("target_amount") === null;
+
+  const isUnlimited = watch("target_amount") === null;
 
   const dispatch = useAppDispatch();
   const { accessToken } = useAppSelector((state) => state.auth);
@@ -125,7 +130,6 @@ const DashboardCampaignsTable = () => {
         item.description.toLowerCase().includes(searchLower)
       );
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaigns, search]);
 
   const pageCount = Math.ceil(filteredData.length / PAGE_SIZE);
@@ -136,55 +140,63 @@ const DashboardCampaignsTable = () => {
     return filteredData.slice(start, end);
   }, [pagination, filteredData]);
 
-  const handleAdd = async (data: ICreateCampaign) => {
-    const body: ICreateCampaign = {
-      ...data,
-      target_amount: addUnlimited ? null : data.target_amount || 0,
-    };
-    const result = await dispatch(addCampaignAction(body, accessToken || ""));
-    if (result?.success) {
-      toast.success("تم إضافة الحملة بنجاح");
-      setAddDialogOpen(false);
-      addForm.reset();
-    } else {
-      toast.error("حدث خطأ أثناء إضافة الحملة");
-    }
+  const openAddDialog = () => {
+    setEditingCampaign(null);
+    reset(defaultFormValues);
+    setDialogMode("add");
   };
 
   const openEditDialog = (campaign: ICampaign) => {
-    setEditCampaign(campaign);
-    
-    editForm.reset({
+    setEditingCampaign(campaign);
+    const toDateInput = (d: string | Date) => {
+      if (!d) return "";
+      const date = new Date(d);
+      return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
+    };
+    reset({
       title: campaign.title,
       description: campaign.description,
       target_amount:
         campaign.target_amount === 0 ? null : campaign.target_amount,
-      start_date: campaign.start_date,
-      end_date: campaign.end_date,
-      status: campaign.status,
+      start_date: toDateInput(campaign.start_date),
+      end_date: toDateInput(campaign.end_date),
     });
-    setEditDialogOpen(true);
+    setDialogMode("edit");
   };
 
-  const handleEdit = async (
-    data: ICreateCampaign & { status?: "active" | "closed" },
-  ) => {
-    if (!editCampaign) return;
-    const body: IEditCampaign = {
-      id: editCampaign.id,
-      title: data.title,
-      description: data.description,
-      target_amount: editUnlimited ? null : data.target_amount || 0,
-      start_date: data.start_date,
-      end_date: data.end_date,
-    };
-    const result = await dispatch(editCampaignAction(body, accessToken || ""));
-    if (result?.success) {
-      toast.success("تم تحديث الحملة بنجاح");
-      setEditDialogOpen(false);
-      setEditCampaign(null);
+  const handleFormSubmit = async (data: ICreateCampaign) => {
+    if (isEditMode && editingCampaign) {
+      const body: IEditCampaign = {
+        id: editingCampaign.id,
+        title: data.title,
+        description: data.description,
+        target_amount: isUnlimited ? null : data.target_amount || 0,
+        start_date: data.start_date,
+        end_date: data.end_date,
+      };
+      const result = await dispatch(
+        editCampaignAction(body, accessToken || ""),
+      );
+      if (result?.success) {
+        toast.success("تم تحديث الحملة بنجاح");
+        setDialogMode("closed");
+        setEditingCampaign(null);
+      } else {
+        toast.error("حدث خطأ أثناء تحديث الحملة");
+      }
     } else {
-      toast.error("حدث خطأ أثناء تحديث الحملة");
+      const body: ICreateCampaign = {
+        ...data,
+        target_amount: isUnlimited ? null : data.target_amount || 0,
+      };
+      const result = await dispatch(addCampaignAction(body, accessToken || ""));
+      if (result?.success) {
+        toast.success("تم إضافة الحملة بنجاح");
+        setDialogMode("closed");
+        reset();
+      } else {
+        toast.error("حدث خطأ أثناء إضافة الحملة");
+      }
     }
   };
 
@@ -239,7 +251,7 @@ const DashboardCampaignsTable = () => {
         header: "تاريخ البداية",
         cell: ({ row }) => (
           <p className="text-sm text-zinc-500">
-            {toDateStr(row.original.start_date)}
+            {toDateStr(row.original.start_date || null)}
           </p>
         ),
       },
@@ -247,7 +259,7 @@ const DashboardCampaignsTable = () => {
         header: "تاريخ النهاية",
         cell: ({ row }) => (
           <p className="text-sm text-zinc-500">
-            {toDateStr(row.original.end_date)}
+            {toDateStr(row.original.end_date || null)}
           </p>
         ),
       },
@@ -302,6 +314,7 @@ const DashboardCampaignsTable = () => {
         },
       },
     ];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formatAmount]);
 
   if (isFetching) {
@@ -365,7 +378,7 @@ const DashboardCampaignsTable = () => {
                   تاريخ البداية:{" "}
                 </span>
                 <span>
-                  {toDateStr(viewModal.start_date)}
+                  {toDateStr(viewModal.start_date || null)}
                 </span>
               </div>
               <div>
@@ -373,7 +386,7 @@ const DashboardCampaignsTable = () => {
                   تاريخ النهاية:{" "}
                 </span>
                 <span>
-                  {toDateStr(viewModal.end_date)}
+                  {toDateStr(viewModal.end_date || null)}
                 </span>
               </div>
               <div>
@@ -436,38 +449,53 @@ const DashboardCampaignsTable = () => {
         </div>
       )}
 
-      {/* Add Campaign Dialog */}
+      {/* Add / Edit Campaign Dialog */}
       <Dialog
-        open={addDialogOpen}
+        open={dialogMode !== "closed"}
         onOpenChange={(open) => {
-          setAddDialogOpen(open);
-          if (!open) addForm.reset();
+          if (!open) {
+            setDialogMode("closed");
+            setEditingCampaign(null);
+            reset();
+          }
         }}
       >
         <DialogContent className="p-0 bg-[#EFF4FF] max-h-[85vh] overflow-y-auto">
           <DialogHeader className="mt-10 px-6 text-start!">
-            <DialogTitle dir="rtl">إضافة حملة جديدة</DialogTitle>
+            <DialogTitle dir="rtl">
+              {isEditMode ? "تعديل الحملة" : "إضافة حملة جديدة"}
+            </DialogTitle>
             <DialogDescription dir="rtl">
-              يرجى تعبئة النموذج أدناه لإضافة حملة جديدة.
+              {isEditMode
+                ? "قم بتعديل معلومات الحملة."
+                : "يرجى تعبئة النموذج أدناه لإضافة حملة جديدة."}
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex items-center gap-2 px-6">
-            <div className="p-2 rounded-full bg-primary/10">
-              <Megaphone className="text-primary" size={22} />
+            <div
+              className={`p-2 rounded-full ${
+                isEditMode ? "bg-amber-100" : "bg-primary/10"
+              }`}
+            >
+              {isEditMode ? (
+                <Pencil className="text-amber-600" size={22} />
+              ) : (
+                <Megaphone className="text-primary" size={22} />
+              )}
             </div>
-            <p>معلومات الحملة</p>
+            <p>{isEditMode ? "تعديل الحملة" : "معلومات الحملة"}</p>
           </div>
 
           <form
             className="bg-white p-6 flex flex-col gap-1 rounded-b-md"
-            onSubmit={addForm.handleSubmit(handleAdd)}
+            onSubmit={handleSubmit(handleFormSubmit)}
           >
             <RowForm<ICreateCampaign>
-              errors={addForm.formState.errors}
+              errors={errors}
               label="title"
               title="عنوان الحملة"
-              register={addForm.register}
+              register={register}
               placeholder="أدخل عنوان الحملة"
             />
 
@@ -475,17 +503,17 @@ const DashboardCampaignsTable = () => {
               <label className="text-sm font-semibold">الوصف</label>
               <textarea
                 rows={3}
-                {...addForm.register("description")}
+                {...register("description")}
                 placeholder="أدخل وصف الحملة"
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 resize-none ${
-                  addForm.formState.errors.description
+                  errors.description
                     ? "outline-rose-500 border-rose-500"
                     : "outline-gray-300 border-gray-300"
                 }`}
               />
-              {addForm.formState.errors.description && (
+              {errors.description && (
                 <span className="text-sm text-rose-600">
-                  {String(addForm.formState.errors.description.message)}
+                  {String(errors.description.message)}
                 </span>
               )}
             </div>
@@ -495,13 +523,13 @@ const DashboardCampaignsTable = () => {
               <div className="flex items-center gap-3">
                 <input
                   type="number"
-                  disabled={addUnlimited}
-                  {...addForm.register("target_amount", {
+                  disabled={isUnlimited}
+                  {...register("target_amount", {
                     valueAsNumber: true,
                   })}
                   placeholder="أدخل المبلغ المستهدف"
                   className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 disabled:bg-zinc-100 disabled:cursor-not-allowed ${
-                    addForm.formState.errors.target_amount
+                    errors.target_amount
                       ? "outline-rose-500 border-rose-500"
                       : "outline-gray-300 border-gray-300"
                   }`}
@@ -509,9 +537,9 @@ const DashboardCampaignsTable = () => {
                 <label className="flex items-center gap-2 text-sm cursor-pointer whitespace-nowrap">
                   <input
                     type="checkbox"
-                    checked={addUnlimited}
+                    checked={isUnlimited}
                     onChange={(e) =>
-                      addForm.setValue(
+                      setValue(
                         "target_amount",
                         e.target.checked ? null : 0,
                       )
@@ -521,9 +549,9 @@ const DashboardCampaignsTable = () => {
                   غير محدود
                 </label>
               </div>
-              {addForm.formState.errors.target_amount && (
+              {errors.target_amount && (
                 <span className="text-sm text-rose-600">
-                  {String(addForm.formState.errors.target_amount.message)}
+                  {String(errors.target_amount.message)}
                 </span>
               )}
             </div>
@@ -533,16 +561,16 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ البداية</label>
                 <input
                   type="date"
-                  {...addForm.register("start_date")}
+                  {...register("start_date")}
                   className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
-                    addForm.formState.errors.start_date
+                    errors.start_date
                       ? "outline-rose-500 border-rose-500"
                       : "outline-gray-300 border-gray-300"
                   }`}
                 />
-                {addForm.formState.errors.start_date && (
+                {errors.start_date && (
                   <span className="text-sm text-rose-600">
-                    {String(addForm.formState.errors.start_date.message)}
+                    {String(errors.start_date.message)}
                   </span>
                 )}
               </div>
@@ -550,169 +578,30 @@ const DashboardCampaignsTable = () => {
                 <label className="text-sm font-semibold">تاريخ النهاية</label>
                 <input
                   type="date"
-                  {...addForm.register("end_date")}
+                  {...register("end_date")}
                   className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
-                    addForm.formState.errors.end_date
+                    errors.end_date
                       ? "outline-rose-500 border-rose-500"
                       : "outline-gray-300 border-gray-300"
                   }`}
                 />
-                {addForm.formState.errors.end_date && (
+                {errors.end_date && (
                   <span className="text-sm text-rose-600">
-                    {String(addForm.formState.errors.end_date.message)}
+                    {String(errors.end_date.message)}
                   </span>
                 )}
               </div>
             </div>
 
             <DialogFooter className="flex items-center flex-wrap gap-2">
-              {isCreating ? (
+              {(isEditMode ? isUpdating : isCreating) ? (
                 <Spinner />
               ) : (
                 <Button
                   className="disabled:bg-zinc-300 disabled:cursor-not-allowed"
                   type="submit"
                 >
-                  إضافة الحملة
-                </Button>
-              )}
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Campaign Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="p-0 bg-[#EFF4FF] max-h-[85vh] overflow-y-auto">
-          <DialogHeader className="mt-10 px-6 text-start!">
-            <DialogTitle dir="rtl">تعديل الحملة</DialogTitle>
-            <DialogDescription dir="rtl">
-              قم بتعديل معلومات الحملة.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex items-center gap-4 px-6">
-            <div className="p-2 rounded-full bg-amber-100">
-              <Pencil className="text-amber-600" size={22} />
-            </div>
-            <p>تعديل الحملة</p>
-          </div>
-
-          <form
-            className="bg-white p-6 flex flex-col gap-4 rounded-b-md"
-            onSubmit={editForm.handleSubmit(handleEdit)}
-          >
-            <RowForm<ICreateCampaign & { status?: "active" | "closed" }>
-              errors={editForm.formState.errors}
-              label="title"
-              title="عنوان الحملة"
-              register={editForm.register}
-              placeholder="أدخل عنوان الحملة"
-            />
-
-            <div className="flex flex-col gap-4 w-full">
-              <label className="text-sm font-semibold">الوصف</label>
-              <textarea
-                rows={3}
-                {...editForm.register("description")}
-                placeholder="أدخل وصف الحملة"
-                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 resize-none ${
-                  editForm.formState.errors.description
-                    ? "outline-rose-500 border-rose-500"
-                    : "outline-gray-300 border-gray-300"
-                }`}
-              />
-              {editForm.formState.errors.description && (
-                <span className="text-sm text-rose-600">
-                  {String(editForm.formState.errors.description.message)}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-4 w-full">
-              <label className="text-sm font-semibold">المبلغ المستهدف</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="number"
-                  disabled={editUnlimited}
-                  {...editForm.register("target_amount", {
-                    valueAsNumber: true,
-                  })}
-                  placeholder="أدخل المبلغ المستهدف"
-                  className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 disabled:bg-zinc-100 disabled:cursor-not-allowed ${
-                    editForm.formState.errors.target_amount
-                      ? "outline-rose-500 border-rose-500"
-                      : "outline-gray-300 border-gray-300"
-                  }`}
-                />
-                <label className="flex items-center gap-2 text-sm cursor-pointer whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    checked={editUnlimited}
-                    onChange={(e) =>
-                      editForm.setValue(
-                        "target_amount",
-                        e.target.checked ? null : 0,
-                      )
-                    }
-                    className="w-4 h-4"
-                  />
-                  غير محدود
-                </label>
-              </div>
-              {editForm.formState.errors.target_amount && (
-                <span className="text-sm text-rose-600">
-                  {String(editForm.formState.errors.target_amount.message)}
-                </span>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-4 w-full">
-                <label className="text-sm font-semibold">تاريخ البداية</label>
-                <input
-                  type="date"
-                  {...editForm.register("start_date")}
-                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
-                    editForm.formState.errors.start_date
-                      ? "outline-rose-500 border-rose-500"
-                      : "outline-gray-300 border-gray-300"
-                  }`}
-                />
-                {editForm.formState.errors.start_date && (
-                  <span className="text-sm text-rose-600">
-                    {String(editForm.formState.errors.start_date.message)}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col gap-4 w-full">
-                <label className="text-sm font-semibold">تاريخ النهاية</label>
-                <input
-                  type="date"
-                  {...editForm.register("end_date")}
-                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md border outline-offset-4 ${
-                    editForm.formState.errors.end_date
-                      ? "outline-rose-500 border-rose-500"
-                      : "outline-gray-300 border-gray-300"
-                  }`}
-                />
-                {editForm.formState.errors.end_date && (
-                  <span className="text-sm text-rose-600">
-                    {String(editForm.formState.errors.end_date.message)}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <DialogFooter className="flex items-center flex-wrap gap-2">
-              {isUpdating ? (
-                <Spinner />
-              ) : (
-                <Button
-                  className="disabled:bg-zinc-300 disabled:cursor-not-allowed"
-                  type="submit"
-                >
-                  حفظ التعديلات
+                  {isEditMode ? "حفظ التعديلات" : "إضافة الحملة"}
                 </Button>
               )}
             </DialogFooter>
@@ -734,7 +623,7 @@ const DashboardCampaignsTable = () => {
             />
           </div>
           <Button
-            onClick={() => setAddDialogOpen(true)}
+            onClick={openAddDialog}
             className="flex items-center gap-2 whitespace-nowrap"
           >
             <Plus size={18} />

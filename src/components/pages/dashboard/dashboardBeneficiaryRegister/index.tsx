@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import type { IRegisterBeneficiaryForm } from "@/@types/forms";
+import type { IBeneficiaryForm } from "@/@types/forms";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RowForm from "@/components/molecules/rowForm";
@@ -23,7 +23,7 @@ import type { IBeneficiary } from "@/@types/beneficiary";
 import { PATHS } from "@/routes/paths";
 import { Eye, EyeOff } from "lucide-react";
 
-const defaultValues: IRegisterBeneficiaryForm = {
+const defaultValues: IBeneficiaryForm = {
   name: "",
   disabled_count: 0,
   area_id: 1,
@@ -38,54 +38,53 @@ const defaultValues: IRegisterBeneficiaryForm = {
   release_date: new Date().toISOString(),
 };
 
-const schemaRegisterBeneficiaryFrom: Yup.ObjectSchema<IRegisterBeneficiaryForm> =
-  Yup.object({
-    name: Yup.string().min(3, "الاسم غير صحيح").required("الاسم مطلوب"),
-    password: Yup.string().required("كلمة المرور مطلوبة"),
+const beneficiaryFormSchema: Yup.ObjectSchema<IBeneficiaryForm> = Yup.object({
+  name: Yup.string().min(3, "الاسم غير صحيح").required("الاسم مطلوب"),
+  password: Yup.string().required("كلمة المرور مطلوبة"),
 
-    phone: Yup.string().min(10, "الرقم غير صحيح").required("رقم الهاتف مطلوب"),
-    national_id: Yup.string()
-      .length(9, "رقم الهوبة غير صحيح")
-      .required("رقم الهويه مطلوبه"),
-    release_date: Yup.string().required("رقم الهويه مطلوبه"),
-    area_id: Yup.number()
-      .transform((value, originalValue) => (originalValue === "" ? -1 : value))
-      .required("المحافظه مطلوب"),
+  phone: Yup.string().min(10, "الرقم غير صحيح").required("رقم الهاتف مطلوب"),
+  national_id: Yup.string()
+    .length(9, "رقم الهوبة غير صحيح")
+    .required("رقم الهويه مطلوبه"),
+  release_date: Yup.string().required("رقم الاصدار مطلوب"),
+  area_id: Yup.number()
+    .transform((value, originalValue) => (originalValue === "" ? -1 : value))
+    .required("المحافظه مطلوب"),
 
-    family_size: Yup.number().min(1).required("عدد أفراد الأسرة مطلوب"),
-    income: Yup.number().required("الدخل مطلوب"),
-    patients_count: Yup.number()
-      .required("عدد المرضى مطلوب")
-      .min(0, "لا يمكن أن يكون سالباً")
-      .test(
-        "max-family",
-        "عدد المرضى يجب أن يكون أقل من أو يساوي عدد أفراد الأسرة",
-        function (value) {
-          const { family_size } = this.parent;
-          if (!family_size || value == null) return true;
-          return value <= family_size;
-        },
-      ),
+  family_size: Yup.number().min(1).required("عدد أفراد الأسرة مطلوب"),
+  income: Yup.number().required("الدخل مطلوب"),
+  patients_count: Yup.number()
+    .required("عدد المرضى مطلوب")
+    .min(0, "لا يمكن أن يكون سالباً")
+    .test(
+      "max-family",
+      "عدد المرضى يجب أن يكون أقل من أو يساوي عدد أفراد الأسرة",
+      function (value) {
+        const { family_size } = this.parent;
+        if (!family_size || value == null) return true;
+        return value <= family_size;
+      },
+    ),
 
-    disabled_count: Yup.number()
-      .min(0, "لا يمكن أن يكون سالباً")
-      .test(
-        "max-family",
-        "عدد العاجزين يجب أن يكون أقل من أو يساوي عدد أفراد الأسرة",
-        function (value) {
-          const { family_size } = this.parent;
-          if (!family_size || value == null) return true;
-          return value <= family_size;
-        },
-      ),
-    is_displaced: Yup.boolean().transform((value) => {
-      if (value === "true") return true;
-      if (value === "false") return false;
-      return value;
-    }),
+  disabled_count: Yup.number()
+    .min(0, "لا يمكن أن يكون سالباً")
+    .test(
+      "max-family",
+      "عدد العاجزين يجب أن يكون أقل من أو يساوي عدد أفراد الأسرة",
+      function (value) {
+        const { family_size } = this.parent;
+        if (!family_size || value == null) return true;
+        return value <= family_size;
+      },
+    ),
+  is_displaced: Yup.boolean().transform((value) => {
+    if (value === "true") return true;
+    if (value === "false") return false;
+    return value;
+  }),
 
-    email: Yup.string().required('الايميل مطلوب'),
-  });
+  email: Yup.string().required("الايميل مطلوب"),
+});
 
 const DashboardBeneficiaryRegister = () => {
   const [region, setRegion] = useState<number>();
@@ -115,8 +114,8 @@ const DashboardBeneficiaryRegister = () => {
     reset,
     register,
     setValue,
-  } = useForm<IRegisterBeneficiaryForm>({
-    resolver: yupResolver(schemaRegisterBeneficiaryFrom),
+  } = useForm<IBeneficiaryForm>({
+    resolver: yupResolver(beneficiaryFormSchema),
   });
 
   useEffect(() => {
@@ -154,7 +153,7 @@ const DashboardBeneficiaryRegister = () => {
     }
   }, [editBeneficiary, areas]);
 
-  const handleOnSubmit = async (data: IRegisterBeneficiaryForm) => {
+  const handleOnSubmit = async (data: IBeneficiaryForm) => {
     if (!isEditMode && isNationalIdExists(data.national_id)) {
       toast.error("رقم الهوية موجود مسبقاً");
       return;
@@ -251,14 +250,14 @@ const DashboardBeneficiaryRegister = () => {
           <span className="h-px w-full bg-zinc-200 block" />
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-            <RowForm<IRegisterBeneficiaryForm>
+            <RowForm<IBeneficiaryForm>
               errors={errors}
               label="name"
               title="الاسم الكامل (كما في الهوية) "
               register={register}
               placeholder="مثال: محمد أحمد علي"
             />
-            <RowForm<IRegisterBeneficiaryForm>
+            <RowForm<IBeneficiaryForm>
               errors={errors}
               label="national_id"
               title="رقم الهوية الوطنية / جواز السفر"
@@ -266,11 +265,10 @@ const DashboardBeneficiaryRegister = () => {
               placeholder="0000000000"
               onlyPositiveNumbers
             />
-            
           </div>
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-            <RowForm<IRegisterBeneficiaryForm>
+            <RowForm<IBeneficiaryForm>
               errors={errors}
               label="phone"
               title="رقم الجوال"
@@ -279,7 +277,7 @@ const DashboardBeneficiaryRegister = () => {
               onlyPositiveNumbers
             />
 
-<RowForm<IRegisterBeneficiaryForm>
+            <RowForm<IBeneficiaryForm>
               errors={errors}
               label="release_date"
               title="تاريخ الاصدار"
@@ -287,12 +285,9 @@ const DashboardBeneficiaryRegister = () => {
               type="date"
               placeholder="2020-10-10"
             />
-
-            
           </div>
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-
             <div className="flex flex-col gap-4 my-4 w-full">
               <label className="text-sm font-semibold">البريد الإلكتروني</label>
               <div className="flex gap-2 items-center">
@@ -341,14 +336,22 @@ const DashboardBeneficiaryRegister = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setValue("password", "password123", { shouldValidate: true })}
+                  onClick={() =>
+                    setValue("password", "password123", {
+                      shouldValidate: true,
+                    })
+                  }
                   className="px-3 py-3 text-sm bg-zinc-200 text-zinc-700 rounded-md hover:bg-zinc-300 transition-colors cursor-pointer whitespace-nowrap"
                 >
                   افتراضي
                 </button>
                 <button
                   type="button"
-                  onClick={() => setValue("password", generateRandomPassword(), { shouldValidate: true })}
+                  onClick={() =>
+                    setValue("password", generateRandomPassword(), {
+                      shouldValidate: true,
+                    })
+                  }
                   className="px-3 py-3 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap"
                 >
                   توليد
@@ -361,7 +364,6 @@ const DashboardBeneficiaryRegister = () => {
               )}
             </div>
           </div>
-
         </article>
 
         <article className="flex flex-col gap-4 bg-white rounded-md border border-zinc-300 px-6 py-4">
@@ -369,7 +371,7 @@ const DashboardBeneficiaryRegister = () => {
           <span className="h-px w-full bg-zinc-200 block" />
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-            <RowForm<IRegisterBeneficiaryForm>
+            <RowForm<IBeneficiaryForm>
               errors={errors}
               label="family_size"
               type="number"
@@ -377,7 +379,7 @@ const DashboardBeneficiaryRegister = () => {
               register={register}
               onlyPositiveNumbers
             />
-            <RowForm<IRegisterBeneficiaryForm>
+            <RowForm<IBeneficiaryForm>
               errors={errors}
               label="patients_count"
               type="number"
@@ -385,7 +387,7 @@ const DashboardBeneficiaryRegister = () => {
               register={register}
               onlyPositiveNumbers
             />
-            <RowForm<IRegisterBeneficiaryForm>
+            <RowForm<IBeneficiaryForm>
               errors={errors}
               label="disabled_count"
               type="number"
@@ -396,7 +398,7 @@ const DashboardBeneficiaryRegister = () => {
           </div>
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-            <RowForm<IRegisterBeneficiaryForm>
+            <RowForm<IBeneficiaryForm>
               errors={errors}
               label="income"
               type="number"

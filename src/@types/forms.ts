@@ -35,7 +35,7 @@ export interface ISendOrderForm {
   reason: string;
 }
 
-export interface IRegisterBeneficiaryForm
+export interface IBeneficiaryForm
   extends Omit<ICreateBeneficiary, 'email' | 'password' | "disabled_count"> {
   email?: string | null;
   password?: string;

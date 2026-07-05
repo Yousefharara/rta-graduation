@@ -30,5 +30,5 @@ export const formatDate = (date: Date) => {
   ].join("-");
 };
 
-export const toDateStr = (d: Date | string) =>
+export const toDateStr = (d: Date | string | null) =>
   d instanceof Date ? d.toISOString().split("T")[0] : String(d).split("T")[0];
