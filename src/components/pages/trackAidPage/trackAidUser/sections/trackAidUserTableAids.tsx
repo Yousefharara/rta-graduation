@@ -4,6 +4,7 @@ import { Archive } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
+import { getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
 
 interface IDataTable {
   name: string;
@@ -28,8 +29,8 @@ const TrackAidUserTableAids = () => {
 
   useEffect(() => {
     if (accessToken) {
-      if (pickupLocations.length === 0)
-        dispatch(getPickupLocations(accessToken));
+      dispatch(getPickupLocations(accessToken));
+      dispatch(getBeneficiaryAids(accessToken));
     }
   }, [dispatch, accessToken, pickupLocations]);
 
@@ -81,13 +82,7 @@ const TrackAidUserTableAids = () => {
           const { name } = row.original;
           return (
             <div>
-              {name === "Cash"
-                ? "مساعده نقديه"
-                : name === "Food Assistance"
-                  ? "مساعده غذائيه"
-                  : name === "Medical Support"
-                    ? "مساعده طبيه"
-                    : name}
+                    {name}
             </div>
           );
         },
@@ -101,7 +96,7 @@ const TrackAidUserTableAids = () => {
         accessorKey: "pickupLocation",
         cell: ({ row }) => {
           const { pickupLocation } = row.original;
-          return <>{pickupLocation}</>;
+          return <>{pickupLocation || ""}</>;
         },
       },
       {
@@ -140,7 +135,7 @@ const TrackAidUserTableAids = () => {
           <div className="text-secondary font-medium rounded-full border-2 border-secondary text-center flex justify-center items-center w-6 h-6 ">
             {deliveredAidsCount}
           </div>
-          <p>إجمالي الدورات المستلمة</p>
+          <p>إجمالي الدورات</p>
         </div>
       </article>
       <div className="overflow-x-auto">
