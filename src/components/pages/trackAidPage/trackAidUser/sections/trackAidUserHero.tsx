@@ -208,7 +208,9 @@ const TrackAidUserHero = () => {
               <>
                 <div className="flex gap-2 items-center">
                   <p>طلب رقم: #RT-{latestOrder.id}</p>
-                  <small className="text-center rounded-full bg-muted px-3 py-0.5">
+                  <small
+                    className={`text-center rounded-full bg-muted px-3 py-0.5  ${latestOrder.status === "rejected" || latestOrderAid?.status === "rejected" ? "bg-rose-500 text-white" : "bg-muted"} `}
+                  >
                     {getStatusText(latestOrder.status, latestOrderAid?.status)}
                   </small>
                 </div>

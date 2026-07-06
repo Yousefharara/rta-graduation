@@ -1,4 +1,4 @@
-export const generateRandomEmail = (  ) => {
+export const generateRandomEmail = () => {
   const random = Math.random().toString(36).slice(2, 8);
 
   return `${random}@example.com`;

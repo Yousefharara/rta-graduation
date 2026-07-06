@@ -122,16 +122,12 @@ export const createBeneficiaryOrderAction =
   };
 
 export const updateBeneficiaryOrderStatusAction =
-  (
-    id: number,
-    status: IBeneficiaryOrder["status"],
-    token: string,
-  ) =>
+  (id: number, status: IBeneficiaryOrder["status"], token: string) =>
   async (dispatch: AppDispatch) => {
     dispatch(setUpdating(true));
     dispatch(setError(null));
 
-    console.log("update updateBeneficiaryOrderStatusAction , ", status, );
+    console.log("update updateBeneficiaryOrderStatusAction , ", status);
 
     try {
       await axios.put(
@@ -146,8 +142,10 @@ export const updateBeneficiaryOrderStatusAction =
         },
       );
       dispatch(updateOrderStatus({ id, status }));
+      return { success: true };
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setUpdating(false));
     }

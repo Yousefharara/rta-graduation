@@ -143,8 +143,10 @@ export const editAidDeductAction =
       );
       console.log("Updating data editAidDeductAction : ", data);
       dispatch(editAidDeduct({ id: id, quantity: quantity }));
+      return { success: true };
     } catch (err) {
       if (err instanceof Error) dispatch(setError(err.message));
+      return { success: false, error: err };
     } finally {
       dispatch(setUpdating(false));
     }

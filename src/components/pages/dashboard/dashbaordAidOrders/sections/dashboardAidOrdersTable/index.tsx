@@ -131,8 +131,8 @@ const DashboardAidOrdersTable = ({
     async (
       id: number,
       status: IBeneficiaryOrder["status"],
-      aid_type_id?: number,
-      beneficiaryId?: number,
+      aid_type_id: number,
+      beneficiaryId: number,
     ) => {
       let pickupLocationId: number | undefined;
       let editAid = aids.find(
@@ -144,47 +144,59 @@ const DashboardAidOrdersTable = ({
         console.log("heloo admin :  ", editAid);
       }
 
-      console.log('status ', status);
+      console.log("status ", status);
+
+      if (status === "rejected") {
+        const isUpdate = await dispatch(
+          updateBeneficiaryOrderStatusAction(id, status, accessToken || ""),
+        );
+
+        const isCreate = await dispatch(
+          createBeneficiaryAidAction(
+            {
+              beneficiary_id: beneficiaryId,
+              aid_type_id: aid_type_id,
+              status: status,
+              order_id: id,
+              pickup_location_id: null,
+            },
+            accessToken || "",
+          ),
+        );
+
+        if (isCreate.success && isUpdate.success) {
+          toast.error("تم رفض الطلب");
+          return;
+        }
+      }
 
       if (editAid) {
         if (editAid.remaining_quantity > 0 && beneficiaryId) {
-          if (status === "rejected") {
-            await dispatch(
-              updateBeneficiaryOrderStatusAction(id, status, accessToken || ""),
-            );
-          }
-
           if (status === "approved") {
             pickupLocationId = resolvePickupLocationId(beneficiaryId);
-            await dispatch(
+            const isDeduct = await dispatch(
               editAidDeductAction(editAid.id, 1, accessToken || ""),
             );
             console.log("handleUpdateStatus : 1 order-id : ", id);
-            await dispatch(
+            const isUpdate = await dispatch(
               updateBeneficiaryOrderStatusAction(id, status, accessToken || ""),
             );
-          }
 
-          if (status === "approved" || status === "rejected") {
-            const result = await dispatch(
+            const isCreate = await dispatch(
               createBeneficiaryAidAction(
                 {
                   beneficiary_id: beneficiaryId,
                   aid_type_id: aid_type_id!,
                   status: status,
                   order_id: id,
-                  pickup_location_id:
-                    status === "approved" ? pickupLocationId : null,
+                  pickup_location_id: pickupLocationId,
                 },
                 accessToken || "",
               ),
             );
 
-            if (result.success && status === "approved") {
+            if (isCreate.success && isUpdate.success && isDeduct.success) {
               toast.success("تم قبول الطلب بنجاح");
-              return;
-            } else if (result.success && status === "rejected") {
-              toast.error("تم رفض الطلب");
               return;
             }
           }
@@ -384,7 +396,14 @@ const DashboardAidOrdersTable = ({
                   <button
                     title="رفض الطلب"
                     disabled={isUpdating}
-                    onClick={() => handleUpdateStatus(id, "rejected", aid_type_id, beneficiary_id)}
+                    onClick={() =>
+                      handleUpdateStatus(
+                        id,
+                        "rejected",
+                        aid_type_id,
+                        beneficiary_id,
+                      )
+                    }
                     className="cursor-pointer disabled:opacity-40"
                   >
                     <CircleX

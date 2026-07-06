@@ -46,7 +46,7 @@ const schema: Yup.ObjectSchema<IEditBeneficiaryForm> = Yup.object({
     .required("عدد ذوي الإعاقة مطلوب")
     .min(0, "لا يمكن أن يكون سالباً"),
   release_date: Yup.string().required("تاريخ الإصدار مطلوب"),
-  password: Yup.string().min(6, 'خطأ ').required(),
+  password: Yup.string().min(6, "خطأ ").required(),
 });
 
 const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {

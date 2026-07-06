@@ -9,7 +9,7 @@ import { getBeneficiaryAids } from "@/redux/slices/beneficiaryAidSlice";
 interface IDataTable {
   name: string;
   date: string;
-  pickupLocation: string;
+  pickupLocation?: string | null;
   status: string;
 }
 
@@ -52,8 +52,8 @@ const TrackAidUserTableAids = () => {
         name,
         date: "",
         pickupLocation: aid.pickup_location_id
-          ? getPickupLocationById(aid.pickup_location_id) || "غزة"
-          : "غزة",
+          ? getPickupLocationById(aid.pickup_location_id)
+          : "--",
         status: aid.status,
       };
     });
@@ -80,11 +80,7 @@ const TrackAidUserTableAids = () => {
         accessorKey: "name",
         cell: ({ row }) => {
           const { name } = row.original;
-          return (
-            <div>
-                    {name}
-            </div>
-          );
+          return <div>{name}</div>;
         },
       },
       {
@@ -105,7 +101,9 @@ const TrackAidUserTableAids = () => {
         cell: ({ row }) => {
           const { status } = row.original;
           return (
-            <p className="px-4 text-sm font-semibold py-2 bg-muted text-secondary w-fit rounded-md">
+            <p
+              className={`px-4 text-sm font-semibold py-2 ${status === "rejected" ? "bg-rose-500 text-white" : "bg-muted"} text-secondary w-fit rounded-md`}
+            >
               {status === "approved"
                 ? "تمت الموافقة"
                 : status === "preparing"
@@ -129,7 +127,7 @@ const TrackAidUserTableAids = () => {
       <article className="flex justify-between items-center gap-4 flex-wrap">
         <div className="flex items-center gap-4">
           <Archive className="text-primary" size={18} />
-          <p>سجل المساعدات المستلمة</p>
+          <p>سجل المساعدات</p>
         </div>
         <div className="flex items-center gap-3 bg-secondary/20 p-4 rounded-lg">
           <div className="text-secondary font-medium rounded-full border-2 border-secondary text-center flex justify-center items-center w-6 h-6 ">
