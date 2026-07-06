@@ -10,7 +10,7 @@ export interface ICreateBeneficiaryAid {
   aid_type_id: number;
   status: IBeneficiaryAid["status"];
   order_id: number | null;
-  pickup_location_id?: number;
+  pickup_location_id?: number | null;
 }
 
 interface BeneficiaryAidState {

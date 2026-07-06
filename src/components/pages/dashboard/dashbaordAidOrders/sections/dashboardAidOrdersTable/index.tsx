@@ -139,57 +139,54 @@ const DashboardAidOrdersTable = ({
         (a) => a.aid_type_id === aid_type_id && a.org_id === organization?.id,
       );
 
-      if (status === "rejected") {
-        await dispatch(
-          updateBeneficiaryOrderStatusAction(
-            id,
-            status,
-            accessToken || ""
-          ),
-        );
-        await dispatch(getBeneficiaryAids(accessToken || ""));
-        return;
-      }
-
       if (role === "admin") {
         editAid = aids.find((a) => a.aid_type_id === aid_type_id);
-        console.log("heloo admin ", editAid);
+        console.log("heloo admin :  ", editAid);
       }
 
+      console.log('status ', status);
+
       if (editAid) {
-        if (editAid.remaining_quantity > 0) {
-          if (status === "approved" && beneficiaryId) {
+        if (editAid.remaining_quantity > 0 && beneficiaryId) {
+          if (status === "rejected") {
+            await dispatch(
+              updateBeneficiaryOrderStatusAction(id, status, accessToken || ""),
+            );
+          }
+
+          if (status === "approved") {
             pickupLocationId = resolvePickupLocationId(beneficiaryId);
             await dispatch(
               editAidDeductAction(editAid.id, 1, accessToken || ""),
             );
-            console.log('handleUpdateStatus : 1 order-id : ', id);
+            console.log("handleUpdateStatus : 1 order-id : ", id);
             await dispatch(
-              updateBeneficiaryOrderStatusAction(
-                id,
-                status,
-                accessToken || ""
-              ),
+              updateBeneficiaryOrderStatusAction(id, status, accessToken || ""),
             );
-            console.log('handleUpdateStatus : 2 order-id : ', id);
+          }
+
+          if (status === "approved" || status === "rejected") {
             const result = await dispatch(
               createBeneficiaryAidAction(
                 {
                   beneficiary_id: beneficiaryId,
                   aid_type_id: aid_type_id!,
-                  status: "approved",
+                  status: status,
                   order_id: id,
-                  pickup_location_id: pickupLocationId,
+                  pickup_location_id:
+                    status === "approved" ? pickupLocationId : null,
                 },
                 accessToken || "",
               ),
             );
-            console.log('handleUpdateStatus : 3 order-id ', id);
-            console.log('handleUpdateStatus : 3 result ', result);
-            // await dispatch(getBeneficiaryAids(accessToken || ""));
-            console.log('handleUpdateStatus : 4');
-            toast.success("تم قبول الطلب بنجاح");
-            return;
+
+            if (result.success && status === "approved") {
+              toast.success("تم قبول الطلب بنجاح");
+              return;
+            } else if (result.success && status === "rejected") {
+              toast.error("تم رفض الطلب");
+              return;
+            }
           }
         } else {
           toast.error("لا يوجد ما يكفى من المساعدات لقبول هذا الطلب");
@@ -387,7 +384,7 @@ const DashboardAidOrdersTable = ({
                   <button
                     title="رفض الطلب"
                     disabled={isUpdating}
-                    onClick={() => handleUpdateStatus(id, "rejected")}
+                    onClick={() => handleUpdateStatus(id, "rejected", aid_type_id, beneficiary_id)}
                     className="cursor-pointer disabled:opacity-40"
                   >
                     <CircleX

@@ -32,7 +32,7 @@ const TrackAidUserTableAids = () => {
       dispatch(getPickupLocations(accessToken));
       dispatch(getBeneficiaryAids(accessToken));
     }
-  }, [dispatch, accessToken, pickupLocations]);
+  }, [dispatch, accessToken]);
 
   const filteredAids = useMemo(() => {
     if (!beneficiary) return [];
