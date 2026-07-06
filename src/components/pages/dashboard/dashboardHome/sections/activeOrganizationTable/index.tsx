@@ -46,7 +46,7 @@ const ActiveOrganization = () => {
       dispatch(getAreas(accessToken));
       dispatch(getLocalOrgs(accessToken));
     }
-  }, [dispatch, accessToken, areas.length]);
+  }, [dispatch, accessToken]);
 
   const filteredData = useMemo(() => {
     return localOrgs.filter((data) =>

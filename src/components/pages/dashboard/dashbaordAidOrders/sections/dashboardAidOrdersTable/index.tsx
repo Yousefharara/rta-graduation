@@ -405,18 +405,7 @@ const DashboardAidOrdersTable = ({
     isUpdating,
     handleStatusClick,
     handleUpdateStatus,
-    setViewModal,
   ]);
-  // }, [
-  //   aidTypes,
-  //   beneficiaryAids,
-  //   isUpdating,
-  //   handleStatusClick,
-  //   handleUpdateStatus,
-  //   setViewModal,
-  //   beneficiaries,
-  //   localOrgs,
-  // ]);
 
   if (isFetching) {
     return (

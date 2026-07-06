@@ -1,9 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import {
-  X,
-  BellDot,
-} from "lucide-react";
+import { X, BellDot } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getNotificationsAction,
@@ -22,9 +19,9 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
   const { notifications } = useAppSelector((state) => state.notifications);
 
   useEffect(() => {
-    if (accessToken){
+    if (accessToken) {
       dispatch(getNotificationsAction(accessToken));
-      console.log('netifiy ....');
+      console.log("netifiy ....");
     }
   }, [open, accessToken, dispatch]);
 
@@ -82,21 +79,23 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
                 }`}
               >
                 <div
-                className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
-                  !n.is_read ? "bg-primary" : "bg-transparent"
-                }`}
-              />
+                  className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
+                    !n.is_read ? "bg-primary" : "bg-transparent"
+                  }`}
+                />
                 <div>
-                  <p className="text-sm font-semibold text-zinc-800">{n.title}</p>
-                <p className="text-xs text-zinc-500 mt-1 line-clamp-2">
-                  {n.message}
-                </p>
-                <p className="text-[10px] text-zinc-400 mt-1">
-                  {new Date(n.created_at).toLocaleDateString("ar-SA", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
+                  <p className="text-sm font-semibold text-zinc-800">
+                    {n.title}
+                  </p>
+                  <p className="text-xs text-zinc-500 mt-1 line-clamp-2">
+                    {n.message}
+                  </p>
+                  <p className="text-[10px] text-zinc-400 mt-1">
+                    {new Date(n.created_at).toLocaleDateString("ar-SA", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
                 </div>
               </div>
             ))

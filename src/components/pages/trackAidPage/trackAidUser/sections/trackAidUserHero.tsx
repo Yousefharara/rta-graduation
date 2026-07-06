@@ -31,6 +31,7 @@ import {
 import { createNotificationAction } from "@/redux/slices/notificationSlice";
 import ComplaintDialog from "./complaintDialog";
 import EditBeneficiaryDialog from "./editBeneficiaryDialog";
+import { getAreas } from "@/redux/slices/areaSlice";
 
 const defaultValues: ISendOrderForm = {
   reason: "",
@@ -54,8 +55,10 @@ const TrackAidUserHero = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (beneficiary) {
-      dispatch(getBeneficiary(Number(beneficiary?.id), accessToken || ""));
+    if (beneficiary && accessToken) {
+      dispatch(getBeneficiary(Number(beneficiary?.id), accessToken));
+      dispatch(getAreas(accessToken));
+      console.log("get areas : ");
     }
   }, [dispatch, beneficiary, accessToken]);
 

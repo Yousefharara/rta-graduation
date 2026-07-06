@@ -25,9 +25,9 @@ const RsourceAllocation = () => {
 
   useEffect(() => {
     if (!accessToken) return;
-    if (aidTypes.length === 0) dispatch(getAidTypes(accessToken));
-    if (beneficiaryAids.length === 0) dispatch(getBeneficiaryAids(accessToken));
-  }, [dispatch, accessToken, aidTypes.length, beneficiaryAids.length]);
+    dispatch(getAidTypes(accessToken));
+    dispatch(getBeneficiaryAids(accessToken));
+  }, [dispatch, accessToken]);
 
   const data = useMemo(() => {
     const delivered = beneficiaryAids.filter((a) => a.status === "delivered");

@@ -29,23 +29,14 @@ const HeroDashboardHome = () => {
   } = useAppSelector((state) => state.localOrg);
 
   useEffect(() => {
-    if (accessToken && role === "admin") {
-      if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
-      if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
-      if (localOrgs.length === 0) dispatch(getLocalOrgs(accessToken));
+    if (accessToken) {
+      dispatch(getBeneficiaries(accessToken));
+      dispatch(getBeneficiaryOrders(accessToken));
+      if (role === "admin") {
+        dispatch(getLocalOrgs(accessToken));
+      }
     }
-    if (accessToken && role === "local_org") {
-      if (beneficiaries.length === 0) dispatch(getBeneficiaries(accessToken));
-      if (orders.length === 0) dispatch(getBeneficiaryOrders(accessToken));
-    }
-  }, [
-    accessToken,
-    beneficiaries.length,
-    dispatch,
-    localOrgs.length,
-    orders.length,
-    role,
-  ]);
+  }, [accessToken, dispatch, role]);
 
   if (isLoading || isFetching || ordersFetching || orgsFetching) {
     return (

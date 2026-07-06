@@ -54,10 +54,12 @@ export default userSlice.reducer;
 // ! ///////////////// Action ////////////////////////
 // ? /////////////////////////////////////////////////
 
-export const getUsers = () => async (dispatch: AppDispatch) => {
+export const getUsers = (token: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
-    const { data } = await axios.get<IUser[]>(API_KEY + USER_PAHTS.GET_USERS);
+    const { data } = await axios.get<IUser[]>(API_KEY + USER_PAHTS.GET_USERS, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     // console.log("data users is , ", data);
     dispatch(setUsers(data));
   } catch (err) {

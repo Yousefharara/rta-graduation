@@ -10,7 +10,6 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { getAreas } from "@/redux/slices/areaSlice";
 import { editBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
-import { editUserAction } from "@/redux/slices/userSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -83,10 +82,10 @@ const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {
   }, [open, beneficiary, reset]);
 
   useEffect(() => {
-    if (open && areas.length === 0 && accessToken) {
+    if (open && accessToken) {
       dispatch(getAreas(accessToken));
     }
-  }, [open, areas.length, accessToken, dispatch]);
+  }, [open, accessToken, dispatch]);
 
   const handleOnSubmit = async (data: IEditBeneficiaryForm) => {
     if (!beneficiary || !accessToken) {
