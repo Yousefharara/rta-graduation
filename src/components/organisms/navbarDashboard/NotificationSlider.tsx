@@ -22,8 +22,10 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
   const { notifications } = useAppSelector((state) => state.notifications);
 
   useEffect(() => {
-    if (open && accessToken)
+    if (accessToken){
       dispatch(getNotificationsAction(accessToken));
+      console.log('netifiy ....');
+    }
   }, [open, accessToken, dispatch]);
 
   const unreadCount = useMemo(
@@ -75,11 +77,17 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
               <div
                 key={n.id}
                 onClick={() => !n.is_read && handleMarkAsRead(n.id)}
-                className={`px-4 py-3 border-b border-zinc-100 cursor-pointer hover:bg-zinc-50 transition-colors ${
+                className={`px-4 py-3 border-b flex gap-3 border-zinc-100 cursor-pointer hover:bg-zinc-50 transition-colors ${
                   !n.is_read ? "bg-blue-50/40" : ""
                 }`}
               >
-                <p className="text-sm font-semibold text-zinc-800">{n.title}</p>
+                <div
+                className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
+                  !n.is_read ? "bg-primary" : "bg-transparent"
+                }`}
+              />
+                <div>
+                  <p className="text-sm font-semibold text-zinc-800">{n.title}</p>
                 <p className="text-xs text-zinc-500 mt-1 line-clamp-2">
                   {n.message}
                 </p>
@@ -89,6 +97,7 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
                     minute: "2-digit",
                   })}
                 </p>
+                </div>
               </div>
             ))
           )}

@@ -62,7 +62,6 @@ const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {
     handleSubmit,
     register,
     reset,
-    setValue,
   } = useForm<IEditBeneficiaryForm>({
     resolver: yupResolver(schema),
   });
@@ -121,7 +120,7 @@ const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="p-0 bg-[#EFF4FF]">
+      <DialogContent className="p-0 bg-[#EFF4FF] h-140 overflow-y-auto ">
         <DialogHeader className="mt-10 px-6 text-start!">
           <DialogTitle dir="rtl">تعديل بيانات المستفيد</DialogTitle>
           <DialogDescription dir="rtl">
