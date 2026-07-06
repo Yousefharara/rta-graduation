@@ -23,9 +23,6 @@ const DashboardAidsTable = () => {
 
   useEffect(() => {
     if (accessToken) {
-      // if (aids.length === 0)
-      //     if (aidTypes.length === 0)
-      //         if (localOrgs.length === 0)
       dispatch(getAids(accessToken));
       dispatch(getAidTypes(accessToken));
       dispatch(getLocalOrgs(accessToken));

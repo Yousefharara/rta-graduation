@@ -19,10 +19,6 @@ const NotificationsPage = () => {
     if (accessToken) dispatch(getNotificationsAction(accessToken));
   }, [dispatch, accessToken, refreshKey]);
 
-  useEffect(() => {
-    console.log("notifications ; ", notifications);
-  });
-
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const handleMarkAsRead = (id: number) => {

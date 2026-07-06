@@ -60,16 +60,9 @@ const DashboardAidOrdersTable = ({
   const { pickupLocations } = useAppSelector((state) => state.pickupLocations);
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
   const { aids } = useAppSelector((state) => state.aids);
-  // const { localOrgs } = useAppSelector((state) => state.localOrg);
 
   useEffect(() => {
     if (accessToken) {
-      // if (orders.length === 0)
-      //   if (beneficiaryAids.length === 0)
-      //     if (beneficiaries.length === 0)
-      //       if (pickupLocations.length === 0)
-      //       if (aidTypes.length === 0)
-      //       if (aids.length === 0)
       dispatch(getBeneficiaryOrders(accessToken));
       dispatch(getBeneficiaries(accessToken));
       dispatch(getBeneficiaryAids(accessToken));
@@ -77,16 +70,7 @@ const DashboardAidOrdersTable = ({
       dispatch(getAidTypes(accessToken));
       dispatch(getAids(accessToken));
     }
-  }, [
-    dispatch,
-    accessToken,
-    // orders,
-    // beneficiaryAids,
-    // beneficiaries,
-    // pickupLocations,
-    // aids,
-    // aidTypes,
-  ]);
+  }, [dispatch, accessToken]);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -141,10 +125,7 @@ const DashboardAidOrdersTable = ({
 
       if (role === "admin") {
         editAid = aids.find((a) => a.aid_type_id === aid_type_id);
-        console.log("heloo admin :  ", editAid);
       }
-
-      console.log("status ", status);
 
       if (status === "rejected") {
         const isUpdate = await dispatch(
@@ -177,7 +158,6 @@ const DashboardAidOrdersTable = ({
             const isDeduct = await dispatch(
               editAidDeductAction(editAid.id, 1, accessToken || ""),
             );
-            console.log("handleUpdateStatus : 1 order-id : ", id);
             const isUpdate = await dispatch(
               updateBeneficiaryOrderStatusAction(id, status, accessToken || ""),
             );

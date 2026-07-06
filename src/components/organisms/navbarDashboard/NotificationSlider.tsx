@@ -3,12 +3,10 @@ import { Link } from "react-router-dom";
 import {
   X,
   BellDot,
-  // CheckCheck
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getNotificationsAction,
-  // markAllNotificationsAsReadAction,
   markNotificationAsReadAction,
 } from "@/redux/slices/notificationSlice";
 import { PATHS } from "@/routes/paths";
@@ -24,9 +22,9 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
   const { notifications } = useAppSelector((state) => state.notifications);
 
   useEffect(() => {
-    if (open && accessToken && notifications.length === 0)
+    if (open && accessToken)
       dispatch(getNotificationsAction(accessToken));
-  }, [open, accessToken, notifications.length, dispatch]);
+  }, [open, accessToken, dispatch]);
 
   const unreadCount = useMemo(
     () => notifications.filter((n) => !n.is_read).length,
@@ -36,10 +34,6 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
   const handleMarkAsRead = (id: number) => {
     if (accessToken) dispatch(markNotificationAsReadAction(id, accessToken));
   };
-
-  // const handleMarkAllAsRead = () => {
-  //   if (accessToken) dispatch(markAllNotificationsAsReadAction(accessToken));
-  // };
 
   return (
     <>
@@ -69,16 +63,6 @@ const NotificationSlider = ({ open, setOpen }: Props) => {
             <X size={20} />
           </button>
         </div>
-
-        {/* {unreadCount > 0 && (
-          <button
-            onClick={handleMarkAllAsRead}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary/5 transition-colors cursor-pointer"
-          >
-            <CheckCheck size={16} />
-            تحديد الكل كمقروء
-          </button>
-        )} */}
 
         <div className="flex-1 overflow-y-auto">
           {notifications.length === 0 ? (
