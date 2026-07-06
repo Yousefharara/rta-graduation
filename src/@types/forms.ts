@@ -17,6 +17,7 @@ export interface IContactForm {
 export interface ITrackAidForm {
   IDNumber: string;
   versionNumber: Date;
+  password: string;
 }
 
 export interface IDonationForm {
@@ -38,7 +39,6 @@ export interface IBeneficiaryForm extends Omit<
   ICreateBeneficiary,
   "email" | "password" | "disabled_count"
 > {
-  email?: string | null;
   password?: string;
   disabled_count?: number;
 }

@@ -34,7 +34,6 @@ const defaultValues: IBeneficiaryForm = {
   phone: "",
   is_displaced: false,
   income: 0,
-  email: "",
   release_date: new Date().toISOString(),
 };
 
@@ -82,8 +81,6 @@ const beneficiaryFormSchema: Yup.ObjectSchema<IBeneficiaryForm> = Yup.object({
     if (value === "false") return false;
     return value;
   }),
-
-  email: Yup.string().required("الايميل مطلوب"),
 });
 
 const DashboardBeneficiaryRegister = () => {
@@ -131,7 +128,6 @@ const DashboardBeneficiaryRegister = () => {
         name: editBeneficiary.users.name,
         national_id: editBeneficiary.national_id,
         phone: editBeneficiary.users.phone,
-        email: editBeneficiary.users.email,
         family_size: editBeneficiary.family_size,
         patients_count: editBeneficiary.patients_count,
         disabled_count: editBeneficiary.disabled_count,
@@ -167,7 +163,6 @@ const DashboardBeneficiaryRegister = () => {
           editBeneficiary.user_id,
           {
             name: data.name,
-            email: data.email || editBeneficiary.users.email,
             phone: data.phone,
           },
           accessToken || "",
@@ -185,7 +180,6 @@ const DashboardBeneficiaryRegister = () => {
             users: {
               ...editBeneficiary.users,
               name: data.name,
-              email: data.email || editBeneficiary.users.email,
               phone: data.phone,
             },
             national_id: data.national_id,
@@ -214,7 +208,7 @@ const DashboardBeneficiaryRegister = () => {
         {
           area_id: data.area_id,
           disabled_count: data.disabled_count || 0,
-          email: data.email || generateRandomEmail(),
+          email: generateRandomEmail(),
           family_size: data.family_size,
           income: data.income,
           name: data.name,
@@ -288,35 +282,6 @@ const DashboardBeneficiaryRegister = () => {
           </div>
 
           <div className="flex flex-col gap-4 items-center justify-between sm:flex-row">
-            <div className="flex flex-col gap-4 my-4 w-full">
-              <label className="text-sm font-semibold">البريد الإلكتروني</label>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="email"
-                  autoComplete="email"
-                  placeholder="example@gmail.com"
-                  className={`flex-1 px-4 py-3 bg-transparent text-sm rounded-md border outline-offset-4 ${errors["email"]?.message ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                  {...register("email")}
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setValue("email", generateRandomEmail(), {
-                      shouldValidate: true,
-                    })
-                  }
-                  className="px-3 py-3 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors cursor-pointer whitespace-nowrap"
-                >
-                  توليد
-                </button>
-              </div>
-              {errors["email"]?.message && (
-                <span className="text-sm text-rose-600">
-                  {String(errors["email"]?.message)}
-                </span>
-              )}
-            </div>
-
             <div className="flex flex-col gap-4 my-4 w-full">
               <label className="text-sm font-semibold">كلمة المرور</label>
               <div className="flex gap-2 items-center">

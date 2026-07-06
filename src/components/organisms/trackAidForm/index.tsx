@@ -3,13 +3,13 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RowForm from "../../molecules/rowForm";
 import Button from "../../atoms/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import type { ITrackAidForm } from "@/@types/forms";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { loginBeneficiaryAction, setError } from "@/redux/slices/authSlice";
 import { formatDate } from "@/utils/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "@/components/feedback/Spinner";
 
 const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
@@ -17,9 +17,12 @@ const schemaLoginFrom: Yup.ObjectSchema<ITrackAidForm> = Yup.object({
     .length(9, "رقم الهوية غير صحيح")
     .required("رقم الهوية مطلوب !"),
   versionNumber: Yup.date().required("رقم الإصدار مطلوب !"),
+  password: Yup.string().required("كلمة المرور مطلوبة"),
 });
 
 const TrackAidForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     formState: { errors },
     handleSubmit,
@@ -31,22 +34,12 @@ const TrackAidForm = () => {
   const { isLoading, error } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    // Clear auth error on unmount to prevent stale errors on other pages
     return () => {
       dispatch(setError(null));
     };
   }, [dispatch]);
 
   const handleOnSubmit = (data: ITrackAidForm) => {
-    console.log(
-      "data submit is : ",
-      data,
-      " | release is ",
-      data.versionNumber instanceof Date
-        ? formatDate(data.versionNumber)
-        : String(data.versionNumber),
-    );
-    // تحويل التاريخ إلى string بصيغة YYYY-MM-DD
     const release_date =
       data.versionNumber instanceof Date
         ? formatDate(data.versionNumber)
@@ -57,6 +50,7 @@ const TrackAidForm = () => {
         {
           national_id: data.IDNumber,
           release_date,
+          password: data.password,
         },
         navigate,
       ),
@@ -87,6 +81,34 @@ const TrackAidForm = () => {
         placeholder="10/10/2020"
         className="w-full bg-[#E0E9FD]!"
       />
+
+      <div className="flex flex-col gap-2 w-full">
+        <label className="text-sm font-semibold">كلمة المرور</label>
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            {...register("password")}
+            placeholder="أدخل كلمة المرور"
+            className={`w-full px-4 py-3 bg-[#E0E9FD] text-sm rounded-md border outline-offset-4 pl-10 ${
+              errors.password
+                ? "outline-rose-500 border-rose-500"
+                : "outline-gray-300 border-gray-300"
+            }`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((p) => !p)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700 cursor-pointer"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+        {errors.password && (
+          <span className="text-sm text-rose-600">
+            {String(errors.password.message)}
+          </span>
+        )}
+      </div>
 
       {error && <p className="text-rose-700 text-sm text-center">{error}</p>}
 

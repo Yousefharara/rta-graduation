@@ -10,6 +10,7 @@ export interface ILoginAuth {
 export interface ILoginBeneficiary {
   national_id: string;
   release_date: string;
+  password: string;
 }
 
 export interface IAuth {
