@@ -47,6 +47,10 @@ const DashboardAidOrdersTable = ({
 }: TableProps) => {
   const [search, setSearch] = useState("");
   const [viewModal, setViewModal] = useState<IBeneficiaryOrder | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    order: IBeneficiaryOrder;
+    action: "approved" | "rejected";
+  } | null>(null);
 
   const dispatch = useAppDispatch();
   const { accessToken, organization, role } = useAppSelector(
@@ -339,7 +343,7 @@ const DashboardAidOrdersTable = ({
       {
         header: "الاجراءات",
         cell: ({ row }) => {
-          const { status, id, beneficiary_id, aid_type_id } = row.original;
+          const { status } = row.original;
 
           return (
             <div className="flex items-center gap-3">
@@ -357,12 +361,10 @@ const DashboardAidOrdersTable = ({
                     title="قبول الطلب"
                     disabled={isUpdating}
                     onClick={() =>
-                      handleUpdateStatus(
-                        id,
-                        "approved",
-                        aid_type_id,
-                        beneficiary_id,
-                      )
+                      setConfirmModal({
+                        order: row.original,
+                        action: "approved",
+                      })
                     }
                     className="cursor-pointer disabled:opacity-40"
                   >
@@ -377,12 +379,10 @@ const DashboardAidOrdersTable = ({
                     title="رفض الطلب"
                     disabled={isUpdating}
                     onClick={() =>
-                      handleUpdateStatus(
-                        id,
-                        "rejected",
-                        aid_type_id,
-                        beneficiary_id,
-                      )
+                      setConfirmModal({
+                        order: row.original,
+                        action: "rejected",
+                      })
                     }
                     className="cursor-pointer disabled:opacity-40"
                   >
@@ -489,6 +489,73 @@ const DashboardAidOrdersTable = ({
                       : "قيد الانتظار"}
                 </span>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 flex flex-col gap-5">
+            <div className="flex items-center gap-3">
+              <div
+                className={`p-2 rounded-full ${
+                  confirmModal.action === "approved"
+                    ? "bg-green-100"
+                    : "bg-red-100"
+                }`}
+              >
+                {confirmModal.action === "approved" ? (
+                  <CircleCheck className="text-green-600" size={22} />
+                ) : (
+                  <CircleX className="text-red-600" size={22} />
+                )}
+              </div>
+              <h2 className="text-lg font-semibold">
+                {confirmModal.action === "approved"
+                  ? "قبول الطلب"
+                  : "رفض الطلب"}
+              </h2>
+            </div>
+
+            <p className="text-zinc-600 text-sm">
+              {confirmModal.action === "approved"
+                ? "هل أنت متأكد من قبول هذا الطلب؟"
+                : "هل أنت متأكد من رفض هذا الطلب؟"}
+            </p>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setConfirmModal(null)}
+                disabled={isUpdating}
+                className="px-4 py-2 rounded-lg border border-zinc-300 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={() => {
+                  const { order, action } = confirmModal;
+                  setConfirmModal(null);
+                  handleUpdateStatus(
+                    order.id,
+                    action,
+                    order.aid_type_id,
+                    order.beneficiary_id,
+                  );
+                }}
+                disabled={isUpdating}
+                className={`px-4 py-2 rounded-lg text-sm text-white font-medium transition-colors cursor-pointer ${
+                  confirmModal.action === "approved"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-red-600 hover:bg-red-700"
+                } ${isUpdating ? "opacity-60 cursor-not-allowed" : ""}`}
+              >
+                {isUpdating
+                  ? "جاري المعالجة..."
+                  : confirmModal.action === "approved"
+                    ? "تأكيد القبول"
+                    : "تأكيد الرفض"}
+              </button>
             </div>
           </div>
         </div>

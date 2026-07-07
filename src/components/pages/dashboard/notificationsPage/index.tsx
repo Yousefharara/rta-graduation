@@ -14,6 +14,7 @@ const NotificationsPage = () => {
     (state) => state.notifications,
   );
   const [refreshKey, setRefreshKey] = useState(0);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
   useEffect(() => {
     if (accessToken) dispatch(getNotificationsAction(accessToken));
@@ -112,7 +113,7 @@ const NotificationsPage = () => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(n.id);
+                    setDeleteConfirmId(n.id);
                   }}
                   title="حذف الإشعار"
                   className="shrink-0 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
@@ -122,6 +123,44 @@ const NotificationsPage = () => {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 flex flex-col gap-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-red-100">
+                <Trash2 className="text-red-600" size={22} />
+              </div>
+              <h2 className="text-lg font-semibold">حذف الإشعار</h2>
+            </div>
+
+            <p className="text-zinc-600 text-sm">
+              هل أنت متأكد من حذف هذا الإشعار؟
+            </p>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                disabled={loading}
+                className="px-4 py-2 rounded-lg border border-zinc-300 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={() => {
+                  const id = deleteConfirmId;
+                  setDeleteConfirmId(null);
+                  handleDelete(id);
+                }}
+                disabled={loading}
+                className={`px-4 py-2 rounded-lg text-sm text-white font-medium bg-red-600 hover:bg-red-700 transition-colors cursor-pointer ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
+              >
+                {loading ? "جاري الحذف..." : "تأكيد الحذف"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </section>

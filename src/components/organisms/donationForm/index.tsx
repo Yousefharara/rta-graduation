@@ -160,241 +160,238 @@ const DonationForm = () => {
   };
 
   return (
-      <form
-        className="donation-grid grid gap-8"
-        onSubmit={handleSubmit(handleOnSubmit)}
+    <form
+      className="donation-grid grid gap-8"
+      onSubmit={handleSubmit(handleOnSubmit)}
+    >
+      <section
+        style={{ gridArea: "item1" }}
+        className="bg-white border h-fit border-zinc-300 py-3 px-6 rounded-lg"
       >
-        <section
-          style={{ gridArea: "item1" }}
-          className="bg-white border h-fit border-zinc-300 py-3 px-6 rounded-lg"
+        <h3>اختر الحملة</h3>
+        <div
+          className="grid gap-4"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          }}
         >
-          <h3>اختر الحملة</h3>
-          <div
-            className="grid gap-4"
-            style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            }}
-          >
-            {campaigns.map((campaign) => {
-              let percentage = null;
-              if (campaign.target_amount) {
-                percentage = Math.min(
-                  Math.round(
-                    (campaign.collected_amount / campaign.target_amount) * 100,
-                  ),
-                  100,
-                );
-              }
-              const isCompleted =
-                Number(campaign.collected_amount) >=
-                Number(campaign.target_amount);
-
-              console.log(
-                `${campaign.collected_amount} >= ${campaign.target_amount}  : `,
-                isCompleted,
+          {campaigns.map((campaign) => {
+            let percentage = null;
+            if (campaign.target_amount) {
+              percentage = Math.min(
+                Math.round(
+                  (campaign.collected_amount / campaign.target_amount) * 100,
+                ),
+                100,
               );
+            }
+            const isCompleted =
+              Number(campaign.collected_amount) >=
+              Number(campaign.target_amount);
 
-              return (
-                <label
-                  key={campaign.id}
-                  htmlFor={campaign.title + campaign.id}
-                  className={`lable-gaza flex flex-col w-full offer active border rounded-lg p-3 ${
-                    isCompleted
-                      ? "border-green-400 bg-green-50/50 opacity-70"
-                      : `${errors["donationCampaign"]?.message ? "border-rose-500" : "border-zinc-300"}`
-                  }`}
-                >
-                  <input
-                    className="hidden"
-                    value={campaign.title}
-                    {...register("donationCampaign")}
-                    type="radio"
-                    id={campaign.title + campaign.id}
-                    disabled={isCompleted}
+            console.log(
+              `${campaign.collected_amount} >= ${campaign.target_amount}  : `,
+              isCompleted,
+            );
+
+            return (
+              <label
+                key={campaign.id}
+                htmlFor={campaign.title + campaign.id}
+                className={`lable-gaza flex flex-col w-full offer active border rounded-lg p-3 ${
+                  isCompleted
+                    ? "border-green-400 bg-green-50/50 opacity-70"
+                    : `${errors["donationCampaign"]?.message ? "border-rose-500" : "border-zinc-300"}`
+                }`}
+              >
+                <input
+                  className="hidden"
+                  value={campaign.title}
+                  {...register("donationCampaign")}
+                  type="radio"
+                  id={campaign.title + campaign.id}
+                  disabled={isCompleted}
+                />
+                <div className="flex items-center justify-between">
+                  <h4 className="text-[#004AC6] text-sm">{campaign.title}</h4>
+                  {isCompleted && (
+                    <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
+                      مكتمل
+                    </span>
+                  )}
+                </div>
+                <p className="text-xl font-medium mb-4">
+                  {campaign.description}
+                </p>
+                <div className="w-full h-2 bg-neutral-300 rounded-full overflow-hidden">
+                  <span
+                    className="block h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${percentage}%`,
+                      backgroundColor: isCompleted
+                        ? "#16a34a"
+                        : "hsl(133, 50%, 20%)",
+                    }}
                   />
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-[#004AC6] text-sm">{campaign.title}</h4>
-                    {isCompleted && (
-                      <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
-                        مكتمل
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xl font-medium mb-4">
-                    {campaign.description}
-                  </p>
-                  <div className="w-full h-2 bg-neutral-300 rounded-full overflow-hidden">
-                    <span
-                      className="block h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${percentage}%`,
-                        backgroundColor: isCompleted
-                          ? "#16a34a"
-                          : "hsl(133, 50%, 20%)",
-                      }}
-                    />
-                  </div>
-                  <div className="flex justify-between items-center mt-1">
-                    <small>
-                      تم جمع {percentage ? percentage : ""}%
-                    </small>
-                    <small>المستهدف {campaign.target_amount}$</small>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  <small>تم جمع {percentage ? percentage : ""}%</small>
+                  <small>المستهدف {campaign.target_amount}$</small>
+                </div>
+              </label>
+            );
+          })}
+        </div>
 
-          {errors["donationCampaign"]?.message && (
-            <span className="text-sm text-rose-600 mt-5 block">
-              {String(errors["donationCampaign"]?.message)}
-            </span>
-          )}
-        </section>
+        {errors["donationCampaign"]?.message && (
+          <span className="text-sm text-rose-600 mt-5 block">
+            {String(errors["donationCampaign"]?.message)}
+          </span>
+        )}
+      </section>
 
-        <section
-          style={{ gridArea: "item2" }}
-          className="rounded-lg p-6 h-fit flex flex-col gap-3 bg-white border border-zinc-300"
-        >
-          <h3>حدد مبلغ التبرع</h3>
-          <div className="flex justify-between gap-4">
-            <label
-              htmlFor="budget10"
-              className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
-            >
-              <input
-                type="radio"
-                {...register("budget")}
-                value={10}
-                className="hidden"
-                id="budget10"
-                defaultChecked
-              />
-              <p className="text-center text-xl font-semibold">10$</p>
-            </label>
-            <label
-              htmlFor="budget50"
-              className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
-            >
-              <input
-                type="radio"
-                {...register("budget")}
-                value={50}
-                className="hidden"
-                id="budget50"
-              />
-              <p className="text-center text-xl font-semibold">50$</p>
-            </label>
-            <label
-              htmlFor="budget100"
-              className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
-            >
-              <input
-                type="radio"
-                {...register("budget")}
-                value={100}
-                className="hidden"
-                id="budget100"
-              />
-              <p className="text-center text-xl font-semibold">100$</p>
-            </label>
-            <label
-              htmlFor="budget500"
-              className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
-            >
-              <input
-                type="radio"
-                {...register("budget")}
-                value={500}
-                className="hidden"
-                id="budget500"
-              />
-              <p className="text-center text-xl font-semibold">500$</p>
-            </label>
-          </div>
-          <div>
-            <Input
+      <section
+        style={{ gridArea: "item2" }}
+        className="rounded-lg p-6 h-fit flex flex-col gap-3 bg-white border border-zinc-300"
+      >
+        <h3>حدد مبلغ التبرع</h3>
+        <div className="flex justify-between gap-4">
+          <label
+            htmlFor="budget10"
+            className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
+          >
+            <input
+              type="radio"
+              {...register("budget")}
+              value={10}
+              className="hidden"
+              id="budget10"
+              defaultChecked
+            />
+            <p className="text-center text-xl font-semibold">10$</p>
+          </label>
+          <label
+            htmlFor="budget50"
+            className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
+          >
+            <input
+              type="radio"
+              {...register("budget")}
+              value={50}
+              className="hidden"
+              id="budget50"
+            />
+            <p className="text-center text-xl font-semibold">50$</p>
+          </label>
+          <label
+            htmlFor="budget100"
+            className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
+          >
+            <input
+              type="radio"
+              {...register("budget")}
+              value={100}
+              className="hidden"
+              id="budget100"
+            />
+            <p className="text-center text-xl font-semibold">100$</p>
+          </label>
+          <label
+            htmlFor="budget500"
+            className={` block w-full rounded-lg px-4 py-3 border ${errors.budget?.message ? "border-rose-500" : "border-gray-300"}`}
+          >
+            <input
+              type="radio"
+              {...register("budget")}
+              value={500}
+              className="hidden"
+              id="budget500"
+            />
+            <p className="text-center text-xl font-semibold">500$</p>
+          </label>
+        </div>
+        <div>
+          <Input
+            errors={errors}
+            label="customBudget"
+            register={register}
+            placeholder="أو ادخل مبلغا أخر"
+            type="number"
+            className="bg-[#F8F9FF]!"
+            onlyPositiveNumbers
+          />
+        </div>
+      </section>
+
+      <section
+        style={{ gridArea: "item3" }}
+        className="bg-white rounded-lg p-6 border border-zinc-300 shadow-md"
+      >
+        <div className="flex items-center gap-4">
+          <ShieldCheck size={28} strokeWidth={2} className="text-green-600" />
+          <h3 className="font-medium text-2xl">دفع أمن 100%</h3>
+        </div>
+
+        <article>
+          <RowForm<IDonationForm>
+            title="الاسم على البطاقه"
+            errors={errors}
+            label="nameOfCard"
+            register={register}
+            className="bg-[#F8F9FF]!"
+          />
+          <RowForm<IDonationForm>
+            title="رقم البطاقه"
+            errors={errors}
+            label="cardNumber"
+            register={register}
+            className="bg-[#F8F9FF]!"
+          />
+          <div className="flex justify-between gap-3 ">
+            <RowForm<IDonationForm>
+              title="تاريخ الانتهاء"
               errors={errors}
-              label="customBudget"
+              label="endDate"
               register={register}
-              placeholder="أو ادخل مبلغا أخر"
+              type="date"
+              className="bg-[#F8F9FF]!"
+            />
+            <RowForm<IDonationForm>
+              title="رمز CVV"
+              errors={errors}
+              label="CVV"
               type="number"
-              className="bg-[#F8F9FF]!"
-              onlyPositiveNumbers
-            />
-          </div>
-        </section>
-
-        <section
-          style={{ gridArea: "item3" }}
-          className="bg-white rounded-lg p-6 border border-zinc-300 shadow-md"
-        >
-          <div className="flex items-center gap-4">
-            <ShieldCheck size={28} strokeWidth={2} className="text-green-600" />
-            <h3 className="font-medium text-2xl">دفع أمن 100%</h3>
-          </div>
-
-          <article>
-            <RowForm<IDonationForm>
-              title="الاسم على البطاقه"
-              errors={errors}
-              label="nameOfCard"
               register={register}
               className="bg-[#F8F9FF]!"
             />
-            <RowForm<IDonationForm>
-              title="رقم البطاقه"
-              errors={errors}
-              label="cardNumber"
-              register={register}
-              className="bg-[#F8F9FF]!"
-            />
-            <div className="flex justify-between gap-3 ">
-              <RowForm<IDonationForm>
-                title="تاريخ الانتهاء"
-                errors={errors}
-                label="endDate"
-                register={register}
-                type="date"
-                className="bg-[#F8F9FF]!"
-              />
-              <RowForm<IDonationForm>
-                title="رمز CVV"
-                errors={errors}
-                label="CVV"
-                type="number"
-                register={register}
-                className="bg-[#F8F9FF]!"
-              />
+          </div>
+          <div className="bg-zinc-300 w-full h-0.5"></div>
+          <div className="flex justify-between items-center gap-4 my-3">
+            <p>مبلغ المتبرع</p>
+            <small className="font-medium">{budget}$</small>
+          </div>
+          <div className="bg-zinc-300 w-full h-0.5"></div>
+          <div className="flex justify-between items-center gap-4 my-3">
+            <p>الإجمالي</p>
+            <small className="font-semibold text-xl text-[#004AC6]">
+              {budget}$
+            </small>
+          </div>
+          <Button
+            variant="default"
+            className="text-white w-full flex justify-center items-center"
+          >
+            <div className=" flex items-center gap-3">
+              <Heart size={28} fill="white" strokeWidth={0} />
+              <p className="font-semibold">أكمل التبرع</p>
             </div>
-            <div className="bg-zinc-300 w-full h-0.5"></div>
-            <div className="flex justify-between items-center gap-4 my-3">
-              <p>مبلغ المتبرع</p>
-              <small className="font-medium">{budget}$</small>
-            </div>
-            <div className="bg-zinc-300 w-full h-0.5"></div>
-            <div className="flex justify-between items-center gap-4 my-3">
-              <p>الإجمالي</p>
-              <small className="font-semibold text-xl text-[#004AC6]">
-                {budget}$
-              </small>
-            </div>
-            <Button
-              variant="default"
-              className="text-white w-full flex justify-center items-center"
-            >
-              <div className=" flex items-center gap-3">
-                <Heart size={28} fill="white" strokeWidth={0} />
-                <p className="font-semibold">أكمل التبرع</p>
-              </div>
-            </Button>
-            <p className="mt-3 justify-center text-xs flex items-center gap-3">
-              <Lock size={15} />
-              بياناتك مشفرةومحميه بأعلى معايير الأمان
-            </p>
-          </article>
-        </section>
-      
+          </Button>
+          <p className="mt-3 justify-center text-xs flex items-center gap-3">
+            <Lock size={15} />
+            بياناتك مشفرةومحميه بأعلى معايير الأمان
+          </p>
+        </article>
+      </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
@@ -421,8 +418,7 @@ const DonationForm = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      </form>
+    </form>
   );
 };
 

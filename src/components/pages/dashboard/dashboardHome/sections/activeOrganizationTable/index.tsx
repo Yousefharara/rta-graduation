@@ -30,6 +30,7 @@ const ActiveOrganization = () => {
   const [filteredName, setFilteredName] = useState<string>("");
   const [viewModal, setViewModal] = useState<ILocalOrg | null>(null);
   const [deleteModal, setDeleteModal] = useState<ILocalOrg | null>(null);
+  const [verifyModal, setVerifyModal] = useState<ILocalOrg | null>(null);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
@@ -125,7 +126,7 @@ const ActiveOrganization = () => {
       {
         header: "الإجراءات",
         cell: ({ row }) => {
-          const { id, is_verified } = row.original;
+          const { is_verified } = row.original;
           return (
             <div className="flex items-center gap-3">
               <button
@@ -139,7 +140,7 @@ const ActiveOrganization = () => {
                 <button
                   title="التحقق من المنظمة"
                   disabled={isUpdating}
-                  onClick={() => handleVerify(id)}
+                  onClick={() => setVerifyModal(row.original)}
                   className="cursor-pointer disabled:opacity-40"
                 >
                   <ShieldCheck
@@ -257,6 +258,44 @@ const ActiveOrganization = () => {
               >
                 <Trash2 size={16} />
                 حذف المنظمة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {verifyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 flex flex-col gap-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-amber-100">
+                <ShieldCheck className="text-amber-600" size={22} />
+              </div>
+              <h2 className="text-lg font-semibold">تأكيد التحقق</h2>
+            </div>
+
+            <p className="text-zinc-600 text-sm">
+              هل أنت متأكد من توثيق المنظمة{" "}
+              <strong>{verifyModal.users.name}</strong>؟
+            </p>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setVerifyModal(null)}
+                disabled={isUpdating}
+                className="px-4 py-2 rounded-lg border border-zinc-300 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={() => {
+                  handleVerify(verifyModal.id);
+                  setVerifyModal(null);
+                }}
+                disabled={isUpdating}
+                className={`px-4 py-2 rounded-lg text-sm text-white font-medium bg-amber-600 hover:bg-amber-700 transition-colors cursor-pointer ${isUpdating ? "opacity-60 cursor-not-allowed" : ""}`}
+              >
+                {isUpdating ? "جاري التحقق..." : "تأكيد التحقق"}
               </button>
             </div>
           </div>
