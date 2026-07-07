@@ -237,7 +237,7 @@ const TrackAidUserHero = () => {
         <div className="flex flex-wrap gap-3">
           <Button
             onClick={() => setOpenComplaint(true)}
-            className="flex gap-3 items-center font-semibold disabled:bg-zinc-600 disabled:text-white"
+            className="flex gap-3 items-center font-semibold disabled:bg-zinc-600 disabled:text-white disabled:cursor-not-allowed disabled:border-none"
             variant="outline"
             disabled={beneficiary?.status !== "eligible"}
           >
@@ -254,7 +254,7 @@ const TrackAidUserHero = () => {
           </Button>
           <Button
             onClick={() => setOpen(true)}
-            className="flex gap-3 items-center font-semibold disabled:bg-zinc-600 disabled:text-white"
+            className="flex gap-3 items-center font-semibold disabled:bg-zinc-600 disabled:text-white disabled:cursor-not-allowed disabled:border-none"
             disabled={beneficiary?.status !== "eligible"}
             style={{ minWidth: "fit-content" }}
           >

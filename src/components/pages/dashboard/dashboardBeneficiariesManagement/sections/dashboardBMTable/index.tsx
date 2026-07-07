@@ -8,6 +8,7 @@ import {
   getBeneficiaries,
 } from "@/redux/slices/beneficiarySlice";
 import { verifyBeneficiaryAction } from "@/redux/slices/verificationSlice";
+import { createNotificationAction } from "@/redux/slices/notificationSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Check, Eye, Search, X, Pencil, Trash2 } from "lucide-react";
@@ -162,6 +163,19 @@ const DashbaordBMTable = () => {
 
     dispatch(verifyBeneficiaryAction(body, accessToken || "")).then(() => {
       dispatch(getBeneficiaries(accessToken || ""));
+      const isApproved = confirmModal.action === "approve";
+      dispatch(
+        createNotificationAction(
+          {
+            user_id: confirmModal.beneficiary.user_id,
+            title: isApproved ? "تم قبول طلب التوثيق" : "تم رفض طلب التوثيق",
+            message: isApproved
+              ? `تم توثيق حسابك بنجاح، يمكنك الآن طلب المساعدة`
+              : `عذراً، تم رفض طلب توثيق حسابك`,
+          },
+          accessToken || "",
+        ),
+      );
       setConfirmModal(null);
     });
   };

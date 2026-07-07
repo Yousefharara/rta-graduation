@@ -494,7 +494,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold">عدد الموظفين</label>
+              <label className="text-sm font-semibold">طاقم العمل</label>
               <input
                 type="number"
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.staff_count ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
@@ -524,7 +524,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold">اسم المسؤول</label>
+              <label className="text-sm font-semibold">اسم المنظمة (en)</label>
               <input
                 type="text"
                 className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.name ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}

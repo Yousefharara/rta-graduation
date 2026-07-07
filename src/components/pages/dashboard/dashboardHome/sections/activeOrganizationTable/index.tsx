@@ -8,6 +8,7 @@ import {
   getLocalOrgs,
   verifyLocalOrgAction,
 } from "@/redux/slices/localOrgSlice";
+import { createNotificationAction } from "@/redux/slices/notificationSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
@@ -87,6 +88,19 @@ const ActiveOrganization = () => {
     );
     if (result?.success) {
       dispatch(getLocalOrgs(accessToken || ""));
+      const org = localOrgs.find((o) => o.id === id);
+      if (org) {
+        dispatch(
+          createNotificationAction(
+            {
+              user_id: org.user_id,
+              title: "تم توثيق المنظمة",
+              message: `تم توثيق منظمتك ${org.org_name} بنجاح`,
+            },
+            accessToken || "",
+          ),
+        );
+      }
       toast.success("تم التحقق من المنظمة بنجاح");
     } else {
       toast.error("حدث خطأ أثناء التحقق من المنظمة");
