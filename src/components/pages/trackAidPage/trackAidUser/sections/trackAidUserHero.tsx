@@ -237,8 +237,9 @@ const TrackAidUserHero = () => {
         <div className="flex flex-wrap gap-3">
           <Button
             onClick={() => setOpenComplaint(true)}
-            className="flex gap-3 items-center font-semibold"
+            className="flex gap-3 items-center font-semibold disabled:bg-zinc-600 disabled:text-white"
             variant="outline"
+            disabled={beneficiary?.status !== "eligible"}
           >
             تقديم شكوى
           </Button>
@@ -253,13 +254,19 @@ const TrackAidUserHero = () => {
           </Button>
           <Button
             onClick={() => setOpen(true)}
-            className="flex gap-3 items-center font-semibold"
+            className="flex gap-3 items-center font-semibold disabled:bg-zinc-600 disabled:text-white"
+            disabled={beneficiary?.status !== "eligible"}
             style={{ minWidth: "fit-content" }}
           >
             أضافة طلب جديد
             <SquareRoundCorner />
           </Button>
         </div>
+        {beneficiary?.status !== "eligible" && (
+          <p className="text-amber-600 text-sm w-full text-center">
+            حسابك قيد المراجعة. لا يمكنك طلب مساعدة أو تقديم شكوى حتى يتم توثيق حسابك.
+          </p>
+        )}
       </section>
 
       {showStepsSection && (

@@ -19,7 +19,7 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/routes/paths";
 import { toast } from "sonner";
@@ -38,7 +38,7 @@ const ActiveOrganization = () => {
   const { localOrgs, isFetching, isUpdating, isDeleting, error } =
     useAppSelector((state) => state.localOrg);
   const { accessToken } = useAppSelector((state) => state.auth);
-  const { areas } = useAppSelector((state) => state.areas);
+  const { areas, isFetching: areaFetching } = useAppSelector((state) => state.areas);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -93,9 +93,15 @@ const ActiveOrganization = () => {
     }
   };
 
-  const getAreaName = (areaId: number) => {
-    return areas.find((a) => a.id === areaId)?.name || `#${areaId}`;
-  };
+  const getAreaName = useCallback(
+    (areaId: number) => {
+      const name = areas.find((a) => a.id === areaId)?.name || `#${areaId}`;
+      console.log("areas , ", areas);
+      console.log("name , ", name);
+      return name;
+    },
+    [areas],
+  );
 
   const columns = useMemo<ColumnDef<ILocalOrg>[]>(() => {
     return [
@@ -161,10 +167,9 @@ const ActiveOrganization = () => {
         },
       },
     ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUpdating]);
+  }, [getAreaName, isUpdating]);
 
-  if (isFetching) {
+  if (isFetching || areaFetching) {
     return (
       <div className="flex justify-center gap-4 items-center h-40 text-zinc-500">
         جاري تحميل المنظمات...

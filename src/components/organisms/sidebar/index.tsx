@@ -1,4 +1,5 @@
 import { PATHS } from "@/routes/paths";
+
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ import {
   PackageOpen,
   Bell,
   Megaphone,
+  Building2,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "./style.css";
@@ -32,6 +34,9 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import RowForm from "@/components/molecules/rowForm";
 import { addAidAction } from "@/redux/slices/aidSlice";
+import { editLocalOrgAction } from "@/redux/slices/localOrgSlice";
+import { updateOrganization } from "@/redux/slices/authSlice";
+import { getAreas } from "@/redux/slices/areaSlice";
 import Spinner from "@/components/feedback/Spinner";
 import { getAidTypes } from "@/redux/slices/aidTypes";
 
@@ -56,8 +61,29 @@ const schemaCreateAidFrom: Yup.ObjectSchema<ICreateAidForm> = Yup.object({
   quantity: Yup.number().min(1, "القيمة غير صحيحة").required("الكمية مطلوبة"),
 });
 
+interface IEditOrgForm {
+  org_name: string;
+  focus_area: string;
+  staff_count: number;
+  area_id: number;
+  name: string;
+  phone: string;
+  password?: string;
+}
+
+const schemaEditOrgForm: Yup.ObjectSchema<IEditOrgForm> = Yup.object({
+  org_name: Yup.string().required("اسم المنظمة مطلوب"),
+  focus_area: Yup.string().required("مجال التركيز مطلوب"),
+  staff_count: Yup.number().min(0).required("عدد الموظفين مطلوب"),
+  area_id: Yup.number().min(1, "المنطقة مطلوبة").required("المنطقة مطلوبة"),
+  name: Yup.string().required("الاسم مطلوب"),
+  phone: Yup.string().required("رقم الهاتف مطلوب"),
+  password: Yup.string(),
+});
+
 const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
   const [open, setOpen] = useState(false);
+  const [openEditOrg, setOpenEditOrg] = useState(false);
   const [isMobileSider, setIsMobileSider] = useState<boolean>();
 
   const { organization, accessToken, user, role } = useAppSelector(
@@ -65,6 +91,8 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
   );
   const { aidTypes } = useAppSelector((state) => state.aidTypes);
   const { isCreating } = useAppSelector((state) => state.aids);
+  const { isUpdating } = useAppSelector((state) => state.localOrg);
+  const { areas } = useAppSelector((state) => state.areas);
   const dispatch = useAppDispatch();
 
   const {
@@ -74,11 +102,35 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
     register,
   } = useForm<ICreateAidForm>({ resolver: yupResolver(schemaCreateAidFrom) });
 
+  const {
+    formState: { errors: editOrgErrors },
+    handleSubmit: handleEditOrgSubmit,
+    reset: resetEditOrg,
+    register: registerEditOrg,
+  } = useForm<IEditOrgForm>({ resolver: yupResolver(schemaEditOrgForm) });
+
   const aidTypeError = errors["aidType"]?.message;
 
   useEffect(() => {
     if (accessToken) dispatch(getAidTypes(accessToken));
   }, [dispatch, accessToken]);
+
+  useEffect(() => {
+    if (openEditOrg && accessToken) {
+      dispatch(getAreas(accessToken));
+      if (organization) {
+        resetEditOrg({
+          org_name: organization.org_name,
+          focus_area: organization.focus_area,
+          staff_count: organization.staff_count,
+          area_id: organization.area_id,
+          name: organization.users?.name || user?.name || "",
+          phone: organization.users?.phone || user?.phone || "",
+          password: "",
+        });
+      }
+    }
+  }, [openEditOrg, accessToken, dispatch, organization, user, resetEditOrg]);
 
   useEffect(() => {
     const mobileSiderResizing = () => {
@@ -93,6 +145,41 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
       window.removeEventListener("resize", mobileSiderResizing);
     };
   }, []);
+
+  const handleEditOrgOnSubmit = async (data: IEditOrgForm) => {
+    if (!organization || !accessToken) {
+      toast.error("لم يتم العثور على بيانات المنظمة");
+      return;
+    }
+
+    const result = await dispatch(
+      editLocalOrgAction(
+        {
+          ...organization,
+          org_name: data.org_name,
+          focus_area: data.focus_area,
+          staff_count: data.staff_count,
+          area_id: data.area_id,
+          users: {
+            ...organization.users,
+            name: data.name,
+            phone: data.phone,
+          },
+          password: data.password || undefined,
+        } as any,
+        accessToken,
+      ),
+    );
+
+    if (result?.success && result.data) {
+      dispatch(updateOrganization(result.data));
+
+      setOpenEditOrg(false);
+      toast.success("تم تعديل بيانات المنظمة بنجاح");
+    } else {
+      toast.error("حدث خطأ أثناء تعديل البيانات");
+    }
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -260,14 +347,23 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
             </NavLink>
           )}
           {role === "local_org" && (
-            <Button
-              variant="gradient"
-              onClick={() => setOpen(true)}
-              className="rounded-md w-full mb-3 flex items-center gap-3 justify-center py-3 cursor-pointer"
-            >
-              <Plus size={18} />
-              {!isMobileSider && <p className="font-semibold"> اضافة شحنة</p>}
-            </Button>
+            <>
+              <Button
+                variant="gradient"
+                onClick={() => setOpen(true)}
+                className="rounded-md w-full mb-2 flex items-center gap-3 justify-center py-3 cursor-pointer"
+              >
+                <Plus size={18} />
+                {!isMobileSider && <p className="font-semibold"> اضافة شحنة</p>}
+              </Button>
+              <div
+                onClick={() => setOpenEditOrg(true)}
+                className="flex items-center gap-3 justify-center py-3 text-primary cursor-pointer rounded-md hover:bg-primary/10 transition-colors"
+              >
+                <Building2 size={18} />
+                {!isMobileSider && <p className="font-semibold"> تعديل بيانات المنظمة</p>}
+              </div>
+            </>
           )}
           <div
             className="flex items-center gap-3 justify-center py-3 text-red-800 cursor-pointer border-t border-t-zinc-400"
@@ -355,6 +451,130 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                   ارسال الشحنة
                 </Button>
               )}
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openEditOrg} onOpenChange={setOpenEditOrg}>
+        <DialogContent className="p-0 bg-[#EFF4FF] h-140 overflow-y-auto">
+          <DialogHeader className="mt-10 px-6 text-start!">
+            <DialogTitle dir="rtl">تعديل بيانات المنظمة</DialogTitle>
+            <DialogDescription dir="rtl">
+              قم بتعديل بيانات المنظمة التي ترغب في تحديثها
+            </DialogDescription>
+          </DialogHeader>
+
+          <form
+            className="bg-white p-6 flex flex-col gap-4 rounded-b-md"
+            onSubmit={handleEditOrgSubmit(handleEditOrgOnSubmit)}
+          >
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">اسم المنظمة</label>
+              <input
+                type="text"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.org_name ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditOrg("org_name")}
+              />
+              {editOrgErrors.org_name && (
+                <span className="text-sm text-rose-600">{editOrgErrors.org_name.message}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">مجال التركيز</label>
+              <input
+                type="text"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.focus_area ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditOrg("focus_area")}
+              />
+              {editOrgErrors.focus_area && (
+                <span className="text-sm text-rose-600">{editOrgErrors.focus_area.message}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">عدد الموظفين</label>
+              <input
+                type="number"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.staff_count ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditOrg("staff_count", { valueAsNumber: true })}
+              />
+              {editOrgErrors.staff_count && (
+                <span className="text-sm text-rose-600">{editOrgErrors.staff_count.message}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">المنطقة</label>
+              <select
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.area_id ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditOrg("area_id", { valueAsNumber: true })}
+              >
+                <option value="0">اختر المنطقة</option>
+                {areas.map((area) => (
+                  <option key={area.id} value={area.id}>
+                    {area.name}
+                  </option>
+                ))}
+              </select>
+              {editOrgErrors.area_id && (
+                <span className="text-sm text-rose-600">{editOrgErrors.area_id.message}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">اسم المسؤول</label>
+              <input
+                type="text"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.name ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditOrg("name")}
+              />
+              {editOrgErrors.name && (
+                <span className="text-sm text-rose-600">{editOrgErrors.name.message}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">رقم الهاتف</label>
+              <input
+                type="text"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.phone ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditOrg("phone")}
+              />
+              {editOrgErrors.phone && (
+                <span className="text-sm text-rose-600">{editOrgErrors.phone.message}</span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">كلمة المرور</label>
+              <input
+                type="password"
+                placeholder="اتركه فارغاً إذا لم ترد التغيير"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.password ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditOrg("password")}
+              />
+              {editOrgErrors.password && (
+                <span className="text-sm text-rose-600">{editOrgErrors.password.message}</span>
+              )}
+            </div>
+
+            <DialogFooter className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpenEditOrg(false)}
+              >
+                إلغاء
+              </Button>
+              <Button
+                disabled={isUpdating}
+                className="disabled:bg-zinc-300 disabled:cursor-not-allowed"
+                type="submit"
+              >
+                {isUpdating ? "جاري الحفظ..." : "حفظ التعديلات"}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

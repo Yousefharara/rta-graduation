@@ -107,6 +107,50 @@
 type Status = "pending" | "approved" | "preparing" | "shipping" | "delivered" | "rejected";
 ```
 
+### حالة المستفيد (Beneficiary Status)
+
+حالة المستفيد تتحكم في صلاحياته داخل النظام:
+
+| الحالة | المعنى | الصلاحيات |
+|--------|--------|-----------|
+| `pending` | قيد المراجعة (لم يتم توثيقه بعد) | ❌ لا يمكن طلب مساعدة أو شكوى |
+| `eligible` | موثّق ومؤهل | ✅ يمكن طلب مساعدة وشكوى |
+| `not_eligible` | غير مؤهل | ❌ لا يمكن طلب مساعدة أو شكوى |
+
+#### 1.3 تعديل بيانات المستفيد ← إعادة للحالة pending
+```
+[مستفيد eligible]
+   ↓
+يضغط "تعديل البيانات"
+   ↓
+يعدّل (المنطقة، حجم الأسرة، الدخل، عدد المرضى، ...)
+   ↓
+API: PUT /api/beneficiaries/:id ← مع status: "pending"
+   ↓
+في Redux:
+   ├── auth.beneficiary.status = "pending"  ← يفقد الصلاحية مؤقتاً
+   └── جميع طلباته تعود للحالة "pending"   ← تحتاج إعادة موافقة
+   ↓
+يظهر رسالة: "حسابك قيد المراجعة، لا يمكنك طلب مساعدة حتى يتم توثيق حسابك"
+   ↓
+[Admin يعيد تقييم البيانات]
+   ↓
+يغيّر الحالة إلى "eligible" ← يعود المستفيد للصلاحيات الكاملة
+```
+
+#### 1.4 منع المستفيد pending من الإجراءات
+**الملفات المعدلة:**
+- `src/components/pages/trackAidPage/trackAidUser/sections/trackAidUserHero.tsx` — تعطيل أزرار "إضافة طلب جديد" و"تقديم شكوى" عندما `beneficiary.status !== "eligible"`
+- `src/components/pages/trackAidPage/trackAidUser/sections/complaintDialog.tsx` — التحقق عند الإرسال ومنع تقديم الشكوى
+- `src/components/pages/trackAidPage/trackAidUser/sections/editBeneficiaryDialog.tsx` — إرسال `status: "pending"` مع بيانات التعديل + إعادة تعيين الطلبات
+
+**المبدأ:**
+```
+beneficiary.status === "eligible"  →  يمكنه: طلب مساعدة ✓  /  شكوى ✓
+beneficiary.status !== "eligible"  →  لا يمكنه: طلب مساعدة ✗  /  شكوى ✗
+                                  →  يظهر رسالة توضيحية
+```
+
 ---
 
 ## 2. نظام الإشعارات (Notification System)
@@ -273,6 +317,45 @@ POST /api/donations ← يرسل { guest_email, amount, campaign_id, guest_name(
 ### الأدوار
 - **local_org**: منظمة محلية تقدم خدمات إغاثة، لها صلاحيات محدودة في الـ Dashboard
 - **admin**: يدير المنظمات ويوثقها ولديه كامل الصلاحيات بخلاف اضافة الشحنات لانه ليس لديه الوقت لهذه الامور فيتركها لل local_org
+
+### تعديل بيانات المنظمة (local_org only)
+
+**الموقع:** الـ Sidebar → زر "تعديل بيانات المنظمة" (أيقونة `Building2`)
+
+**الملفات:**
+- `src/components/organisms/sidebar/index.tsx` — زر + Dialog التعديل
+- `src/redux/slices/authSlice.ts` — `updateOrganization` action لتحديث `state.auth.organization`
+- `src/redux/slices/localOrgSlice.ts` — `editLocalOrgAction` لاستدعاء API
+
+**الحقول القابلة للتعديل:**
+| الحقل | النوع | الوصف |
+|-------|-------|-------|
+| `org_name` | نص | اسم المنظمة |
+| `focus_area` | نص | مجال التركيز |
+| `staff_count` | رقم | عدد الموظفين |
+| `area_id` | اختيار | المنطقة (قائمة منسدلة) |
+| `name` | نص | اسم المسؤول |
+| `phone` | نص | رقم الهاتف |
+| `password` | كلمة سر | اختياري (تُرك فارغاً إذا لم يُرد التغيير) |
+
+**التدفق:**
+```
+[Local Org]
+   ↓
+يضغط "تعديل بيانات المنظمة" في الـ Sidebar
+   ↓
+يفتح Dialog مع البيانات الحالية
+   ↓
+يعدّل الحقول المطلوبة
+   ↓
+API: PUT /api/organizations/:id
+   ↓
+في Redux:
+   ├── localOrgsSlice → editLocalOrg (تحديث القائمة)
+   └── authSlice → updateOrganization (تحديث state.organization)
+   ↓
+Toast: "تم تعديل بيانات المنظمة بنجاح"
+```
 
 ### توثيق المنظمة (Verification)
 ```

@@ -10,12 +10,14 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { getAreas } from "@/redux/slices/areaSlice";
 import { editBeneficiaryAction } from "@/redux/slices/beneficiarySlice";
+import { updateBeneficiaryStatus } from "@/redux/slices/authSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import * as Yup from "yup";
+import { updateOrderStatus } from "@/redux/slices/beneficiaryOrderSlice";
 
 interface IEditBeneficiaryForm {
   area_id: number;
@@ -24,7 +26,7 @@ interface IEditBeneficiaryForm {
   patients_count: number;
   disabled_count: number;
   release_date: string;
-  password: string;
+  password?: string | null;
 }
 
 interface Props {
@@ -45,7 +47,7 @@ const schema: Yup.ObjectSchema<IEditBeneficiaryForm> = Yup.object({
     .required("عدد ذوي الإعاقة مطلوب")
     .min(0, "لا يمكن أن يكون سالباً"),
   release_date: Yup.string().required("تاريخ الإصدار مطلوب"),
-  password: Yup.string().min(6, "خطأ ").required(),
+  password: Yup.string().min(6, "خطأ").nullable().optional(),
 });
 
 const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {
@@ -55,6 +57,7 @@ const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {
   const { areas } = useAppSelector((state) => state.areas);
   const { accessToken } = useAppSelector((state) => state.auth);
   const { isUpdating } = useAppSelector((state) => state.beneficiaries);
+  const { orders } = useAppSelector((state) => state.beneficiaryOrders);
 
   const {
     formState: { errors },
@@ -97,6 +100,7 @@ const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {
       editBeneficiaryAction(
         {
           ...beneficiary,
+          status: "pending",
           area_id: data.area_id,
           family_size: data.family_size,
           income: data.income,
@@ -110,6 +114,12 @@ const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {
     );
 
     if (result?.success) {
+      dispatch(updateBeneficiaryStatus({ status: "pending" }));
+      orders
+        .filter((o) => o.beneficiary_id === beneficiary.id && o.status !== "pending")
+        .forEach((o) => {
+          dispatch(updateOrderStatus({ id: o.id, status: "pending" }));
+        });
       setOpen(false);
       toast.success("تم تعديل البيانات بنجاح");
     } else {

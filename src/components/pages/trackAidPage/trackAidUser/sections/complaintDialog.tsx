@@ -62,6 +62,11 @@ const ComplaintDialog = ({ open = false, setOpen }: IPorps) => {
       return;
     }
 
+    if (beneficiary.status !== "eligible") {
+      toast.error("حسابك قيد المراجعة، لا يمكنك تقديم شكوى حتى يتم توثيق حسابك");
+      return;
+    }
+
     const result = await dispatch(
       addComplaintAction(
         { ...data, beneficiary_id: beneficiary.id },

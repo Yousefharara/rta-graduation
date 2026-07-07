@@ -36,7 +36,7 @@ const schemaRegisterLocalOrgFrom: Yup.ObjectSchema<IRegisterLocalOrgForm> =
   Yup.object({
     name: Yup.string().min(3, "الاسم غير صحيح").required("الاسم مطلوب"),
     email: Yup.string().email().required("البريد اللكتروني مطلوب"),
-    password: Yup.string().min(5).required("كلمة المرور مطلوية"),
+    password: Yup.string().min(5),
     phone: Yup.string().min(10).required("رقم الجوال مطلوب"),
     org_name: Yup.string().min(3).required("الاسم بالانجليزي مطلوب"),
     area_id: Yup.number().required(),
@@ -99,7 +99,8 @@ const DashboardOrgRegister = () => {
             name: data.name,
             email: data.email || editOrg.users.email,
             phone: data.phone,
-          },
+            password: data.password || undefined,
+          } as any,
           accessToken || "",
         ),
       );
@@ -122,6 +123,7 @@ const DashboardOrgRegister = () => {
               email: data.email || editOrg.users.email,
               phone: data.phone,
             },
+            password: data.password || undefined,
           },
           accessToken || "",
         ),
