@@ -20,6 +20,8 @@ import {
   Bell,
   Megaphone,
   Building2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "./style.css";
@@ -35,7 +37,8 @@ import * as Yup from "yup";
 import RowForm from "@/components/molecules/rowForm";
 import { addAidAction } from "@/redux/slices/aidSlice";
 import { editLocalOrgAction } from "@/redux/slices/localOrgSlice";
-import { updateOrganization } from "@/redux/slices/authSlice";
+import { updateOrganization, updateUser } from "@/redux/slices/authSlice";
+import { editUserAction } from "@/redux/slices/userSlice";
 import { getAreas } from "@/redux/slices/areaSlice";
 import Spinner from "@/components/feedback/Spinner";
 import { getAidTypes } from "@/redux/slices/aidTypes";
@@ -81,9 +84,28 @@ const schemaEditOrgForm: Yup.ObjectSchema<IEditOrgForm> = Yup.object({
   password: Yup.string(),
 });
 
+interface IEditAdminForm {
+  name: string;
+  email: string;
+  phone: string;
+  password?: string;
+}
+
+const schemaEditAdminForm: Yup.ObjectSchema<IEditAdminForm> = Yup.object({
+  name: Yup.string().required("الاسم مطلوب"),
+  email: Yup.string()
+    .email("البريد الإلكتروني غير صحيح")
+    .required("البريد الإلكتروني مطلوب"),
+  phone: Yup.string().required("رقم الهاتف مطلوب"),
+  password: Yup.string(),
+});
+
 const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
   const [open, setOpen] = useState(false);
   const [openEditOrg, setOpenEditOrg] = useState(false);
+  const [openEditAdmin, setOpenEditAdmin] = useState(false);
+  const [showOrgPassword, setShowOrgPassword] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [isMobileSider, setIsMobileSider] = useState<boolean>();
 
   const { organization, accessToken, user, role } = useAppSelector(
@@ -109,11 +131,29 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
     register: registerEditOrg,
   } = useForm<IEditOrgForm>({ resolver: yupResolver(schemaEditOrgForm) });
 
+  const {
+    formState: { errors: editAdminErrors },
+    handleSubmit: handleEditAdminSubmit,
+    reset: resetEditAdmin,
+    register: registerEditAdmin,
+  } = useForm<IEditAdminForm>({ resolver: yupResolver(schemaEditAdminForm) });
+
   const aidTypeError = errors["aidType"]?.message;
 
   useEffect(() => {
     if (accessToken) dispatch(getAidTypes(accessToken));
   }, [dispatch, accessToken]);
+
+  useEffect(() => {
+    if (openEditAdmin && user) {
+      resetEditAdmin({
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        password: "",
+      });
+    }
+  }, [openEditAdmin, user, resetEditAdmin]);
 
   useEffect(() => {
     if (openEditOrg && accessToken) {
@@ -176,6 +216,32 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
 
       setOpenEditOrg(false);
       toast.success("تم تعديل بيانات المنظمة بنجاح");
+    } else {
+      toast.error("حدث خطأ أثناء تعديل البيانات");
+    }
+  };
+
+  const handleEditAdminOnSubmit = async (data: IEditAdminForm) => {
+    if (!user || !accessToken) {
+      toast.error("لم يتم العثور على بيانات المستخدم");
+      return;
+    }
+
+    const body: Partial<IEditAdminForm & { id?: number }> = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+    };
+    if (data.password) body.password = data.password;
+
+    const result = await dispatch(
+      editUserAction(user.id, body as Partial<IUser>, accessToken),
+    );
+
+    if (result?.success && result.data) {
+      dispatch(updateUser(result.data));
+      setOpenEditAdmin(false);
+      toast.success("تم تعديل البيانات بنجاح");
     } else {
       toast.error("حدث خطأ أثناء تعديل البيانات");
     }
@@ -304,15 +370,19 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
             </li>
 
             {role === "admin" && (
-              <li>
-                <NavLink
-                  className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
-                  to={PATHS.DASHBOARD.AIDS}
-                >
-                  <PackageOpen />
-                  {!isMobileSider && <p className="font-semibold">المساعدات</p>}
-                </NavLink>
-              </li>
+              <>
+                <li>
+                  <NavLink
+                    className="flex items-center gap-3 justify-center text-primary-foreground p-4 rounded-lg sm:justify-start"
+                    to={PATHS.DASHBOARD.AIDS}
+                  >
+                    <PackageOpen />
+                    {!isMobileSider && (
+                      <p className="font-semibold">المساعدات</p>
+                    )}
+                  </NavLink>
+                </li>
+              </>
             )}
 
             <li>
@@ -337,6 +407,22 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
         </article>
 
         <div className="mt-auto">
+          
+
+          {role === "admin" && (
+            <li>
+              <div
+                onClick={() => setOpenEditAdmin(true)}
+                className="flex items-center gap-3 justify-center py-3 text-primary cursor-pointer rounded-md hover:bg-primary/10 transition-colors sm:px-4"
+              >
+                <Building2 size={18} />
+                {!isMobileSider && (
+                  <p className="font-semibold">تعديل البيانات الشخصية</p>
+                )}
+              </div>
+            </li>
+          )}
+
           {role !== "local_org" && (
             <NavLink
               to={PATHS.DASHBOARD.ORG_REGISTER}
@@ -346,6 +432,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
               {!isMobileSider && <p className="font-semibold"> تسجيل منظمه</p>}
             </NavLink>
           )}
+
           {role === "local_org" && (
             <>
               <Button
@@ -361,7 +448,9 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 className="flex items-center gap-3 justify-center py-3 text-primary cursor-pointer rounded-md hover:bg-primary/10 transition-colors"
               >
                 <Building2 size={18} />
-                {!isMobileSider && <p className="font-semibold"> تعديل بيانات المنظمة</p>}
+                {!isMobileSider && (
+                  <p className="font-semibold"> تعديل بيانات المنظمة</p>
+                )}
               </div>
             </>
           )}
@@ -477,7 +566,9 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 {...registerEditOrg("org_name")}
               />
               {editOrgErrors.org_name && (
-                <span className="text-sm text-rose-600">{editOrgErrors.org_name.message}</span>
+                <span className="text-sm text-rose-600">
+                  {editOrgErrors.org_name.message}
+                </span>
               )}
             </div>
 
@@ -489,7 +580,9 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 {...registerEditOrg("focus_area")}
               />
               {editOrgErrors.focus_area && (
-                <span className="text-sm text-rose-600">{editOrgErrors.focus_area.message}</span>
+                <span className="text-sm text-rose-600">
+                  {editOrgErrors.focus_area.message}
+                </span>
               )}
             </div>
 
@@ -501,7 +594,9 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 {...registerEditOrg("staff_count", { valueAsNumber: true })}
               />
               {editOrgErrors.staff_count && (
-                <span className="text-sm text-rose-600">{editOrgErrors.staff_count.message}</span>
+                <span className="text-sm text-rose-600">
+                  {editOrgErrors.staff_count.message}
+                </span>
               )}
             </div>
 
@@ -519,7 +614,9 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 ))}
               </select>
               {editOrgErrors.area_id && (
-                <span className="text-sm text-rose-600">{editOrgErrors.area_id.message}</span>
+                <span className="text-sm text-rose-600">
+                  {editOrgErrors.area_id.message}
+                </span>
               )}
             </div>
 
@@ -531,7 +628,9 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 {...registerEditOrg("name")}
               />
               {editOrgErrors.name && (
-                <span className="text-sm text-rose-600">{editOrgErrors.name.message}</span>
+                <span className="text-sm text-rose-600">
+                  {editOrgErrors.name.message}
+                </span>
               )}
             </div>
 
@@ -543,20 +642,33 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 {...registerEditOrg("phone")}
               />
               {editOrgErrors.phone && (
-                <span className="text-sm text-rose-600">{editOrgErrors.phone.message}</span>
+                <span className="text-sm text-rose-600">
+                  {editOrgErrors.phone.message}
+                </span>
               )}
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold">كلمة المرور</label>
-              <input
-                type="password"
-                placeholder="اتركه فارغاً إذا لم ترد التغيير"
-                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.password ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
-                {...registerEditOrg("password")}
-              />
+              <div className="relative">
+                <input
+                  type={showOrgPassword ? "text" : "password"}
+                  placeholder="اتركه فارغاً إذا لم ترد التغيير"
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editOrgErrors.password ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                  {...registerEditOrg("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowOrgPassword(!showOrgPassword)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showOrgPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {editOrgErrors.password && (
-                <span className="text-sm text-rose-600">{editOrgErrors.password.message}</span>
+                <span className="text-sm text-rose-600">
+                  {editOrgErrors.password.message}
+                </span>
               )}
             </div>
 
@@ -574,6 +686,104 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
                 type="submit"
               >
                 {isUpdating ? "جاري الحفظ..." : "حفظ التعديلات"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openEditAdmin} onOpenChange={setOpenEditAdmin}>
+        <DialogContent className="p-0 bg-[#EFF4FF]">
+          <DialogHeader className="mt-10 px-6 text-start!">
+            <DialogTitle dir="rtl">تعديل البيانات الشخصية</DialogTitle>
+            <DialogDescription dir="rtl">
+              قم بتعديل بياناتك الشخصية التي ترغب في تحديثها
+            </DialogDescription>
+          </DialogHeader>
+
+          <form
+            className="bg-white p-6 flex flex-col gap-4 rounded-b-md"
+            onSubmit={handleEditAdminSubmit(handleEditAdminOnSubmit)}
+          >
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">الاسم</label>
+              <input
+                type="text"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editAdminErrors.name ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditAdmin("name")}
+              />
+              {editAdminErrors.name && (
+                <span className="text-sm text-rose-600">
+                  {editAdminErrors.name.message}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">البريد الإلكتروني</label>
+              <input
+                type="email"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editAdminErrors.email ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditAdmin("email")}
+              />
+              {editAdminErrors.email && (
+                <span className="text-sm text-rose-600">
+                  {editAdminErrors.email.message}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">رقم الهاتف</label>
+              <input
+                type="text"
+                className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editAdminErrors.phone ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                {...registerEditAdmin("phone")}
+              />
+              {editAdminErrors.phone && (
+                <span className="text-sm text-rose-600">
+                  {editAdminErrors.phone.message}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold">كلمة المرور</label>
+              <div className="relative">
+                <input
+                  type={showAdminPassword ? "text" : "password"}
+                  placeholder="اتركه فارغاً إذا لم ترد التغيير"
+                  className={`px-4 py-3 bg-transparent w-full text-sm rounded-md outline-offset-4 border ${editAdminErrors.password ? "outline-rose-500 border-rose-500" : "outline-gray-300 border-gray-300"}`}
+                  {...registerEditAdmin("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAdminPassword(!showAdminPassword)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showAdminPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {editAdminErrors.password && (
+                <span className="text-sm text-rose-600">
+                  {editAdminErrors.password.message}
+                </span>
+              )}
+            </div>
+
+            <DialogFooter className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpenEditAdmin(false)}
+              >
+                إلغاء
+              </Button>
+              <Button
+                className="disabled:bg-zinc-300 disabled:cursor-not-allowed"
+                type="submit"
+              >
+                حفظ التعديلات
               </Button>
             </DialogFooter>
           </form>

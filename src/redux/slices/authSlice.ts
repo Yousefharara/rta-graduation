@@ -80,10 +80,13 @@ const authSlice = createSlice({
     updateOrganization: (state, action: PayloadAction<ILocalOrg>) => {
       state.organization = action.payload;
     },
+    updateUser: (state, action: PayloadAction<IUser>) => {
+      state.user = action.payload;
+    },
   },
 });
 
-export const { login, updateTokens, logout, setError, setLoading, updateBeneficiaryStatus, updateOrganization } =
+export const { login, updateTokens, logout, setError, setLoading, updateBeneficiaryStatus, updateOrganization, updateUser } =
   authSlice.actions;
 
 export default authSlice.reducer;

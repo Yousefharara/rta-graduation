@@ -359,6 +359,42 @@ API: PUT /api/organizations/:id
 Toast: "تم تعديل بيانات المنظمة بنجاح"
 ```
 
+### تعديل البيانات الشخصية (Admin only)
+
+**الموقع:** الـ Sidebar → زر "تعديل البيانات الشخصية" (أيقونة `Building2`) — يظهر فقط لـ `role === "admin"`
+
+**الملفات:**
+- `src/components/organisms/sidebar/index.tsx` — زر + Dialog التعديل
+- `src/redux/slices/authSlice.ts` — `updateUser` action لتحديث `state.auth.user`
+- `src/redux/slices/userSlice.ts` — `editUserAction` لاستدعاء API
+
+**الحقول القابلة للتعديل:**
+| الحقل | النوع | الوصف |
+|-------|-------|-------|
+| `name` | نص | الاسم |
+| `email` | بريد إلكتروني | البريد الإلكتروني |
+| `phone` | نص | رقم الهاتف |
+| `password` | كلمة سر | اختياري (تُرك فارغاً إذا لم يُرد التغيير) |
+
+**التدفق:**
+```
+[Admin]
+   ↓
+يضغط "تعديل البيانات الشخصية" في الـ Sidebar
+   ↓
+يفتح Dialog مع البيانات الحالية
+   ↓
+يعدّل الحقول المطلوبة
+   ↓
+API: PUT /api/users/:id
+   ↓
+في Redux:
+   ├── userSlice → editUser (تحديث القائمة)
+   └── authSlice → updateUser (تحديث state.user)
+   ↓
+Toast: "تم تعديل البيانات بنجاح"
+```
+
 ### توثيق المنظمة (Verification)
 ```
 [Local Org تسجل]
