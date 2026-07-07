@@ -42,9 +42,9 @@ const DashboardCampaigns = lazy(
   () => import("@/components/pages/dashboard/dashboardCampaigns"),
 );
 
-// ! -----------------------------------------------------------------
-// ? ------------------- User Routes ---------------------------------
-// ! -----------------------------------------------------------------
+const NotFoundPage = lazy(
+  () => import("@/components/pages/notFoundPage"),
+);
 
 const userRoutes: RouteObject[] = [
   {
@@ -190,7 +190,7 @@ const guestRoutes: RouteObject[] = [
 const errorRoutes: RouteObject[] = [
   {
     path: PATHS.ERROR.PAGE_NOT_FOUNT,
-    element: <h2>Page not found 404</h2>,
+    element: <NotFoundPage />,
   },
   {
     path: "*",
