@@ -18,7 +18,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { Input as InputUI } from "@/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { getCampaigns } from "@/redux/slices/campaignSlice";
 import Error from "@/components/feedback/Error";
@@ -34,6 +33,7 @@ const defaultValues: IDonationForm = {
   cardNumber: "",
   endDate: new Date(),
   CVV: 0,
+  email: null,
 };
 
 const schemaDonationForm: Yup.ObjectSchema<IDonationForm> = Yup.object({
@@ -45,6 +45,10 @@ const schemaDonationForm: Yup.ObjectSchema<IDonationForm> = Yup.object({
   nameOfCard: Yup.string().required(""),
   cardNumber: Yup.string().required(""),
   endDate: Yup.date().required(""),
+  email: Yup.string()
+    .email("البريد الذي ادخلته غير صحيح")
+    .nullable()
+    .optional(),
   CVV: Yup.number().required(""),
 });
 
@@ -55,6 +59,7 @@ const DonationForm = () => {
     reset,
     watch,
     register,
+    getValues,
   } = useForm<IDonationForm>({ resolver: yupResolver(schemaDonationForm) });
   const { campaigns, isFetching, error } = useAppSelector(
     (state) => state.campaigns,
@@ -63,7 +68,6 @@ const DonationForm = () => {
 
   // ! State
   const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
   const [pendingData, setPendingData] = useState<IDonationForm | null>(null);
   const [budget, setBudget] = useState<number>(10);
 
@@ -107,17 +111,18 @@ const DonationForm = () => {
     const finalBudget = pendingData.customBudget || pendingData.budget;
 
     if (finalBudget <= 0) return;
-    console.log({
+    console.log("===> in clg ===> : ", {
       ...pendingData,
       budget: finalBudget,
-      email,
+      guest_email: pendingData.email,
     });
     dispatch(
       addDonationAction({
         ...pendingData,
+        guest_name: pendingData.nameOfCard,
+        guest_email: getValues("email") || null,
         amount: finalBudget,
         currency: "USD",
-        guest_email: email,
       }),
     );
 
@@ -150,14 +155,11 @@ const DonationForm = () => {
     reset(defaultValues);
 
     setBudget(10);
-
-    setEmail("");
     setPendingData(null);
     setOpen(false);
   };
 
   return (
-    <>
       <form
         className="donation-grid grid gap-8"
         onSubmit={handleSubmit(handleOnSubmit)}
@@ -234,7 +236,7 @@ const DonationForm = () => {
                   </div>
                   <div className="flex justify-between items-center mt-1">
                     <small>
-                      تم جمع {percentage ? percentage : "غير محدود"}%
+                      تم جمع {percentage ? percentage : ""}%
                     </small>
                     <small>المستهدف {campaign.target_amount}$</small>
                   </div>
@@ -392,7 +394,7 @@ const DonationForm = () => {
             </p>
           </article>
         </section>
-      </form>
+      
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
@@ -404,11 +406,12 @@ const DonationForm = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <InputUI
+          <RowForm<IDonationForm>
+            register={register}
+            errors={errors}
+            label="email"
             type="email"
             placeholder="example@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           />
 
           <DialogFooter>
@@ -418,7 +421,8 @@ const DonationForm = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+
+      </form>
   );
 };
 

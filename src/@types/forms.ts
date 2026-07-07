@@ -28,6 +28,7 @@ export interface IDonationForm {
   cardNumber: string;
   endDate: Date;
   CVV: number;
+  email?: string | null;
 }
 
 export interface ISendOrderForm {

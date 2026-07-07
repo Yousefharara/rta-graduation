@@ -92,9 +92,13 @@ export const setLogin = (body: ILoginAuth) => async (dispatch: AppDispatch) => {
     console.log("data test login : ", data);
     dispatch(login(data));
   } catch (err) {
-    if (err instanceof Error)
-      dispatch(setError("خطـأ في اسم المستخدم او كلمه المرور"));
-    else dispatch(setError("حدث خطأ غير معروف حاول مرة أخرى "));
+    if (err instanceof Error) {
+      if (err.message === "Request failed with status code 401")
+        dispatch(setError("خطـأ في اسم المستخدم او كلمه المرور"));
+      else if (err.message === "Request failed with status code 403")
+        dispatch(setError("انت غير مصرح بالدخول"));
+      else dispatch(setError(err.message));
+    }
   } finally {
     dispatch(setLoading(false));
   }
