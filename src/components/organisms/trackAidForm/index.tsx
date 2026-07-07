@@ -34,6 +34,7 @@ const TrackAidForm = () => {
   const { isLoading, error } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
+    dispatch(setError(null));
     return () => {
       dispatch(setError(null));
     };

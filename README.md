@@ -5,12 +5,6 @@ The system helps administrators and local organizations manage beneficiaries, mo
 
 ---
 
-## Live Demo
-
-🔗 [Live Demo](https://rta-graduation.vercel.app/)
-
----
-
 ## Project Overview
 
 The platform aims to solve common challenges in humanitarian aid distribution such as:
@@ -31,26 +25,21 @@ The system provides a centralized platform for managing aid operations while sup
 - Manage local organization accounts
 - Manage beneficiaries and user accounts
 - Monitor aid distribution operations
-- Generate transparency reports
-- Manage aid categories and distribution cycles
 
 ### Local Organization Features
 - Add and manage beneficiaries
 - Verify beneficiary eligibility
 - Manage aid distribution operations
-- Scan QR codes during distribution
 - Work in offline mode with synchronization support
 
 ### Beneficiary Features
 - Login using generated credentials
 - Track aid distribution status
 - View previously received aid batches
-- Receive notifications related to aid delivery
 
 ### Donor Features
 - Donate through the platform without account registration
-- View aid statistics and campaign information
-- Receive donation updates through email notifications
+- View campaign information
 
 ---
 

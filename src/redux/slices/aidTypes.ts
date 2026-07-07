@@ -7,14 +7,14 @@ import type { IAidType } from "@/@types/aidType";
 import type { ICreateAid } from "@/@types/aid";
 
 interface IAidTypesState {
-  errorMessage: string | null;
+  error: string | null;
   isLoading: boolean;
   aidTypes: IAidType[];
   aidType: IAidType | null;
 }
 
 const initialState: IAidTypesState = {
-  errorMessage: "",
+  error: null,
   isLoading: false,
   aidTypes: [],
   aidType: null,
@@ -28,7 +28,7 @@ const aidTypesSlice = createSlice({
       state.isLoading = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
-      state.errorMessage = action.payload;
+      state.error = action.payload;
     },
     setAidTypes: (state, action: PayloadAction<IAidType[]>) => {
       state.aidTypes = action.payload;

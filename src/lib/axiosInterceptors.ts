@@ -3,6 +3,11 @@ import { addToQueue } from "./syncService";
 import { toast } from "sonner";
 
 const MUTATION_METHODS = ["post", "put", "patch", "delete"];
+const AUTH_ENDPOINTS = ["/api/auth/"];
+
+function isAuthEndpoint(url: string): boolean {
+  return AUTH_ENDPOINTS.some((prefix) => url.includes(prefix));
+}
 
 function getTableName(url: string): string {
   const parts = url.replace(/^\/api\//, "").split("/");
@@ -36,6 +41,7 @@ export function setupAxiosInterceptors() {
       const methodLower = method?.toLowerCase() || "";
 
       if (!MUTATION_METHODS.includes(methodLower)) return Promise.reject(error);
+      if (isAuthEndpoint(url || "")) return Promise.reject(error);
 
       error.config._offlineHandled = true;
 

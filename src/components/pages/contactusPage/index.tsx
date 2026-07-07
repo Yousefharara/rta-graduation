@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import ContactForm from "../../organisms/contactForm";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
 const ContactusPage = () => {
   return (
@@ -44,15 +44,6 @@ const ContactusPage = () => {
                 <div>
                   <small>رقم الهاتف</small>
                   <p dir="ltr">+970 800 123 4567</p>
-                </div>
-              </li>
-              <li className="flex gap-4 items-center">
-                <div className="flex justify-center items-center rounded-md p-3 bg-[#195CCC]">
-                  <MapPin size={18} />
-                </div>
-                <div>
-                  <small>المكتب الرئيسي</small>
-                  <p>غزة, حي الرمال</p>
                 </div>
               </li>
             </ul>

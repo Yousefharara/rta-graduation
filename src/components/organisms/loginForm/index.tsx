@@ -5,11 +5,11 @@ import Button from "../../atoms/button";
 import RowForm from "../../molecules/rowForm";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { setLogin } from "../../../redux/slices/authSlice";
+import { setLogin, setError } from "../../../redux/slices/authSlice";
 import type { ILoginForm } from "@/@types/forms";
 import Spinner from "@/components/feedback/Spinner";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const schemaLoginFrom: Yup.ObjectSchema<ILoginForm> = Yup.object({
   email: Yup.string().email().required(),
@@ -28,6 +28,10 @@ const LoginForm = () => {
   } = useForm<ILoginForm>({ resolver: yupResolver(schemaLoginFrom) });
   const dispatch = useAppDispatch();
   const { user, isLoading, error } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(setError(null));
+  }, [dispatch]);
 
   const handleOnSubmit = (data: ILoginForm) => {
     dispatch(setLogin(data));

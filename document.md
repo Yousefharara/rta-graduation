@@ -418,6 +418,7 @@ POST /api/sync لكل عملية في الطابور
 - فقط **auth reducer** هو اللي مستمر عبر `redux-persist` إلى localStorage
 - الـ `useNetworkStatus` hook موجود لكن غير مربوط بأي واجهة مستخدم حالياً
 - `/api/sync` endpoint لازم يكون موجود عالسيرفر عشان المزامنة تشتغل
+- **مسارات المصادقة** (`/api/auth/*`) **مستثناة** من الـ offline queue — لأن تسجيل الدخول لا يمكن مزامنته لاحقاً (الـ toast والـ queue يطبق فقط على عمليات CRUD العادية)
 
 ---
 

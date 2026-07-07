@@ -13,7 +13,7 @@ interface IAreaState {
 }
 
 const initialState: IAreaState = {
-  error: "",
+  error: null,
   isFetching: false,
   areas: [],
   area: null,
