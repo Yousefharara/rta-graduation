@@ -31,7 +31,7 @@ const DashbaordTemplate = ({
         isMobile={isMobile}
         handleCloseAside={handleCloseAside}
       />
-      <main className="w-full min-h-screen flex flex-col gap-4">
+      <main className="flex-1 min-w-0 min-h-screen flex flex-col gap-4">
         <OfflineBanner />
         <NavbarDashboard handleOpenAside={handleOpenAside} />
         <article className="w-full rounded-lg my-10 min-h-screen p-4">

@@ -135,7 +135,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
   return (
     <>
       <aside
-        className={`border-r flex flex-col gap-4 border-r-gray-300 transition-all duration-200 z-30 sticky bg-[#E0E9FD] p-4 top-0 h-screen overflow-y-auto basis-1/4 rounded-lg max-lg:-left-full max-lg:fixed
+        className={`border-r flex flex-col gap-4 border-r-gray-300 transition-all duration-200 z-30 sticky bg-[#E0E9FD] p-4 top-0 h-screen overflow-y-auto basis-1/4 shrink-0 rounded-lg max-lg:-left-full max-lg:fixed
             ${isOpenAside && isMobile ? "max-lg:left-0 max-lg:w-1/3 max-lg:basis-0" : ""}`}
       >
         <div className="flex justify-between">
