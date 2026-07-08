@@ -4,7 +4,6 @@ import type { ICreateLocalOrg } from "./localOrg";
 export interface ILoginForm {
   email: string;
   password: string;
-  remeberMe: boolean;
 }
 
 export interface IContactForm {
