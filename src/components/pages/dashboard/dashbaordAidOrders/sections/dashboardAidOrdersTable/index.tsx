@@ -32,7 +32,7 @@ import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
 import type { IBeneficiaryOrder } from "@/@types/beneficiaryOrder";
 import type { IBeneficiaryAid } from "@/@types/beneficiaryAid";
 import Spinner from "@/components/feedback/Spinner";
-import Error from "@/components/feedback/Error";
+// import Error from "@/components/feedback/Error";
 import { getAidTypes } from "@/redux/slices/aidTypes";
 import { editAidDeductAction, getAids } from "@/redux/slices/aidSlice";
 import { toast } from "sonner";

@@ -27,4 +27,5 @@ export interface ILocalOrg {
   focus_area: string;
   staff_count: number;
   users: IUser;
+  password?: string;
 }

@@ -91,7 +91,9 @@ const DashboardBeneficiaryRegister = () => {
   const isOnline = useNetworkStatus();
   const navigate = useNavigate();
   const { accessToken } = useAppSelector((state) => state.auth);
-  const { isCreating, isUpdating, error } = useAppSelector(
+  const { isCreating, isUpdating, 
+    // error
+   } = useAppSelector(
     (state) => state.beneficiaries,
   );
   const { isFetching, governorates } = useAppSelector(

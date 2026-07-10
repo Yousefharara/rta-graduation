@@ -44,6 +44,7 @@ import { editUserAction } from "@/redux/slices/userSlice";
 import { getAreas } from "@/redux/slices/areaSlice";
 import Spinner from "@/components/feedback/Spinner";
 import { getAidTypes } from "@/redux/slices/aidTypes";
+import type { IUser } from "@/@types/user";
 
 interface ISidebar {
   isOpenAside: boolean;
