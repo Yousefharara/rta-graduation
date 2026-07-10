@@ -264,7 +264,8 @@ const TrackAidUserHero = () => {
         </div>
         {beneficiary?.status !== "eligible" && (
           <p className="text-amber-600 text-sm w-full text-center">
-            حسابك قيد المراجعة. لا يمكنك طلب مساعدة أو تقديم شكوى حتى يتم توثيق حسابك.
+            حسابك قيد المراجعة. لا يمكنك طلب مساعدة أو تقديم شكوى حتى يتم توثيق
+            حسابك.
           </p>
         )}
       </section>

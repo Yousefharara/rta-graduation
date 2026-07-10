@@ -42,9 +42,7 @@ const DashboardCampaigns = lazy(
   () => import("@/components/pages/dashboard/dashboardCampaigns"),
 );
 
-const NotFoundPage = lazy(
-  () => import("@/components/pages/notFoundPage"),
-);
+const NotFoundPage = lazy(() => import("@/components/pages/notFoundPage"));
 
 const userRoutes: RouteObject[] = [
   {

@@ -1,6 +1,7 @@
 import NavbarDashboard from "@/components/organisms/navbarDashboard";
 import Sidebar from "@/components/organisms/sidebar";
 import OfflineBanner from "@/components/feedback/OfflineBanner";
+import SyncIndicator from "@/components/feedback/SyncIndicator";
 import type { ReactNode } from "react";
 
 interface IDashbaordTemplate {
@@ -38,6 +39,7 @@ const DashbaordTemplate = ({
           {/* main content */}
           <div className="w-full ">{children}</div>
         </article>
+        <SyncIndicator />
       </main>
     </article>
   );

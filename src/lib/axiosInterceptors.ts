@@ -1,6 +1,5 @@
 import axios from "axios";
-import { addToQueue } from "./syncService";
-import { toast } from "sonner";
+import { addToQueue, isSyncing, type QueuedActionName } from "./syncService";
 
 const MUTATION_METHODS = ["post", "put", "patch", "delete"];
 const AUTH_ENDPOINTS = ["/api/auth/"];
@@ -9,19 +8,98 @@ function isAuthEndpoint(url: string): boolean {
   return AUTH_ENDPOINTS.some((prefix) => url.includes(prefix));
 }
 
-function getTableName(url: string): string {
-  const parts = url.replace(/^\/api\//, "").split("/");
-  return parts[0] || "unknown";
+const SYNC_ENDPOINTS: {
+  pattern: RegExp;
+  method: string;
+  actionName: QueuedActionName;
+  extractArgs: (
+    url: string,
+    data: Record<string, unknown> | undefined,
+  ) => unknown[];
+}[] = [
+  {
+    pattern: /\/api\/beneficiaries$/,
+    method: "post",
+    actionName: "addBeneficiaryAction",
+    extractArgs: (_url, data) => [data, ""],
+  },
+  {
+    pattern: /\/api\/aids$/,
+    method: "post",
+    actionName: "addAidAction",
+    extractArgs: (_url, data) => [data, ""],
+  },
+  {
+    pattern: /\/api\/beneficiary-orders\/(\d+)$/,
+    method: "put",
+    actionName: "updateBeneficiaryOrderStatusAction",
+    extractArgs: (url, data) => {
+      const id = Number(
+        url.match(/\/api\/beneficiary-orders\/(\d+)/)?.[1] || 0,
+      );
+      return [id, (data as { status?: string })?.status || "pending", ""];
+    },
+  },
+  {
+    pattern: /\/api\/beneficiary-aids\/(\d+)$/,
+    method: "put",
+    actionName: "editBeneficiaryAidStatus",
+    extractArgs: (url, data) => {
+      const id = Number(url.match(/\/api\/beneficiary-aids\/(\d+)/)?.[1] || 0);
+      return [id, (data as { status?: string })?.status || "pending", ""];
+    },
+  },
+  {
+    pattern: /\/api\/beneficiary-aids$/,
+    method: "post",
+    actionName: "createBeneficiaryAidAction",
+    extractArgs: (_url, data) => [data, ""],
+  },
+  {
+    pattern: /\/api\/aids\/(\d+)\/deduct$/,
+    method: "patch",
+    actionName: "editAidDeductAction",
+    extractArgs: (url, data) => {
+      const id = Number(url.match(/\/api\/aids\/(\d+)\/deduct/)?.[1] || 0);
+      return [id, (data as { quantity?: number })?.quantity || 1, ""];
+    },
+  },
+];
+
+function getTokenFromConfig(error: {
+  config?: { headers?: Record<string, string> };
+}): string | null {
+  const authHeader = error.config?.headers?.Authorization || "";
+  return authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
 }
 
-function getRecordId(url: string, method: string): number | null {
-  if (method === "delete" || method === "put" || method === "patch") {
-    const parts = url.replace(/^\/api\//, "").split("/");
-    const last = parts[parts.length - 1];
-    const id = Number(last);
-    return !isNaN(id) ? id : null;
+function handleSyncEndpoint(
+  method: string,
+  url: string,
+  data: string | undefined,
+  error: unknown,
+) {
+  for (const ep of SYNC_ENDPOINTS) {
+    if (ep.pattern.test(url) && ep.method === method) {
+      let parsedData: Record<string, unknown> | undefined;
+      try {
+        parsedData = data ? JSON.parse(data) : undefined;
+      } catch {
+        parsedData = undefined;
+      }
+
+      const args = ep.extractArgs(url, parsedData);
+      const token = getTokenFromConfig(
+        error as { config?: { headers?: Record<string, string> } },
+      );
+      if (token && args.length > 0) {
+        args[args.length - 1] = token;
+      }
+
+      addToQueue(ep.actionName, ...args);
+      return;
+    }
   }
-  return null;
 }
 
 export function setupAxiosInterceptors() {
@@ -42,33 +120,13 @@ export function setupAxiosInterceptors() {
 
       if (!MUTATION_METHODS.includes(methodLower)) return Promise.reject(error);
       if (isAuthEndpoint(url || "")) return Promise.reject(error);
+      if (isSyncing()) return Promise.reject(error);
 
-      error.config._offlineHandled = true;
-
-      let parsedData: Record<string, unknown> | undefined;
-      try {
-        parsedData = data ? JSON.parse(data) : undefined;
-      } catch {
-        parsedData = undefined;
+      if (url) {
+        handleSyncEndpoint(methodLower, url, data, error);
       }
 
-      addToQueue({
-        operation_type:
-          methodLower === "post"
-            ? "create"
-            : methodLower === "delete"
-              ? "delete"
-              : "update",
-        table_name: getTableName(url || ""),
-        endpoint: url || "",
-        method: methodLower,
-        payload: parsedData,
-        record_id: getRecordId(url || "", methodLower),
-      });
-
-      toast.warning(
-        "تم حفظ العملية محلياً وستتم مزامنتها تلقائياً عند عودة الإنترنت",
-      );
+      error.config._offlineHandled = true;
 
       return Promise.reject(error);
     },

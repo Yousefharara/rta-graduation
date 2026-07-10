@@ -39,7 +39,9 @@ const ActiveOrganization = () => {
   const { localOrgs, isFetching, isUpdating, isDeleting, error } =
     useAppSelector((state) => state.localOrg);
   const { accessToken } = useAppSelector((state) => state.auth);
-  const { areas, isFetching: areaFetching } = useAppSelector((state) => state.areas);
+  const { areas, isFetching: areaFetching } = useAppSelector(
+    (state) => state.areas,
+  );
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 

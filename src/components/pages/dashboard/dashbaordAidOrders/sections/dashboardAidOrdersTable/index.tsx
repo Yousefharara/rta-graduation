@@ -7,6 +7,7 @@ import {
   X,
   Truck,
   Package,
+  WifiOff,
 } from "lucide-react";
 import "./style.css";
 import ReactTable from "@/components/organisms/reactTable";
@@ -16,12 +17,16 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getBeneficiaryOrders,
   updateBeneficiaryOrderStatusAction,
+  updateOrderStatus,
 } from "@/redux/slices/beneficiaryOrderSlice";
 import {
   createBeneficiaryAidAction,
   editBeneficiaryAidStatus,
   getBeneficiaryAids,
+  updateAidStatus,
 } from "@/redux/slices/beneficiaryAidSlice";
+import { editAidDeduct } from "@/redux/slices/aidSlice";
+
 import { getBeneficiaries } from "@/redux/slices/beneficiarySlice";
 import { getPickupLocations } from "@/redux/slices/pickupLocationSlice";
 import type { IBeneficiaryOrder } from "@/@types/beneficiaryOrder";
@@ -31,6 +36,8 @@ import Error from "@/components/feedback/Error";
 import { getAidTypes } from "@/redux/slices/aidTypes";
 import { editAidDeductAction, getAids } from "@/redux/slices/aidSlice";
 import { toast } from "sonner";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { addToQueue, getPendingCount } from "@/lib/syncService";
 
 type orderAidStatus = "pending" | "approved" | "rejected";
 
@@ -52,8 +59,10 @@ const DashboardAidOrdersTable = ({
     action: "approved" | "rejected";
   } | null>(null);
 
+  const isOnline = useNetworkStatus();
+
   const dispatch = useAppDispatch();
-  const { accessToken, organization, role } = useAppSelector(
+  const { accessToken, organization, role, user } = useAppSelector(
     (state) => state.auth,
   );
   const { orders, isFetching, isUpdating, error } = useAppSelector(
@@ -122,6 +131,47 @@ const DashboardAidOrdersTable = ({
       aid_type_id: number,
       beneficiaryId: number,
     ) => {
+      if (!isOnline) {
+        dispatch(updateOrderStatus({ id, status }));
+        addToQueue(
+          "updateBeneficiaryOrderStatusAction",
+          id,
+          status,
+          accessToken || "",
+        );
+        addToQueue(
+          "createBeneficiaryAidAction",
+          {
+            beneficiary_id: beneficiaryId,
+            aid_type_id,
+            status,
+            order_id: id,
+            pickup_location_id: null,
+          },
+          accessToken || "",
+        );
+        let editAid = aids.find(
+          (a) => a.aid_type_id === aid_type_id && a.org_id === organization?.id,
+        );
+        if (role === "admin") {
+          editAid = aids.find((a) => a.aid_type_id === aid_type_id);
+        }
+        if (status === "approved" && editAid) {
+          addToQueue("editAidDeductAction", editAid.id, 1, accessToken || "");
+          dispatch(
+            editAidDeduct({
+              id: editAid.id,
+              quantity:
+                editAid.remaining_quantity - 1 >= 0
+                  ? editAid.remaining_quantity - 1
+                  : 0,
+            }),
+          );
+        }
+        toast.info("تم حفظ العملية محلياً وستتم مزامنتها عند عودة الإنترنت");
+        return;
+      }
+
       let pickupLocationId: number | undefined;
       let editAid = aids.find(
         (a) => a.aid_type_id === aid_type_id && a.org_id === organization?.id,
@@ -193,15 +243,35 @@ const DashboardAidOrdersTable = ({
         return;
       }
     },
-    [dispatch, role, accessToken, organization, resolvePickupLocationId, aids],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      aids,
+      role,
+      dispatch,
+      accessToken,
+      user?.id,
+      organization?.id,
+      resolvePickupLocationId,
+    ],
   );
 
   const handleStatusClick = useCallback(
     (newStatus: IBeneficiaryAid["status"], id: number) => {
       if (isUpdating) return;
+      if (!isOnline) {
+        dispatch(updateAidStatus({ id, status: newStatus }));
+        addToQueue(
+          "editBeneficiaryAidStatus",
+          id,
+          newStatus,
+          accessToken || "",
+        );
+        toast.info("تم حفظ العملية محلياً وستتم مزامنتها عند عودة الإنترنت");
+        return;
+      }
       dispatch(editBeneficiaryAidStatus(id, newStatus, accessToken || ""));
     },
-    [accessToken, dispatch, isUpdating],
+    [accessToken, dispatch, isUpdating, isOnline],
   );
 
   const getBeneficiaryName = (id: number) => {
@@ -416,12 +486,42 @@ const DashboardAidOrdersTable = ({
     );
   }
 
-  if (error)
+  if (error && !isOnline) {
+    const pendingCount = getPendingCount();
     return (
-      <Error
-        onRetry={() => dispatch(getBeneficiaryOrders(accessToken || ""))}
-      />
+      <div className="flex flex-col items-center justify-center gap-4 h-40 text-zinc-500 border border-amber-300 bg-amber-50 rounded-md p-6">
+        <WifiOff size={32} className="text-amber-600" />
+        <p className="text-amber-700 font-medium text-lg">
+          أنت غير متصل بالإنترنت
+        </p>
+        <p className="text-amber-600 text-sm text-center">
+          {pendingCount > 0
+            ? `تم حفظ ${pendingCount} عملية محلياً وستتم مزامنتها تلقائياً عند عودة الاتصال`
+            : "سيتم حفظ العمليات محلياً ومزامنتها تلقائياً عند عودة الاتصال"}
+        </p>
+        <button
+          onClick={() => dispatch(getBeneficiaryOrders(accessToken || ""))}
+          className="px-4 py-2 rounded-lg bg-amber-600 text-white text-sm hover:bg-amber-700 transition-colors cursor-pointer"
+        >
+          إعادة المحاولة
+        </button>
+      </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 h-40 text-zinc-500 border border-red-300 bg-red-50 rounded-md p-6">
+        <p className="text-red-700 font-medium">{error}</p>
+        <button
+          onClick={() => dispatch(getBeneficiaryOrders(accessToken || ""))}
+          className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700 transition-colors cursor-pointer"
+        >
+          إعادة المحاولة
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>

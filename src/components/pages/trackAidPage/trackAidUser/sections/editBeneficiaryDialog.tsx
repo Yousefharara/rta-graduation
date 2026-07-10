@@ -116,7 +116,9 @@ const EditBeneficiaryDialog = ({ open, setOpen }: Props) => {
     if (result?.success) {
       dispatch(updateBeneficiaryStatus({ status: "pending" }));
       orders
-        .filter((o) => o.beneficiary_id === beneficiary.id && o.status !== "pending")
+        .filter(
+          (o) => o.beneficiary_id === beneficiary.id && o.status !== "pending",
+        )
         .forEach((o) => {
           dispatch(updateOrderStatus({ id: o.id, status: "pending" }));
         });

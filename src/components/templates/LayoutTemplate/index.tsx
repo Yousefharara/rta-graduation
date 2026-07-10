@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollToTop from "../../atoms/scrollToTop";
 import OfflineBanner from "../../feedback/OfflineBanner";
+import SyncIndicator from "../../feedback/SyncIndicator";
 import { isAuthPath, isDashboardPath } from "../../../utils/router.helper";
 import Navbar from "@/components/organisms/navbar";
 import Footer from "@/components/organisms/footer";
@@ -54,6 +55,7 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
         <Navbar />
         <div className="mt-20">{children}</div>
         <Footer />
+        <SyncIndicator />
       </article>
     );
   }
@@ -83,6 +85,7 @@ const LayoutTemplate = ({ children }: { children: ReactNode }) => {
       <Navbar />
       <div className="mt-20">{children}</div>
       <Footer />
+      <SyncIndicator />
     </article>
   );
 };

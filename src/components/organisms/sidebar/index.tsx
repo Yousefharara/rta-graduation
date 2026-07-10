@@ -30,6 +30,8 @@ import { logout } from "@/redux/slices/authSlice";
 import { createNotificationAction } from "@/redux/slices/notificationSlice";
 import Button from "@/components/atoms/button";
 import { useEffect, useState } from "react";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { addToQueue } from "@/lib/syncService";
 import { toast } from "sonner";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -115,6 +117,7 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
   const { isCreating } = useAppSelector((state) => state.aids);
   const { isUpdating } = useAppSelector((state) => state.localOrg);
   const { areas } = useAppSelector((state) => state.areas);
+  const isOnline = useNetworkStatus();
   const dispatch = useAppDispatch();
 
   const {
@@ -254,6 +257,22 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
   const handleOnSubmit = async (data: ICreateAidForm) => {
     const selectedAid = aidTypes.find((a) => a.name === data.aidType);
     const aidTypeId = selectedAid ? selectedAid.id : 1;
+
+    if (!isOnline) {
+      addToQueue(
+        "addAidAction",
+        {
+          aid_type_id: Number(aidTypeId),
+          org_id: organization?.id || 1,
+          quantity: data.quantity,
+        },
+        accessToken || "",
+      );
+      setOpen(false);
+      toast.success("تم حفظ الشحنة محلياً وستتم المزامنة عند عودة الإنترنت");
+      reset(defaultValues);
+      return;
+    }
 
     const result = await dispatch(
       addAidAction(
@@ -407,8 +426,6 @@ const Sidebar = ({ isOpenAside, isMobile, handleCloseAside }: ISidebar) => {
         </article>
 
         <div className="mt-auto">
-          
-
           {role === "admin" && (
             <li>
               <div

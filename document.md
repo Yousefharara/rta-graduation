@@ -509,39 +509,92 @@ quantity = quantity - 1  ← خصم تلقائي
 
 | الملف | الوظيفة |
 |-------|---------|
-| `src/lib/syncService.ts` | طابور العمليات في localStorage، المزامنة مع الخادم |
-| `src/lib/axiosInterceptors.ts` | اكتشاف أخطاء الشبكة وإضافة العمليات للطابور |
-| `src/hooks/useNetworkStatus.ts` | Hook لمراقبة حالة الاتصال (غير مستخدم حالياً) |
-| `src/main.tsx` (سطر 9-10) | تشغيل الانترسبتور وآلية المزامنة |
-| `vite.config.ts` (سطر 11-48) | إعدادات PWA + Workbox (تخزين مؤقت للاستجابات) |
+| `src/lib/syncService.ts` | طابور العمليات في localStorage (action-based) + Action Registry لإعادة التنفيذ |
+| `src/lib/axiosInterceptors.ts` | اكتشاف أخطاء الشبكة وإضافة العمليات المدعومة للطابور (بدون toast) |
+| `src/hooks/useNetworkStatus.ts` | Hook لمراقبة حالة الاتصال |
+| `src/components/feedback/SyncIndicator.tsx` | مؤشر المزامنة (يظهر عدد العمليات المعلقة + حالة المزامنة) |
+| `src/components/feedback/OfflineBanner.tsx` | شريط علوي عند انقطاع الإنترنت |
+| `src/main.tsx` | تشغيل الانترسبتور وآلية المزامنة التلقائية |
+
+### العمليات المدعومة للمزامنة Offline
+
+| العملية | Redux Action | API | الصفحة |
+|---------|-------------|-----|--------|
+| تسجيل مستفيد | `addBeneficiaryAction` | `POST /api/beneficiaries` | تسجيل مستفيد جديد |
+| تسجيل شحنة | `addAidAction` | `POST /api/aids` | الشحنات (Sidebar) |
+| تغيير حالة طلب مساعدة | `updateBeneficiaryOrderStatusAction` | `PUT /api/beneficiary-orders/:id` | طلبات المساعدة |
+| إنشاء سجل مساعدة | `createBeneficiaryAidAction` | `POST /api/beneficiary-aids` | طلبات المساعدة (للدخول في مراحل الـ 4) |
+| خصم المخزون | `editAidDeductAction` | `PATCH /api/aids/:id/deduct` | طلبات المساعدة (عند القبول) |
+| تغيير حالة المساعدة | `editBeneficiaryAidStatus` | `PUT /api/beneficiary-aids/:id` | طلبات المساعدة |
 
 ### تدفق العمل
+
+#### المسار 1 — من المكون (Component First):
 ```
-[مستخدم يعمل Create/Update/Delete]
+[مستخدم يعمل العملية]
        ↓
-axios → Network Error
+المكون يتحقق: isOnline؟
+       ↓
+[غير متصل]
+       ↓
+addToQueue(actionName, ...args) ← يحفظ مباشرة في localStorage
+       ↓
+Toast: "تم الحفظ محلياً وستتم المزامنة عند عودة الإنترنت"
+       ↓
+(لا يتم استدعاء API — لا يظهر خطأ)
+```
+
+#### المسار 2 — من Axios Interceptor (للحالات الطارئة):
+```
+[API call يفشل مع Network Error]
        ↓
 axiosInterceptors.ts يلتقط الخطأ
        ↓
-addToQueue() ← يحفظ العملية في localStorage (key: "offline_queue")
+يتحقق: هل الـ endpoint مدعوم؟ ← addToQueue()
        ↓
-Toast: "تم حفظ العملية محلياً وستتم مزامنتها تلقائياً عند عودة الإنترنت"
-       ↓
-[لما الإنترنت يعود]
-       ↓
-setupAutoSync() → syncNow()
-       ↓
-POST /api/sync لكل عملية في الطابور
-       ↓
-حذف العمليات الناجحة من الطابور
+يرفض الـ Promise (المكون يتعامل مع الفشل)
 ```
 
+#### المزامنة عند عودة الإنترنت:
+```
+[نافذة "online" event]
+       ↓
+syncNow()
+       ↓
+تستخرج التوكن الحالي من store.getState().auth.accessToken
+       ↓
+لكل عملية في الطابور:
+   ├── actionRegistry[actionName](...args) ← تستدعي Redux Thunk
+   ├── store.dispatch(thunk)
+   ├── إذا نجحت ← removeFromQueue(id)
+   └── إذا فشلت ← تبقى في الطابور للمحاولة التالية
+       ↓
+Custom Events:
+   ├── "sync-status-changed" ← لـ SyncIndicator
+   └── "sync-queue-changed" ← لـ SyncIndicator
+```
+
+### مؤشر المزامنة (SyncIndicator)
+
+- أيقونة صغيرة في الزاوية السفلية اليمنى
+- **غير متصل**: خلفية حمراء + عدد العمليات المحفوظة
+- **متصل + في انتظار المزامنة**: خلفية صفراء + عدد العمليات
+- **جاري المزامنة**: خلفية زرقاء + أيقونة تدور
+- مخفي عندما `pendingCount === 0` والمتصفح متصل
+
+### معالجة أخطاء الـ Error Component
+
+- في `dashboardAidOrdersTable`: تم استبدال `if(error) return <Error />` بـ:
+  - **عند انقطاع الشبكة**: عرض رسالة "أنت غير متصل بالإنترنت" مع عدد العمليات المعلقة
+  - **خطأ آخر**: عرض رسالة الخطأ مع زر إعادة محاولة
+- باقي الصفحات تظهر Banner أصفر في أعلى النموذج عند انقطاع الشبكة
+
 ### ملاحظات
+- **مسارات المصادقة** (`/api/auth/*`) **مستثناة** من الـ offline queue
+- التوكن يُحدّث في `syncNow()` من `store.getState()` — يستخدم أحدث توكن متاح
+- العمليات تفشل إذا انتهت صلاحية التوكن وتبقى في الطابور للمحاولة التالية
+- `actionRegistry` في `syncService.ts` يربط أسماء الـ actions بالـ Redux Thunks الفعلية
 - PWA يستخدم `NetworkFirst` strategy — يحاول من الإنترنت أولاً ثم الكاش
-- فقط **auth reducer** هو اللي مستمر عبر `redux-persist` إلى localStorage
-- الـ `useNetworkStatus` hook موجود لكن غير مربوط بأي واجهة مستخدم حالياً
-- `/api/sync` endpoint لازم يكون موجود عالسيرفر عشان المزامنة تشتغل
-- **مسارات المصادقة** (`/api/auth/*`) **مستثناة** من الـ offline queue — لأن تسجيل الدخول لا يمكن مزامنته لاحقاً (الـ toast والـ queue يطبق فقط على عمليات CRUD العادية)
 
 ---
 

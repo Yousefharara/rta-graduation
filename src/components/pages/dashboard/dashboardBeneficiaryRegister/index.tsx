@@ -21,7 +21,9 @@ import { getGovernorates } from "@/redux/slices/governorateSlice";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { IBeneficiary } from "@/@types/beneficiary";
 import { PATHS } from "@/routes/paths";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, WifiOff } from "lucide-react";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { addToQueue } from "@/lib/syncService";
 
 const defaultValues: IBeneficiaryForm = {
   name: "",
@@ -86,6 +88,7 @@ const beneficiaryFormSchema: Yup.ObjectSchema<IBeneficiaryForm> = Yup.object({
 const DashboardBeneficiaryRegister = () => {
   const [region, setRegion] = useState<number>();
   const [showPassword, setShowPassword] = useState(false);
+  const isOnline = useNetworkStatus();
   const navigate = useNavigate();
   const { accessToken } = useAppSelector((state) => state.auth);
   const { isCreating, isUpdating, error } = useAppSelector(
@@ -203,7 +206,31 @@ const DashboardBeneficiaryRegister = () => {
       return;
     }
 
-    await dispatch(
+    if (!isOnline) {
+      addToQueue(
+        "addBeneficiaryAction",
+        {
+          area_id: data.area_id,
+          disabled_count: data.disabled_count || 0,
+          email: generateRandomEmail(),
+          family_size: data.family_size,
+          income: data.income,
+          name: data.name,
+          national_id: data.national_id,
+          password: data.password || "password123",
+          patients_count: data.patients_count,
+          phone: data.phone,
+          is_displaced: isDisplaced,
+          release_date: data.release_date,
+        },
+        accessToken || "",
+      );
+      toast.success("تم حفظ البيانات محلياً وستتم المزامنة عند عودة الإنترنت");
+      reset(defaultValues);
+      return;
+    }
+
+    const result = await dispatch(
       addBeneficiaryAction(
         {
           area_id: data.area_id,
@@ -222,7 +249,7 @@ const DashboardBeneficiaryRegister = () => {
         accessToken || "",
       ),
     );
-    if (!error && !isCreating) {
+    if (result?.success) {
       toast.success("تم تسجيل المستفيد");
       reset(defaultValues);
     }
@@ -230,6 +257,15 @@ const DashboardBeneficiaryRegister = () => {
 
   return (
     <section>
+      {!isOnline && (
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-300 rounded-md px-4 py-3 mb-4 text-amber-700 text-sm">
+          <WifiOff size={18} />
+          <span>
+            أنت غير متصل بالإنترنت. سيتم حفظ البيانات محلياً ومزامنتها عند عودة
+            الاتصال.
+          </span>
+        </div>
+      )}
       <h1 className="text-2xl font-semibold mb-6">
         {isEditMode ? "تعديل المستفيد" : "تسجيل مستفيد جديد"}
       </h1>

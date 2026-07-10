@@ -5,5 +5,4 @@ export const ROLES: Record<string, RoleType> = {
   ORG: "local_org", // org --> Organization
 };
 
-export type RoleType =
-  "guest" | "beneficiary" | "admin" | "local_org";
+export type RoleType = "guest" | "beneficiary" | "admin" | "local_org";

@@ -71,7 +71,9 @@ const authSlice = createSlice({
     },
     updateBeneficiaryStatus: (
       state,
-      action: PayloadAction<{ status: "pending" | "eligible" | "not_eligible" }>,
+      action: PayloadAction<{
+        status: "pending" | "eligible" | "not_eligible";
+      }>,
     ) => {
       if (state.beneficiary) {
         state.beneficiary.status = action.payload.status;
@@ -86,8 +88,16 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, updateTokens, logout, setError, setLoading, updateBeneficiaryStatus, updateOrganization, updateUser } =
-  authSlice.actions;
+export const {
+  login,
+  updateTokens,
+  logout,
+  setError,
+  setLoading,
+  updateBeneficiaryStatus,
+  updateOrganization,
+  updateUser,
+} = authSlice.actions;
 
 export default authSlice.reducer;
 

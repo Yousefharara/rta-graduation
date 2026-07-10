@@ -7,7 +7,7 @@ import { setupAutoSync } from "./lib/syncService";
 import { store } from "./redux/store";
 
 setupAxiosInterceptors();
-setupAutoSync(() => store.getState()?.auth?.accessToken || null);
+setupAutoSync();
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
